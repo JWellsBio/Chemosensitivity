@@ -1,0 +1,7 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"33","TCGA-PK-A5HB-01A",213,"Sorafenib","",NA,1293,"alive",1293,213,0,0
+"34","TCGA-PK-A5HB-11A",213,"Sorafenib","",NA,1293,"alive",1293,213,0,0
+"38","TCGA-OR-A5K2-01A",97,"etoposide","",994,NA,"dead",994,97,0,0
+"82","TCGA-OU-A5PI-01A",351,"Avastin","NO",NA,1171,"alive",1171,351,0,1
+"91","TCGA-OR-A5JM-01A",72,"ketoconazole","",562,NA,"dead",562,72,1,0
+"96","TCGA-OR-A5JY-01A",75,"xeloda","",552,NA,"dead",552,75,1,0

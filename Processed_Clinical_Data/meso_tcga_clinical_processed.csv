@@ -1,0 +1,60 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"3","TCGA-UD-AAC6-01A",130,"Pemetrexed","NO",456,NA,"dead",456,130,1,0
+"4","TCGA-MQ-A4LC-01A",2758,"Tetrathiomolybdate","",2790,NA,"dead",2790,2758,0,1
+"5","TCGA-3U-A98H-01A",434,"Tivantinib (ARQ-197)","NO",1156,1150,"dead",1156,434,0,0
+"7","TCGA-LK-A4O5-01A",NA,"Adriamycin","NO",387,371,"dead",387,387,0,0
+"8","TCGA-TS-A8AI-01A",NA,"Porfimer Sodium (Photofin)","",328,NA,"dead",328,328,0,0
+"9","TCGA-MQ-A4LI-01A",416,"Gemzar","",572,NA,"dead",572,416,0,0
+"11","TCGA-MQ-A6BQ-01A",NA,"Alimta","NO",NA,2359,"alive",2359,2359,0,1
+"12","TCGA-ZN-A9VV-01A",1299,"Alimta","NO",NA,1309,"alive",1309,1299,0,1
+"15","TCGA-SC-AA5Z-01A",NA,"Carboplatin","NO",NA,664,"alive",664,664,0,0
+"16","TCGA-TS-A7P6-01A",NA,"2-[1-hexyloxyethyl]-2-devinyl pyropheophorbide-alpha (HPPH or Photochlor)","",283,NA,"dead",283,283,0,0
+"17","TCGA-LK-A4NZ-01A",NA,"Cisplatin","",244,NA,"dead",244,244,0,0
+"18","TCGA-UD-AAC5-01A",237,"Pemetrexed","NO",253,NA,"dead",253,237,0,0
+"22","TCGA-MQ-A4LJ-01A",409,"Cisplatin","",709,NA,"dead",709,409,0,0
+"23","TCGA-3H-AB3U-01A",220,"Dasatinib","",826,NA,"dead",826,220,0,0
+"24","TCGA-SH-A9CU-01A",90,"Pemetrexed","NO",732,602,"dead",732,90,1,0
+"25","TCGA-UT-A88D-01B",568,"Cisplatin","NO",823,756,"dead",823,568,0,0
+"26","TCGA-SC-A6LN-01A",NA,"Pemetrexed","NO",414,200,"dead",414,414,0,0
+"27","TCGA-3H-AB3M-01A",822,"Temsirolimus","",885,NA,"dead",885,822,0,1
+"29","TCGA-3U-A98I-01A",551,"Pemetrexed (Alimta)","NO",860,671,"dead",860,551,0,0
+"30","TCGA-UT-A88C-01B",479,"Pemetrexed","NO",863,723,"dead",863,479,0,0
+"31","TCGA-3U-A98E-01A",117,"DS-8273a","NO",NA,1916,"alive",1916,117,1,0
+"32","TCGA-3U-A98F-01A",440,"Pemetrexed (Alimta)","NO",536,463,"dead",536,440,0,0
+"33","TCGA-TS-A7P1-01A",494,"Porfimer Sodium (Photofrin)","",563,NA,"dead",563,494,0,0
+"34","TCGA-SC-A6LP-01A",NA,"Pemetrexed","",78,NA,"dead",78,78,1,0
+"36","TCGA-SH-A9CT-01A",43,"Pemetrexed","NO",449,256,"dead",449,43,1,0
+"37","TCGA-3H-AB3K-01A",883,"Cediranib","",1715,NA,"dead",1715,883,0,1
+"38","TCGA-3H-AB3L-01A",222,"Dasatinib","",361,NA,"dead",361,222,0,0
+"41","TCGA-3H-AB3T-01A",369,"Cisplatin, pemetrexed","",414,NA,"dead",414,369,0,0
+"42","TCGA-MQ-A6BN-01A",609,"Alimta","",757,NA,"dead",757,609,0,0
+"43","TCGA-MQ-A6BL-01A",186,"Alimta","",333,NA,"dead",333,186,1,0
+"44","TCGA-TS-A8AV-01A",NA,"2-[1-hexyloxyethyl]-2-devinyl pyropheophorbide-alpha (HPPH or Photochlor)","",NA,NA,"dead",NA,NA,NA,NA
+"46","TCGA-UD-AAC1-01A",85,"Gemcitabine","NO",789,NA,"dead",789,85,1,0
+"47","TCGA-SC-A6LQ-01A",238,"Cisplatin","",297,NA,"dead",297,238,0,0
+"48","TCGA-LK-A4O0-01A",NA,"Cisplatinum","",185,NA,"dead",185,185,1,0
+"50","TCGA-3H-AB3S-01A",186,"R1507","",385,NA,"dead",385,186,1,0
+"51","TCGA-TS-A7P3-01A",NA,"Porfimer Sodium (Photofrin)","",689,NA,"dead",689,689,0,0
+"53","TCGA-TS-A8AF-01A",NA,"Porfimer Sodium (Photofin)","",358,NA,"dead",358,358,0,0
+"54","TCGA-TS-A8AS-01A",NA,"2-[1-hexyloxyethyl]-2-devinyl pyropheophorbide-alpha (HPPH or Photochlor)","",795,NA,"dead",795,795,0,1
+"55","TCGA-TS-A7P8-01A",301,"Porfimer Sodium (Photofin)","",457,NA,"dead",457,301,0,0
+"56","TCGA-SH-A7BD-01A",200,"Cisplatin","",459,NA,"dead",459,200,0,0
+"57","TCGA-MQ-A6BS-01A",332,"WT-1 Vaccine","NO",608,414,"dead",608,332,0,0
+"58","TCGA-TS-A7OY-01A",NA,"Porfimer Sodium(Photofin)","",255,NA,"dead",255,255,0,0
+"60","TCGA-MQ-A4KX-01A",1803,"Alimta","",2459,NA,"dead",2459,1803,0,1
+"61","TCGA-UD-AAC4-01A",555,"Gemcitabine","NO",719,NA,"dead",719,555,0,0
+"64","TCGA-SH-A7BH-01A",125,"Pemetrexed","",243,NA,"dead",243,125,1,0
+"65","TCGA-TS-A8AY-01A",NA,"Porfimer Sodium (Photofin)","",469,NA,"dead",469,469,0,0
+"66","TCGA-UD-AABZ-01A",NA,"Alimta","NO",197,NA,"dead",197,197,0,0
+"67","TCGA-SC-A6LM-01A",783,"Vinorelbine","",881,NA,"dead",881,783,0,1
+"68","TCGA-MQ-A4LV-01A",99,"Tetrathiomolybdate","",107,NA,"dead",107,99,1,0
+"70","TCGA-SH-A7BC-01A",507,"Pemetrexed","",727,NA,"dead",727,507,0,0
+"72","TCGA-LK-A4NY-01A",NA,"ALIMTA","",168,NA,"dead",168,168,1,0
+"73","TCGA-TS-A7P0-01A",277,"Porfimer Sodium (Photofrin)","",1261,NA,"dead",1261,277,0,0
+"77","TCGA-LK-A4O7-01A",NA,"Alimta","NO",350,108,"dead",350,350,0,0
+"78","TCGA-TS-A7PB-01A",NA,"2-[1-hexyloxyethyl]-2-devinyl pyropheophorbide-alpha (HPPH or Photochlor)","",982,NA,"dead",982,982,0,1
+"79","TCGA-MQ-A6BR-01A",1574,"Alimta","NO",NA,2090,"alive",2090,1574,0,1
+"82","TCGA-LK-A4NW-01A",NA,"Carboplatin","",546,NA,"dead",546,546,0,0
+"84","TCGA-UD-AAC7-01A",265,"Alimta","NO",406,NA,"dead",406,265,0,0
+"87","TCGA-3H-AB3O-01A",1013,"Pemetrexed","",1302,NA,"dead",1302,1013,0,1
+"88","TCGA-3H-AB3X-01A",NA,"Pemetrexed","NO",NA,1490,"alive",1490,1490,0,1

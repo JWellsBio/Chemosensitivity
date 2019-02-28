@@ -1,0 +1,89 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"4","TCGA-AF-6136-01A",609,"Fluorouracil","",NA,741,"alive",741,609,0,0
+"5","TCGA-AF-3911-01A",1020,"5FU","",NA,1148,"alive",1148,1020,0,0
+"6","TCGA-AG-A020-01A",NA,"Oxaliplatin","",NA,31,"alive",31,31,1,0
+"7","TCGA-AG-A020-11A",NA,"Oxaliplatin","",NA,31,"alive",31,31,1,0
+"8","TCGA-EI-7002-01A",NA,"IRINOTECAN+5-fluorouracilim","",NA,364,"alive",364,364,0,0
+"10","TCGA-AG-A01Y-01A",NA,"5-Fluorouracil","",NA,0,"alive",0,0,1,0
+"11","TCGA-AG-A01Y-11A",NA,"5-Fluorouracil","",NA,0,"alive",0,0,1,0
+"13","TCGA-CI-6622-01A",NA,"Oxaliplatin","NO",NA,1362,"alive",1362,1362,0,1
+"17","TCGA-AG-3584-01A",NA,"Irinotecan","NO",730,0,"dead",730,730,0,0
+"18","TCGA-AG-A00C-01A",NA,"Oxaliplatin","NO",NA,183,"alive",183,183,1,0
+"25","TCGA-AG-3885-01A",NA,"Zoledronic acid","NO",NA,546,"alive",546,546,0,0
+"30","TCGA-AG-3894-01A",NA,"5-Fluorouracil","NO",NA,426,"alive",426,426,0,0
+"31","TCGA-AG-3732-01A",NA,"Bevacizumab","NO",NA,1003,"alive",1003,1003,0,0
+"32","TCGA-AG-3732-11A",NA,"Bevacizumab","NO",NA,1003,"alive",1003,1003,0,0
+"34","TCGA-DC-6156-01A",30,"BEVACIZUmab","",NA,943,"alive",943,30,1,0
+"35","TCGA-F5-6864-01A",NA,"Leucovorin","NO",NA,379,"alive",379,379,0,0
+"36","TCGA-AG-A01W-01A",NA,"5-Fluorouracil","",NA,0,"alive",0,0,1,0
+"37","TCGA-AG-A01W-11A",NA,"5-Fluorouracil","",NA,0,"alive",0,0,1,0
+"39","TCGA-F5-6571-01A",1059,"Gemcitabine","",NA,1288,"alive",1288,1059,0,1
+"40","TCGA-F5-6702-01A",368,"Oxaliplatin","NO",869,452,"alive",452,368,0,0
+"42","TCGA-DC-6683-01A",NA,"Leucovorin Calcium","",NA,762,"alive",762,762,0,0
+"46","TCGA-EI-6885-01A",295,"oxaliplatinum+5 fluorouracilum","",NA,415,"alive",415,295,1,0
+"47","TCGA-EI-6917-01A",NA,"5fluorouracil+oxaciplatina+l-folinian discido","",NA,531,"alive",531,531,0,0
+"50","TCGA-EI-6514-01A",NA,"5-FU + LEULOV","",NA,496,"alive",496,496,0,0
+"51","TCGA-EI-6884-01A",NA,"5 fluorouracilum+leucovorin","",NA,328,"alive",328,328,0,0
+"57","TCGA-AG-A01N-01A",NA,"Bevacizumab","NO",NA,943,"alive",943,943,0,0
+"58","TCGA-AF-2687-01A",1267,"5 FU","",NA,1427,"alive",1427,1267,0,1
+"59","TCGA-G5-6233-01A",92,"Oxaliplatin","",556,NA,"dead",556,92,1,0
+"65","TCGA-DY-A0XA-01A",NA,"Mayo 425-20","",NA,3846,"alive",3846,3846,0,1
+"66","TCGA-AG-3893-01A",NA,"5-Fluorouracil","NO",NA,1065,"alive",1065,1065,0,1
+"67","TCGA-EI-6511-01A",NA,"oxaliplatinum+5-FU","",NA,482,"alive",482,482,0,0
+"68","TCGA-AH-6643-01A",1026,"Leucovorin","NO",1314,21,"dead",1314,1026,0,0
+"69","TCGA-AH-6643-11A",1026,"Leucovorin","NO",1314,21,"dead",1314,1026,0,0
+"70","TCGA-G5-6641-01A",NA,"Leucovorin","",NA,804,"alive",804,804,0,0
+"71","TCGA-DC-4745-01A",NA,"Oxaliplatin","",NA,639,"alive",639,639,0,0
+"72","TCGA-AG-3611-01A",NA,"5-Fluorouracil","NO",NA,424,"alive",424,424,0,0
+"76","TCGA-AG-A02N-01A",NA,"Folinic acid","",NA,1885,"alive",1885,1885,0,1
+"77","TCGA-AG-A02N-11A",NA,"Folinic acid","",NA,1885,"alive",1885,1885,0,1
+"80","TCGA-AG-A02G-01A",578,"Oxaliplatin","NO",1185,0,"dead",1185,578,0,0
+"82","TCGA-AF-3400-01A",NA,"5FU","",NA,1049,"alive",1049,1049,0,0
+"83","TCGA-AF-3400-11A",NA,"5FU","",NA,1049,"alive",1049,1049,0,0
+"85","TCGA-AF-A56L-01A",NA,"5FU","NO",NA,2007,"alive",2007,2007,0,1
+"86","TCGA-EI-6508-01A",NA,"oxaliplatinum + 5-FU","",NA,636,"alive",636,636,0,0
+"88","TCGA-AF-3914-01A",846,"Fluorouracil IV Continuous infusion over 46 hours","",NA,1146,"alive",1146,846,0,0
+"89","TCGA-AF-3914-11A",846,"Fluorouracil IV Continuous infusion over 46 hours","",NA,1146,"alive",1146,846,0,0
+"90","TCGA-AF-3913-01A",NA,"Oxaliplatin","",316,NA,"dead",316,316,0,0
+"91","TCGA-AF-3913-11A",NA,"Oxaliplatin","",316,NA,"dead",316,316,0,0
+"98","TCGA-AG-3609-01A",NA,"Oxaliplatin","NO",NA,608,"alive",608,608,0,0
+"99","TCGA-EI-6509-01A",90,"FOLFOX","",NA,517,"alive",517,90,1,0
+"100","TCGA-AF-2689-01A",1134,"Leucovorin","",1201,546,"dead",1201,1134,0,1
+"101","TCGA-AF-2689-11A",1134,"Leucovorin","",1201,546,"dead",1201,1134,0,1
+"102","TCGA-AG-3887-01A",1064,"Bevacizumab","NO",NA,1124,"alive",1124,1064,0,1
+"103","TCGA-BM-6198-01A",NA,"Xeloda","",NA,646,"alive",646,646,0,0
+"113","TCGA-AG-A032-01A",792,"Bevacizumab","NO",NA,1157,"alive",1157,792,0,0
+"114","TCGA-DC-6154-01A",NA,"Oxaliplatin","",NA,365,"alive",365,365,0,0
+"115","TCGA-AF-2692-01A",327,"Xeloda","",NA,412,"alive",412,327,0,0
+"116","TCGA-AF-2692-11A",327,"Xeloda","",NA,412,"alive",412,327,0,0
+"117","TCGA-AG-3593-01A",NA,"5-Fluorouracil","NO",NA,1035,"alive",1035,1035,0,0
+"119","TCGA-DC-6681-01A",NA,"Oxaliplatin","",NA,790,"alive",790,790,0,0
+"120","TCGA-DC-6155-01A",NA,"Fluorouracil","",NA,425,"alive",425,425,0,0
+"122","TCGA-AF-6672-01A",461,"Fluorouracil","",NA,748,"alive",748,461,0,0
+"123","TCGA-EI-6512-01A",NA,"FOLFOX","",NA,538,"alive",538,538,0,0
+"124","TCGA-AF-A56N-01A",NA,"xeloda","NO",NA,360,"alive",360,360,0,0
+"125","TCGA-EI-6883-01A",NA,"5fluorouracil+leucovorin","",NA,350,"alive",350,350,0,0
+"129","TCGA-AH-6903-01A",NA,"Leucovorin","NO",NA,592,"alive",592,592,0,0
+"130","TCGA-DY-A1DE-01A",3316,"Mayo 425-20","",NA,3932,"alive",3932,3316,0,1
+"133","TCGA-EI-7004-01A",NA,"xeloda","",NA,257,"alive",257,257,1,0
+"141","TCGA-G5-6235-01A",1042,"Fluorouracil","",NA,1696,"alive",1696,1042,0,0
+"154","TCGA-AG-A016-01A",NA,"Bevacizumab","NO",NA,276,"alive",276,276,1,0
+"155","TCGA-AG-3909-01A",NA,"Oxaliplatin","NO",NA,608,"alive",608,608,0,0
+"157","TCGA-AG-A036-01A",NA,"5-Fluorouracil","NO",NA,3562,"alive",3562,3562,0,1
+"158","TCGA-AG-A036-11A",NA,"5-Fluorouracil","NO",NA,3562,"alive",3562,3562,0,1
+"160","TCGA-CI-6620-01A",90,"Oxaliplatin","NO",NA,1009,"alive",1009,90,1,0
+"162","TCGA-AH-6544-01A",NA,"Leucovorin","NO",NA,1173,"alive",1173,1173,0,1
+"165","TCGA-AG-A01L-01A",NA,"5-Fluorouracil","",NA,0,"alive",0,0,1,0
+"168","TCGA-AG-4022-01A",NA,"5-Fluorouracil","NO",NA,1400,"alive",1400,1400,0,1
+"171","TCGA-AG-4008-01A",NA,"Folinic acid","NO",NA,518,"alive",518,518,0,0
+"174","TCGA-AG-4005-01A",NA,"Oxaliplatin","NO",NA,427,"alive",427,427,0,0
+"176","TCGA-AG-3728-01A",NA,"Oxaliplatin","NO",NA,912,"alive",912,912,0,0
+"177","TCGA-DY-A1DC-01A",630,"Capecitabine -xeloda","",1258,NA,"dead",1258,630,0,0
+"179","TCGA-EI-6881-01A",NA,"5 fluorouracil+leucovorin","",NA,499,"alive",499,499,0,0
+"180","TCGA-F5-6863-01A",191,"Xeloda","NO",361,23,"dead",361,191,1,0
+"181","TCGA-AF-4110-01A",NA,"Oxaliplatin","",NA,912,"alive",912,912,0,0
+"182","TCGA-CL-4957-01A",NA,"Fluorouracil","",NA,425,"dead",NA,NA,NA,NA
+"183","TCGA-AG-3731-01A",NA,"Irinotecan","NO",NA,1126,"alive",1126,1126,0,1
+"184","TCGA-AG-3731-11A",NA,"Irinotecan","NO",NA,1126,"alive",1126,1126,0,1
+"188","TCGA-AG-3600-01A",NA,"5-Fluorouracil","NO",NA,184,"alive",184,184,1,0
+"189","TCGA-AG-A00H-01A",790,"5-Fluorouracil","NO",NA,790,"alive",790,790,0,0

@@ -1,0 +1,124 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"1","TCGA-ER-A195-06A",NA,"interferon","",1078,NA,"dead",1078,1078,0,0
+"5","TCGA-EB-A6QZ-01A",341,"Vincristine","NO",352,-3,"dead",352,341,1,0
+"11","TCGA-EE-A3AE-06A",NA,"Mage A3","NO",NA,1658,"alive",1658,1658,0,0
+"13","TCGA-EE-A3AD-06A",648,"BRAF inhibitor","NO",875,112,"dead",875,648,0,0
+"21","TCGA-D3-A3C7-06A",NA,"Interferon","NO",NA,1429,"alive",1429,1429,0,0
+"24","TCGA-D3-A51E-06A",NA,"Melphalan","NO",NA,5318,"alive",5318,5318,0,1
+"25","TCGA-EE-A2MQ-06A",1125,"Dacarbazine","",1315,NA,"dead",1315,1125,0,0
+"34","TCGA-EE-A29T-06A",11006,"Vemurafenib","NO",NA,11252,"alive",11252,11006,0,1
+"36","TCGA-ER-A19Q-06A",1479,"Dacarbazine","",1548,NA,"dead",1548,1479,0,0
+"41","TCGA-ER-A19G-06A",NA,"GM-CSF","NO",NA,9188,"alive",9188,9188,0,1
+"44","TCGA-EB-A5FP-01A",24,"Carboplatin","NO",454,6,"dead",454,24,1,0
+"46","TCGA-EB-A3XC-01A",372,"Dacarbazine","NO",NA,650,"alive",650,372,0,0
+"51","TCGA-GN-A264-06A",3221,"Interferon alfa-2b","",3587,NA,"dead",3587,3221,0,1
+"57","TCGA-EE-A3JI-06A",NA,"Ipilimumab","NO",4648,4504,"dead",4648,4648,0,1
+"60","TCGA-D3-A2JN-06A",NA,"Interferon-alfa","NO",2022,1709,"dead",2022,2022,0,0
+"64","TCGA-QB-AA9O-06A",NA,"ipilimumab","",549,NA,"dead",549,549,0,0
+"66","TCGA-FW-A3R5-06A",NA,"Interferon","NO",NA,1124,"alive",1124,1124,0,0
+"67","TCGA-FW-A3R5-11A",NA,"Interferon","NO",NA,1124,"alive",1124,1124,0,0
+"75","TCGA-GN-A267-06A",1729,"Temodar","",1960,NA,"dead",1960,1729,0,0
+"78","TCGA-GN-A4U9-06A",579,"Axitinib","NO",673,384,"dead",673,579,0,0
+"80","TCGA-ER-A2NF-01A",230,"Aflibercept","NO",877,498,"dead",877,230,1,0
+"81","TCGA-ER-A2NF-06A",230,"Aflibercept","NO",877,498,"dead",877,230,1,0
+"82","TCGA-D3-A1Q3-06A",NA,"Cisplatin","",507,NA,"dead",507,507,0,0
+"87","TCGA-FS-A1ZE-06A",1096,"Carboplatin Paclitaxel","NO",1413,1225,"dead",1413,1096,0,0
+"91","TCGA-ER-A1A1-06A",1971,"Interferon","NO",NA,3196,"alive",3196,1971,0,0
+"94","TCGA-FR-A728-01A",NA,"Trametinib","NO",NA,583,"alive",583,583,0,0
+"101","TCGA-D3-A1Q9-06A",503,"GP-100","",961,NA,"dead",961,503,0,0
+"116","TCGA-EB-A550-01A",NA,"Tamoxifen","NO",264,6,"dead",264,264,1,0
+"122","TCGA-EE-A29Q-06A",1574,"Dacarbazine","NO",2030,1136,"dead",2030,1574,0,0
+"129","TCGA-EE-A2MD-06A",1344,"Dacarbazine","",1438,NA,"dead",1438,1344,0,0
+"132","TCGA-EB-A85J-01A",138,"Vincristine","NO",NA,360,"alive",360,138,1,0
+"133","TCGA-WE-AAA4-06A",NA,"ipilimumab","NO",NA,760,"alive",760,760,0,0
+"135","TCGA-EE-A2ML-06A",6525,"MORAb-004","NO",6590,6176,"dead",6590,6525,0,1
+"137","TCGA-ER-A2NG-06A",1153,"Ipilimumab","NO",1490,951,"dead",1490,1153,0,0
+"139","TCGA-D3-A51G-06A",NA,"Resiquimod","NO",NA,NA,"alive",NA,NA,NA,NA
+"146","TCGA-D3-A51H-06A",NA,"Dacarbazine","NO",NA,1714,"alive",1714,1714,0,0
+"151","TCGA-ER-A19H-06A",NA,"DTIC","",4634,NA,"dead",4634,4634,0,1
+"152","TCGA-EB-A5SH-06A",NA,"Interferon alpha","NO",NA,1643,"alive",1643,1643,0,0
+"153","TCGA-FS-A4F0-06A",1828,"Gemcitabine","NO",NA,2367,"alive",2367,1828,0,0
+"157","TCGA-EE-A2A5-06A",1117,"Fotemustine","",1195,NA,"dead",1195,1117,0,0
+"162","TCGA-D3-A8GB-06A",461,"Interferon","",938,NA,"dead",938,461,0,0
+"164","TCGA-DA-A3F2-06A",NA,"Ipilimumab","NO",1032,1025,"dead",1032,1032,0,0
+"166","TCGA-EB-A57M-01A",NA,"RenAmin","NO",472,399,"dead",472,472,0,0
+"167","TCGA-D3-A2JH-06A",NA,"Interferon","NO",NA,1280,"alive",1280,1280,0,0
+"169","TCGA-EB-A5UL-06A",NA,"Bleomycin","NO",NA,891,"alive",891,891,0,0
+"172","TCGA-FW-A3TV-06A",139,"Interferon","NO",NA,411,"alive",411,139,1,0
+"176","TCGA-EE-A29C-06A",2212,"Trametinib","NO",2402,1455,"dead",2402,2212,0,0
+"177","TCGA-W3-AA1O-06A",NA,"Dacarbazine","",122,NA,"dead",122,122,1,0
+"180","TCGA-WE-A8ZN-06A",1605,"nivolumab","NO",NA,1794,"alive",1794,1605,0,0
+"186","TCGA-EE-A3AH-06A",4184,"PI88","",4222,NA,"dead",4222,4184,0,1
+"188","TCGA-WE-A8K5-06A",1498,"ipilimumab","NO",1860,1654,"dead",1860,1498,0,0
+"197","TCGA-DA-A3F5-06A",6841,"Pembrolizumab","NO",6873,6826,"dead",6873,6841,0,1
+"199","TCGA-D3-A3C1-06A",NA,"Interferon","NO",NA,NA,"alive",NA,NA,NA,NA
+"202","TCGA-D9-A148-06A",4287,"ipilimumab","",NA,4609,"alive",4609,4287,0,1
+"206","TCGA-FR-A7U8-06A",567,"Interferon","NO",NA,847,"alive",847,567,0,0
+"208","TCGA-GN-A4U4-06A",NA,"Ipilimumab","NO",NA,1197,"alive",1197,1197,0,0
+"213","TCGA-FR-A8YC-06A",NA,"2B3-101","",1059,NA,"dead",1059,1059,0,0
+"216","TCGA-GN-A4U5-01A",NA,"Interferon","NO",NA,1156,"alive",1156,1156,0,0
+"217","TCGA-GN-A8LN-01A",NA,"Pembrolizumab","NO",NA,772,"alive",772,772,0,0
+"222","TCGA-EE-A185-06A",85,"Dacarbazine","",151,NA,"dead",151,85,1,0
+"231","TCGA-FR-A3YO-06A",NA,"Ipilimumab","NO",NA,NA,"alive",NA,NA,NA,NA
+"247","TCGA-D3-A5GT-01A",291,"Interferon alpha","NO",NA,487,"alive",487,291,1,0
+"250","TCGA-GN-A9SD-06A",1267,"melphalan","",1807,NA,"dead",1807,1267,0,0
+"251","TCGA-FS-A1ZT-06A",NA,"interferon alpha","NO",NA,1617,"alive",1617,1617,0,0
+"252","TCGA-EB-A6QY-01A",36,"Laferon","NO",NA,382,"alive",382,36,1,0
+"254","TCGA-W3-A825-06A",NA,"Interferon-α2","",1917,NA,"dead",1917,1917,0,0
+"256","TCGA-EE-A29H-06A",1237,"Vemurafenib","NO",NA,1966,"alive",1966,1237,0,0
+"257","TCGA-EE-A29X-06A",505,"Fotemustine","",545,NA,"dead",545,505,0,0
+"262","TCGA-D3-A1QA-06A",2553,"recMAGE- A3","NO",NA,2765,"alive",2765,2553,0,0
+"263","TCGA-D3-A1QA-07A",2553,"recMAGE- A3","NO",NA,2765,"alive",2765,2553,0,0
+"265","TCGA-EE-A182-06A",NA,"PV-10","",447,NA,"dead",447,447,0,0
+"267","TCGA-WE-A8ZM-06A",3082,"Diphencyprone","NO",NA,3082,"alive",3082,3082,0,1
+"272","TCGA-YG-AA3P-06A",NA,"Yervoy","NO",NA,439,"alive",439,439,0,0
+"275","TCGA-D3-A8GK-06A",NA,"MEL-44","NO",NA,5177,"alive",5177,5177,0,1
+"276","TCGA-YG-AA3O-06A",999,"Interferon","NO",1154,1096,"dead",1154,999,0,0
+"284","TCGA-XV-AB01-06A",NA,"interferon","NO",NA,403,"alive",403,403,0,0
+"285","TCGA-D3-A2JC-06A",NA,"Interferon alfa","NO",NA,2639,"alive",2639,2639,0,1
+"288","TCGA-EB-A6R0-01A",NA,"Lomustine","NO",608,467,"dead",608,608,0,0
+"293","TCGA-GN-A8LK-06A",1468,"Dacarbazine","",1524,NA,"dead",1524,1468,0,0
+"295","TCGA-EB-A4OY-01A",NA,"Lomustine","NO",NA,977,"alive",977,977,0,0
+"307","TCGA-WE-A8ZR-06A",126,"vemurafenib","NO",274,133,"dead",274,126,1,0
+"321","TCGA-D3-A2JL-06A",NA,"MAGE-3","NO",NA,5219,"alive",5219,5219,0,1
+"325","TCGA-FR-A69P-06A",274,"Ipilimumab","NO",NA,478,"alive",478,274,1,0
+"328","TCGA-FR-A8YD-06A",NA,"Ipilimumab","NO",1103,896,"dead",1103,1103,0,0
+"332","TCGA-GN-A4U8-06A",NA,"Sylatron","NO",NA,1487,"alive",1487,1487,0,0
+"333","TCGA-GN-A4U8-11A",NA,"Sylatron","NO",NA,1487,"alive",1487,1487,0,0
+"336","TCGA-WE-A8K6-06A",NA,"Vemurafenib","NO",NA,546,"alive",546,546,0,0
+"339","TCGA-EE-A3AF-06A",333,"Fotemustine","",420,NA,"dead",420,333,1,0
+"342","TCGA-FR-A44A-06A",NA,"Interferon","NO",NA,5299,"alive",5299,5299,0,1
+"348","TCGA-D3-A2JP-06A",NA,"Interferon Alpha","NO",NA,1812,"alive",1812,1812,0,0
+"349","TCGA-FR-A2OS-01A",NA,"Temodar","NO",368,NA,"dead",368,368,1,0
+"353","TCGA-FR-A3YN-06A",NA,"Ipilimumab","NO",NA,2828,"alive",2828,2828,0,1
+"357","TCGA-ER-A19K-01A",275,"Temozolomide","",469,NA,"dead",469,275,1,0
+"359","TCGA-EE-A2GS-06A",2455,"Vemurafenib","NO",2470,1691,"dead",2470,2455,0,0
+"361","TCGA-EE-A29V-06A",701,"Dacarbazine","",787,NA,"dead",787,701,0,0
+"365","TCGA-DA-A1I1-06A",NA,"Pembrolizumab","NO",NA,6311,"alive",6311,6311,0,1
+"367","TCGA-W3-AA1R-06A",1037,"IL2","",3379,NA,"dead",3379,1037,0,0
+"373","TCGA-FS-A1ZS-06A",4049,"interferon alpha","NO",NA,4526,"alive",4526,4049,0,1
+"376","TCGA-D3-A1Q6-06A",48,"Interferon","",2184,NA,"dead",2184,48,1,0
+"377","TCGA-D3-A1Q6-07A",48,"Interferon","",2184,NA,"dead",2184,48,1,0
+"379","TCGA-ER-A19E-06A",64,"Carboplatin","",396,NA,"dead",396,64,1,0
+"382","TCGA-GN-A4U3-06A",2749,"Interleukin-2","NO",NA,3708,"alive",3708,2749,0,1
+"386","TCGA-FS-A4F9-06A",696,"Temodal","NO",NA,1035,"alive",1035,696,0,0
+"395","TCGA-WE-AAA0-06A",NA,"pembrolizumab","NO",NA,1229,"alive",1229,1229,0,0
+"397","TCGA-ER-A19M-06A",1730,"Interferon","",1857,NA,"dead",1857,1730,0,0
+"400","TCGA-EE-A2ME-06A",3017,"Cancer Vax","",3141,NA,"dead",3141,3017,0,1
+"401","TCGA-FR-A729-06A",6299,"Sylatron","NO",NA,6716,"alive",6716,6299,0,1
+"404","TCGA-WE-A8ZQ-06A",NA,"Dabrafenib","NO",NA,1923,"alive",1923,1923,0,0
+"405","TCGA-ER-A19O-06A",349,"Interferon","",NA,NA,"dead",NA,349,1,0
+"410","TCGA-GN-A4U7-06A",NA,"vemurafenib","NO",317,266,"dead",317,317,1,0
+"416","TCGA-HR-A2OH-06A",NA,"Interleukin - 2","NO",2004,NA,"dead",2004,2004,0,0
+"420","TCGA-EE-A2MN-06A",1359,"Dacabarzine","",1446,NA,"dead",1446,1359,0,0
+"426","TCGA-ER-A19N-06A",0,"Interferon","NO",1341,NA,"dead",1341,0,1,0
+"430","TCGA-ER-A198-06A",0,"Dacarbazine","",1544,NA,"dead",1544,0,1,0
+"432","TCGA-FR-A7U9-06A",231,"Ipilimumab","NO",NA,571,"alive",571,231,1,0
+"433","TCGA-EE-A2MM-06A",4598,"autologous vaccine","",5107,NA,"dead",5107,4598,0,1
+"437","TCGA-EB-A5KH-06A",NA,"Leukine","NO",619,543,"dead",619,619,0,0
+"439","TCGA-D3-A3MV-06A",NA,"Interleukin-2","NO",NA,1378,"alive",1378,1378,0,0
+"440","TCGA-EE-A2MG-06A",3097,"Dacarbazine","",3139,NA,"dead",3139,3097,0,1
+"444","TCGA-D3-A3CB-06A",NA,"MEL-44","NO",NA,5065,"alive",5065,5065,0,1
+"446","TCGA-EE-A2M5-06A",579,"PNU-159548","",659,NA,"dead",659,579,0,0
+"468","TCGA-XV-A9W5-01A",NA,"interferon","NO",NA,392,"alive",392,392,0,0
+"470","TCGA-FS-A1ZW-06A",NA,"interferon alpha","NO",NA,1505,"alive",1505,1505,0,0

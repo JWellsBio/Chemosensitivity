@@ -1,0 +1,87 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"5","TCGA-G9-A9S0-01A",650,"cabazitaxel","NO",791,NA,"dead",791,650,1,0
+"6","TCGA-KK-A8I7-01A",1756,"Leuprolide Acetate","NO",NA,2002,"alive",2002,1756,0,1
+"7","TCGA-KK-A8I7-11A",1756,"Leuprolide Acetate","NO",NA,2002,"alive",2002,1756,0,1
+"13","TCGA-YL-A8HL-01A",NA,"Lupron","NO",NA,1565,"alive",1565,1565,0,0
+"18","TCGA-J4-AATZ-01A",79,"Eligard","",NA,412,"alive",412,79,1,0
+"23","TCGA-KK-A8IA-01A",NA,"Lupron","NO",NA,1931,"alive",1931,1931,0,1
+"24","TCGA-KK-A8IA-11A",NA,"Lupron","NO",NA,1931,"alive",1931,1931,0,1
+"26","TCGA-4L-AA1F-01A",NA,"Zoladex","",NA,350,"alive",350,350,1,0
+"27","TCGA-YL-A8SI-01A",1423,"Eligard","NO",NA,1614,"alive",1614,1423,0,0
+"30","TCGA-KK-A8II-01A",1854,"jevtana","NO",3467,NA,"dead",3467,1854,0,1
+"31","TCGA-KK-A8II-11A",1854,"jevtana","NO",3467,NA,"dead",3467,1854,0,1
+"35","TCGA-KK-A6E1-01A",NA,"Lupron","NO",NA,2198,"alive",2198,2198,0,1
+"36","TCGA-KK-A6E1-11A",NA,"Lupron","NO",NA,2198,"alive",2198,2198,0,1
+"49","TCGA-J4-A6G3-01A",618,"leuprolide","NO",NA,849,"alive",849,618,1,0
+"67","TCGA-CH-5752-01A",NA,"Leuprorelin","",NA,943,"alive",943,943,0,0
+"72","TCGA-X4-A8KQ-01A",NA,"Eligard","NO",NA,1383,"alive",1383,1383,0,0
+"77","TCGA-V1-A8WV-01A",NA,"LHRH Agonist","NO",NA,686,"alive",686,686,1,0
+"87","TCGA-J9-A52E-01A",NA,"Zoladex","",NA,323,"alive",323,323,1,0
+"88","TCGA-VP-A87B-01A",2473,"Leuprolide","NO",NA,2722,"alive",2722,2473,0,1
+"90","TCGA-ZG-A9N3-01A",NA,"Bicalutamid","NO",NA,349,"alive",349,349,1,0
+"117","TCGA-HI-7168-01A",NA,"Lupron","",NA,3323,"alive",3323,3323,0,1
+"118","TCGA-YL-A9WY-01A",765,"Lupron","NO",NA,1098,"alive",1098,765,1,0
+"122","TCGA-YL-A8HJ-01A",NA,"Zoladex","NO",NA,1611,"alive",1611,1611,0,1
+"125","TCGA-HC-8257-01A",NA,"Goserelin","NO",NA,726,"alive",726,726,1,0
+"141","TCGA-M7-A723-01A",NA,"Bicalutamide","NO",NA,763,"alive",763,763,1,0
+"151","TCGA-CH-5751-01A",365,"Zoledronic acid","",NA,1065,"alive",1065,365,1,0
+"157","TCGA-XJ-A9DX-01A",NA,"Lupron","NO",NA,973,"alive",973,973,0,0
+"159","TCGA-ZG-A8QZ-01A",NA,"Bicalutamide","NO",NA,308,"alive",308,308,1,0
+"173","TCGA-YL-A8SC-01A",152,"Trelstar","NO",NA,1261,"alive",1261,152,1,0
+"207","TCGA-FC-A5OB-01A",NA,"Lupron","NO",NA,680,"alive",680,680,1,0
+"208","TCGA-YL-A8HM-01A",1473,"Zoladex","NO",NA,1482,"alive",1482,1473,0,0
+"213","TCGA-CH-5788-01A",NA,"Leuprorelin","",NA,821,"alive",821,821,1,0
+"219","TCGA-YL-A8SB-01A",1384,"Lupron","NO",NA,1719,"alive",1719,1384,0,0
+"221","TCGA-KK-A59X-01A",2233,"Abiraterone","NO",NA,2535,"alive",2535,2233,0,1
+"222","TCGA-KK-A59X-11A",2233,"Abiraterone","NO",NA,2535,"alive",2535,2233,0,1
+"227","TCGA-YL-A8HK-01A",1376,"Eligard","NO",NA,1491,"alive",1491,1376,0,0
+"238","TCGA-G9-7521-01A",NA,"Casodex","NO",NA,942,"alive",942,942,0,0
+"258","TCGA-HC-7742-01A",NA,"Eligard","NO",NA,938,"alive",938,938,0,0
+"259","TCGA-HC-7742-11A",NA,"Eligard","NO",NA,938,"alive",938,938,0,0
+"265","TCGA-KC-A4BR-01A",1022,"Lupron","",NA,1349,"alive",1349,1022,0,0
+"289","TCGA-XK-AAIV-01A",NA,"Casodex","NO",NA,1133,"alive",1133,1133,0,0
+"294","TCGA-G9-A9S4-01A",NA,"lupron","NO",NA,906,"alive",906,906,1,0
+"295","TCGA-J9-A52B-01A",57,"Zoladex","",NA,422,"alive",422,57,1,0
+"310","TCGA-V1-A8WW-01A",NA,"LHRH Agonist","NO",NA,1078,"alive",1078,1078,0,0
+"313","TCGA-KK-A8I4-01A",2162,"Leuprolide acetate","NO",NA,2259,"alive",2259,2162,0,1
+"314","TCGA-KK-A8I4-11A",2162,"Leuprolide acetate","NO",NA,2259,"alive",2259,2162,0,1
+"327","TCGA-KK-A7AU-01A",NA,"Lupron","NO",NA,1775,"alive",1775,1775,0,1
+"328","TCGA-KK-A7AU-11A",NA,"Lupron","NO",NA,1775,"alive",1775,1775,0,1
+"338","TCGA-YL-A9WK-01A",1009,"Casodex","NO",NA,2136,"alive",2136,1009,0,0
+"345","TCGA-KK-A7AQ-01A",NA,"Leuprolide acetate","NO",NA,1610,"alive",1610,1610,0,1
+"346","TCGA-KK-A7AQ-11A",NA,"Leuprolide acetate","NO",NA,1610,"alive",1610,1610,0,1
+"359","TCGA-VP-A878-01A",2354,"Zoladex","NO",NA,3130,"alive",3130,2354,0,1
+"362","TCGA-KK-A6E0-01A",NA,"Lupron","NO",NA,1483,"alive",1483,1483,0,0
+"363","TCGA-KK-A6E0-11A",NA,"Lupron","NO",NA,1483,"alive",1483,1483,0,0
+"366","TCGA-HI-7171-01A",NA,"Casodex","",1329,NA,"dead",1329,1329,0,0
+"374","TCGA-HC-A9TE-01A",216,"Eligard","NO",NA,587,"alive",587,216,1,0
+"384","TCGA-YL-A9WL-01A",740,"Lupron","NO",NA,740,"alive",740,740,1,0
+"393","TCGA-FC-A4JI-01A",NA,"Casodex","NO",NA,877,"alive",877,877,1,0
+"409","TCGA-KK-A8ID-01A",NA,"Lupron","NO",NA,2107,"alive",2107,2107,0,1
+"410","TCGA-KK-A8ID-11A",NA,"Lupron","NO",NA,2107,"alive",2107,2107,0,1
+"426","TCGA-YL-A8SL-01B",NA,"Eligard","NO",NA,987,"alive",987,987,0,0
+"431","TCGA-KK-A7B4-01A",963,"Casodex","NO",NA,987,"alive",987,963,0,0
+"432","TCGA-KK-A7B4-11A",963,"Casodex","NO",NA,987,"alive",987,963,0,0
+"448","TCGA-M7-A724-01A",NA,"Lupron","NO",NA,889,"alive",889,889,1,0
+"454","TCGA-HC-A48F-01A",NA,"Eligard","NO",NA,680,"alive",680,680,1,0
+"457","TCGA-KK-A7B0-01A",NA,"Leuprolide","NO",NA,1329,"alive",1329,1329,0,0
+"458","TCGA-KK-A7B0-11A",NA,"Leuprolide","NO",NA,1329,"alive",1329,1329,0,0
+"468","TCGA-CH-5741-01A",NA,"Leuprorelin","",NA,395,"alive",395,395,1,0
+"483","TCGA-HC-A9TH-01A",351,"Firmagon","NO",NA,844,"alive",844,351,1,0
+"511","TCGA-KK-A59Y-01A",NA,"Leuprolide Acetate","NO",NA,1968,"alive",1968,1968,0,1
+"512","TCGA-KK-A59Y-11A",NA,"Leuprolide Acetate","NO",NA,1968,"alive",1968,1968,0,1
+"518","TCGA-YL-A8SO-01B",NA,"Zoladex","NO",NA,3479,"alive",3479,3479,0,1
+"532","TCGA-XJ-A9DI-01A",NA,"Casodex","NO",NA,1461,"alive",1461,1461,0,0
+"537","TCGA-YL-A8SP-01B",2036,"Casodex","NO",NA,2366,"alive",2366,2036,0,1
+"543","TCGA-VN-A88R-01A",512,"Casodex","NO",NA,784,"alive",784,512,1,0
+"557","TCGA-2A-A8VT-01A",NA,"Lupron","NO",NA,1373,"alive",1373,1373,0,0
+"571","TCGA-YL-A8SQ-01B",329,"Leuprolide","NO",NA,2083,"alive",2083,329,1,0
+"578","TCGA-ZG-A9LN-01A",NA,"Trenantone","NO",NA,115,"alive",115,115,1,0
+"582","TCGA-KK-A8I9-01A",940,"Lupron","NO",NA,1001,"alive",1001,940,0,0
+"583","TCGA-KK-A8I9-11A",940,"Lupron","NO",NA,1001,"alive",1001,940,0,0
+"586","TCGA-KK-A8IC-01A",1060,"Abiraterone","NO",NA,2051,"alive",2051,1060,0,0
+"587","TCGA-KK-A8IC-11A",1060,"Abiraterone","NO",NA,2051,"alive",2051,1060,0,0
+"590","TCGA-V1-A9O5-01A",NA,"LHRH Agonist and Anti-Androgens ""Combined Androgen Blockade""","NO",NA,1932,"alive",1932,1932,0,1
+"591","TCGA-V1-A9O5-06A",NA,"LHRH Agonist and Anti-Androgens ""Combined Androgen Blockade""","NO",NA,1932,"alive",1932,1932,0,1
+"599","TCGA-J4-A83N-01A",433,"Gemcitabine","NO",NA,992,"alive",992,433,1,0
+"600","TCGA-V1-A8MU-01A",NA,"LHRH Agonist","NO",NA,1876,"alive",1876,1876,0,1

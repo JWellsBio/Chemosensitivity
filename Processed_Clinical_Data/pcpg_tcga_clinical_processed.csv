@@ -1,0 +1,5 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"102","TCGA-QR-A6GT-01A",1476,"Cytoxan, vincristine and dacarbazine","",NA,4185,"alive",4185,1476,0,1
+"106","TCGA-WB-A81Q-01A",NA,"Cyclophosphamide","",755,NA,"dead",755,755,0,0
+"129","TCGA-QT-A5XJ-01A",1044,"Temodar","NO",NA,1102,"alive",1102,1044,0,1
+"155","TCGA-QR-A70P-01A",648,"cyclophosphamide, vincristine, and dacarbazine","",3563,NA,"dead",3563,648,1,0

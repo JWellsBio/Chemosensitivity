@@ -1,0 +1,5 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"1","TCGA-V4-A9EM-01A",NA,"fotemustine","NO",NA,966,"alive",966,966,0,1
+"28","TCGA-V4-A9ET-01A",NA,"fotemustine","NO",NA,1362,"alive",1362,1362,0,1
+"60","TCGA-V4-A9F3-01A",NA,"fotemustine","NO",873,670,"dead",873,873,1,0
+"62","TCGA-V4-A9F1-01A",NA,"fotemustine","NO",NA,938,"alive",938,938,0,0

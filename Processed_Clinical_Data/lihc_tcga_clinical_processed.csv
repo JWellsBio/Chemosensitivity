@@ -1,0 +1,50 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"20","TCGA-DD-A3A4-01A",87,"Gemcitabine","NO",612,NA,"dead",612,87,1,0
+"21","TCGA-DD-A3A4-11A",87,"Gemcitabine","NO",612,NA,"dead",612,87,1,0
+"32","TCGA-DD-A1EG-01A",1006,"Sorafenib","NO",1372,NA,"dead",1372,1006,0,1
+"33","TCGA-DD-A1EG-11A",1006,"Sorafenib","NO",1372,NA,"dead",1372,1006,0,1
+"42","TCGA-UB-A7MA-01A",NA,"sorafenib","NO",NA,848,"alive",848,848,0,1
+"84","TCGA-DD-A4NE-01A",190,"Sorafenib","NO",660,NA,"dead",660,190,0,0
+"85","TCGA-DD-A4NE-11A",190,"Sorafenib","NO",660,NA,"dead",660,190,0,0
+"86","TCGA-DD-A1EK-01A",167,"Sorafenib","NO",558,NA,"dead",558,167,0,0
+"99","TCGA-G3-A3CJ-01A",296,"Sorafenib","NO",NA,594,"alive",594,296,0,0
+"141","TCGA-K7-AAU7-01A",58,"cisplatin","NO",NA,359,"alive",359,58,1,0
+"164","TCGA-FV-A3R2-01A",NA,"Gemcitabine","NO",194,NA,"dead",194,194,0,0
+"165","TCGA-FV-A3R2-11A",NA,"Gemcitabine","NO",194,NA,"dead",194,194,0,0
+"186","TCGA-ED-A459-01A",NA,"Alvesin","NO",NA,910,"alive",910,910,0,1
+"196","TCGA-LG-A9QD-01A",NA,"Sorafinib ( Nexavar)","NO",NA,366,"alive",366,366,0,0
+"197","TCGA-DD-A4ND-01A",NA,"Adriamycin/Cytoxan","NO",NA,2746,"alive",2746,2746,0,1
+"198","TCGA-DD-A4ND-11A",NA,"Adriamycin/Cytoxan","NO",NA,2746,"alive",2746,2746,0,1
+"211","TCGA-DD-A4NQ-01A",126,"Sorafenib","NO",373,NA,"dead",373,126,1,0
+"212","TCGA-DD-A4NQ-11A",126,"Sorafenib","NO",373,NA,"dead",373,126,1,0
+"239","TCGA-G3-A5SI-01A",NA,"Sorafenib","NO",768,447,"dead",768,768,0,0
+"240","TCGA-2Y-A9H9-01A",701,"Naxavar","NO",NA,697,"alive",697,701,0,0
+"260","TCGA-G3-AAV5-01A",266,"HEC.1 - Sorafenib vs Sorafenib plus Doxorubicin","NO",NA,354,"alive",354,266,0,0
+"271","TCGA-G3-A3CH-01A",558,"Sorafenib","NO",NA,780,"alive",780,558,0,0
+"272","TCGA-G3-A3CH-11A",558,"Sorafenib","NO",NA,780,"alive",780,558,0,0
+"276","TCGA-G3-A3CG-01A",329,"Sorafenib","NO",NA,673,"alive",673,329,0,0
+"302","TCGA-2Y-A9H8-01A",398,"SOM 230","",633,NA,"dead",633,398,0,0
+"304","TCGA-3K-AAZ8-01A",304,"Regorafenib","NO",NA,396,"alive",396,304,0,0
+"312","TCGA-DD-A4NS-01A",1091,"Temozolomide","NO",2456,NA,"dead",2456,1091,0,1
+"313","TCGA-DD-A4NS-11A",1091,"Temozolomide","NO",2456,NA,"dead",2456,1091,0,1
+"322","TCGA-BW-A5NP-01A",102,"Nexavar","",NA,0,"alive",0,102,1,0
+"338","TCGA-2Y-A9GZ-01A",719,"Naxavar","",848,NA,"dead",848,719,0,0
+"355","TCGA-CC-A8HV-01A",241,"Nexavar","NO",279,0,"dead",279,241,0,0
+"363","TCGA-G3-A25S-01A",37,"Sorafenib","",416,37,"dead",416,37,1,0
+"367","TCGA-DD-A11D-01A",498,"Temozolomide","NO",1560,NA,"dead",1560,498,0,0
+"368","TCGA-DD-A11D-11A",498,"Temozolomide","NO",1560,NA,"dead",1560,498,0,0
+"370","TCGA-2Y-A9GV-01A",1745,"Naxavar","",2532,NA,"dead",2532,1745,0,1
+"385","TCGA-DD-A1EH-01A",120,"Everolimus, Gemcitabine, and Cisplatin","NO",NA,1495,"alive",1495,120,1,0
+"386","TCGA-DD-A1EH-11A",120,"Everolimus, Gemcitabine, and Cisplatin","NO",NA,1495,"alive",1495,120,1,0
+"402","TCGA-BC-4073-01B",NA,"Sorafenib","",NA,849,"alive",849,849,0,1
+"421","TCGA-DD-A1EJ-01A",263,"Sorafenib","NO",1005,887,"dead",1005,263,0,0
+"422","TCGA-DD-A1EJ-11A",263,"Sorafenib","NO",1005,887,"dead",1005,263,0,0
+"438","TCGA-BC-A10Q-01A",340,"Gemcitabine","",1135,NA,"dead",1135,340,0,0
+"439","TCGA-BC-A10Q-11A",340,"Gemcitabine","",1135,NA,"dead",1135,340,0,0
+"440","TCGA-FV-A3I0-01A",159,"Gemcitabine","NO",NA,848,"alive",848,159,0,0
+"441","TCGA-FV-A3I0-11A",159,"Gemcitabine","NO",NA,848,"alive",848,159,0,0
+"449","TCGA-EP-A2KA-01A",433,"Sorafenib","",627,357,"dead",627,433,0,0
+"460","TCGA-WX-AA47-01A",485,"Sorafenib","",556,NA,"dead",556,485,0,0
+"462","TCGA-DD-A4NH-01A",161,"Sorafenib","NO",NA,917,"alive",917,161,0,0
+"463","TCGA-DD-A4NH-11A",161,"Sorafenib","NO",NA,917,"alive",917,161,0,0
+"466","TCGA-BC-A8YO-01A",NA,"Nexavar","NO",NA,562,"alive",562,562,0,0

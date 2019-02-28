@@ -1,0 +1,8 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"34","TCGA-4X-A9FD-01A",NA,"azaTHIOprine","NO",NA,1503,"alive",1503,1503,0,0
+"48","TCGA-5U-AB0D-01A",NA,"etoposide","NO",NA,714,"alive",714,714,0,0
+"61","TCGA-XU-A933-01A",NA,"Etoposide","NO",NA,1789,"alive",1789,1789,0,1
+"68","TCGA-X7-A8M6-01A",NA,"cyclophosphamide","NO",NA,4575,"alive",4575,4575,0,1
+"84","TCGA-4X-A9FA-01A",NA,"azaTHIOprine","NO",NA,392,"alive",392,392,1,0
+"103","TCGA-XM-AAZ1-01A",NA,"Cisplatin","NO",NA,397,"alive",397,397,1,0
+"112","TCGA-4V-A9QQ-01A",1549,"CISPLATINUM","NO",NA,1572,"alive",1572,1549,0,1

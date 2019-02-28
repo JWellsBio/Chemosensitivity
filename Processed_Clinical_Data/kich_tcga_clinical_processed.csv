@@ -1,0 +1,17 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"11","TCGA-KN-8428-01A",478,"sorafenib","",1590,NA,"dead",1590,478,0,0
+"12","TCGA-KN-8428-11A",478,"sorafenib","",1590,NA,"dead",1590,478,0,0
+"36","TCGA-UW-A7GR-01A",NA,"Sorafenib","NO",NA,3109,"alive",3109,3109,0,1
+"37","TCGA-UW-A7GR-11A",NA,"Sorafenib","NO",NA,3109,"alive",3109,3109,0,1
+"39","TCGA-KL-8339-01A",363,"Sunitinib","NO",855,NA,"dead",855,363,1,0
+"40","TCGA-KL-8339-11A",363,"Sunitinib","NO",855,NA,"dead",855,363,1,0
+"44","TCGA-KO-8404-01A",148,"Thalidomide","",325,NA,"dead",325,148,1,0
+"45","TCGA-KO-8404-11A",148,"Thalidomide","",325,NA,"dead",325,148,1,0
+"67","TCGA-KM-A7Q8-01B",246,"Sunitinib","NO",407,246,"dead",407,246,1,0
+"125","TCGA-KL-8341-01A",616,"Sorafenib","",754,NA,"dead",754,616,0,0
+"126","TCGA-KL-8341-11A",616,"Sorafenib","",754,NA,"dead",754,616,0,0
+"142","TCGA-KL-8323-01A",911,"PTK-ZK","",1158,NA,"dead",1158,911,0,1
+"143","TCGA-KL-8323-11A",911,"PTK-ZK","",1158,NA,"dead",1158,911,0,1
+"156","TCGA-KL-8336-01A",817,"Bevacizumab","",920,NA,"dead",920,817,0,0
+"157","TCGA-KL-8336-11A",817,"Bevacizumab","",920,NA,"dead",920,817,0,0
+"184","TCGA-KM-8438-01A",4622,"Bevacizumab","NO",NA,4622,"alive",4622,4622,0,1

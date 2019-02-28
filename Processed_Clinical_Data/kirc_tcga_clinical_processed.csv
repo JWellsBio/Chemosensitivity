@@ -1,0 +1,162 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"8","TCGA-CJ-4875-01A",531,"Nexavar","",3554,2353,"dead",3554,531,0,0
+"9","TCGA-CJ-4875-11A",531,"Nexavar","",3554,2353,"dead",3554,531,0,0
+"20","TCGA-CJ-5678-01A",399,"oncophage vaccine","",574,NA,"dead",574,399,0,0
+"21","TCGA-CJ-5678-11A",399,"oncophage vaccine","",574,NA,"dead",574,399,0,0
+"22","TCGA-B0-5712-01A",725,"Zometa","",NA,2722,"alive",2722,725,0,0
+"23","TCGA-B0-5712-11A",725,"Zometa","",NA,2722,"alive",2722,725,0,0
+"28","TCGA-DV-5565-01A",NA,"ZD6474","",NA,1329,"alive",1329,1329,0,0
+"31","TCGA-B0-4844-01A",62,"Thalidomide","",313,NA,"dead",313,62,1,0
+"32","TCGA-B0-4844-11A",62,"Thalidomide","",313,NA,"dead",313,62,1,0
+"34","TCGA-B0-4837-01A",1208,"Tyrosine kinase inhibitor","",1378,NA,"dead",1378,1208,0,0
+"35","TCGA-B0-4837-11A",1208,"Tyrosine kinase inhibitor","",1378,NA,"dead",1378,1208,0,0
+"45","TCGA-CJ-4904-01A",278,"Nexavar","",NA,3302,"alive",3302,278,0,0
+"46","TCGA-CJ-4904-11A",278,"Nexavar","",NA,3302,"alive",3302,278,0,0
+"63","TCGA-CZ-4860-01A",NA,"sorafenib","",206,NA,"dead",206,206,0,0
+"64","TCGA-CZ-4860-11A",NA,"sorafenib","",206,NA,"dead",206,206,0,0
+"67","TCGA-BP-5189-01A",781,"Bevacizumab","",822,NA,"dead",822,781,0,0
+"68","TCGA-BP-5189-11A",781,"Bevacizumab","",822,NA,"dead",822,781,0,0
+"71","TCGA-CJ-4637-01A",1821,"AZD","",2227,NA,"dead",2227,1821,0,1
+"72","TCGA-CJ-4637-11A",1821,"AZD","",2227,NA,"dead",2227,1821,0,1
+"77","TCGA-BP-4354-01A",NA,"Gefitinib","",1034,NA,"dead",1034,1034,0,0
+"78","TCGA-BP-4354-11A",NA,"Gefitinib","",1034,NA,"dead",1034,1034,0,0
+"79","TCGA-BP-5178-01A",1709,"Sorafenib","",1912,NA,"dead",1912,1709,0,1
+"80","TCGA-BP-5178-11A",1709,"Sorafenib","",1912,NA,"dead",1912,1709,0,1
+"83","TCGA-BP-4335-01A",160,"Interferon","",475,NA,"dead",475,160,0,0
+"84","TCGA-BP-4335-11A",160,"Interferon","",475,NA,"dead",475,160,0,0
+"85","TCGA-G6-A8L6-01A",304,"Axitnib","NO",313,305,"dead",313,304,0,0
+"88","TCGA-CW-5580-01A",NA,"IFN-Alpha (Intron)","",1964,NA,"dead",1964,1964,0,1
+"89","TCGA-CW-5580-11A",NA,"IFN-Alpha (Intron)","",1964,NA,"dead",1964,1964,0,1
+"108","TCGA-CZ-4857-01A",188,"IL-2 Therapy (interleukin)","",1432,NA,"dead",1432,188,0,0
+"109","TCGA-CZ-4857-11A",188,"IL-2 Therapy (interleukin)","",1432,NA,"dead",1432,188,0,0
+"116","TCGA-CZ-5469-01A",110,"sunitinib","",946,NA,"dead",946,110,0,0
+"117","TCGA-CZ-5469-11A",110,"sunitinib","",946,NA,"dead",946,110,0,0
+"134","TCGA-CJ-4918-01A",33,"Gemcitabine","",93,NA,"dead",93,33,1,0
+"135","TCGA-CJ-4918-11A",33,"Gemcitabine","",93,NA,"dead",93,33,1,0
+"136","TCGA-CJ-4895-01A",61,"Avastin","",1200,NA,"dead",1200,61,1,0
+"137","TCGA-CJ-4895-11A",61,"Avastin","",1200,NA,"dead",1200,61,1,0
+"147","TCGA-B0-5701-01A",224,"Interleukin-2","",NA,2461,"alive",2461,224,0,0
+"148","TCGA-B0-5701-11A",224,"Interleukin-2","",NA,2461,"alive",2461,224,0,0
+"167","TCGA-BP-4352-01A",265,"Sunitinib","",344,NA,"dead",344,265,0,0
+"168","TCGA-BP-4352-11A",265,"Sunitinib","",344,NA,"dead",344,265,0,0
+"185","TCGA-CJ-5676-01A",2219,"pazopanib","",NA,4067,"alive",4067,2219,0,1
+"186","TCGA-CJ-5676-11A",2219,"pazopanib","",NA,4067,"alive",4067,2219,0,1
+"192","TCGA-CJ-4641-01A",-359,"Oncophage","",1661,NA,"dead",1661,-359,1,0
+"193","TCGA-CJ-4641-11A",-359,"Oncophage","",1661,NA,"dead",1661,-359,1,0
+"205","TCGA-CZ-5461-01A",48,"sunitinib (sutent)","",330,330,"dead",330,48,1,0
+"206","TCGA-CZ-5461-11A",48,"sunitinib (sutent)","",330,330,"dead",330,48,1,0
+"230","TCGA-B0-5115-01A",75,"Afinitor","",NA,1604,"alive",1604,75,1,0
+"231","TCGA-B0-5115-11A",75,"Afinitor","",NA,1604,"alive",1604,75,1,0
+"241","TCGA-CZ-5456-01A",951,"Pazopanib","",NA,2422,"alive",2422,951,0,0
+"242","TCGA-CZ-5456-11A",951,"Pazopanib","",NA,2422,"alive",2422,951,0,0
+"249","TCGA-A3-3317-01A",952,"Interferon Alpha","",NA,1491,"alive",1491,952,0,0
+"250","TCGA-A3-3317-11A",952,"Interferon Alpha","",NA,1491,"alive",1491,952,0,0
+"253","TCGA-CJ-5680-01A",153,"Tarceva","",768,NA,"dead",768,153,0,0
+"254","TCGA-CJ-5680-11A",153,"Tarceva","",768,NA,"dead",768,153,0,0
+"287","TCGA-CJ-6028-01A",137,"Interferon","",1625,NA,"dead",1625,137,0,0
+"288","TCGA-CJ-6028-11A",137,"Interferon","",1625,NA,"dead",1625,137,0,0
+"301","TCGA-CJ-4923-01A",25,"proleukin (IL-2)","",572,NA,"dead",572,25,1,0
+"302","TCGA-CJ-4923-11A",25,"proleukin (IL-2)","",572,NA,"dead",572,25,1,0
+"319","TCGA-DV-A4VX-01A",NA,"Sorafenib","NO",1626,NA,"dead",1626,1626,0,1
+"321","TCGA-B0-5694-01A",288,"Pazopanib","",480,NA,"dead",480,288,0,0
+"322","TCGA-B0-5694-11A",288,"Pazopanib","",480,NA,"dead",480,288,0,0
+"363","TCGA-BP-4804-01A",295,"Sunitinib","",NA,1459,"alive",1459,295,0,0
+"364","TCGA-BP-4804-11A",295,"Sunitinib","",NA,1459,"alive",1459,295,0,0
+"367","TCGA-CJ-5679-01A",595,"Xeloda","",679,NA,"dead",679,595,0,0
+"368","TCGA-CJ-5679-11A",595,"Xeloda","",679,NA,"dead",679,595,0,0
+"369","TCGA-CJ-4894-01A",158,"Interferon","",841,841,"dead",841,158,0,0
+"370","TCGA-CJ-4894-11A",158,"Interferon","",841,841,"dead",841,158,0,0
+"373","TCGA-AK-3426-01A",256,"Interferon","",885,NA,"dead",885,256,0,0
+"378","TCGA-CJ-5681-01A",17,"RAD001","",552,NA,"dead",552,17,1,0
+"379","TCGA-CJ-5681-11A",17,"RAD001","",552,NA,"dead",552,17,1,0
+"380","TCGA-BP-4169-01A",78,"Interferon","",701,NA,"dead",701,78,1,0
+"381","TCGA-BP-4169-11A",78,"Interferon","",701,NA,"dead",701,78,1,0
+"403","TCGA-CJ-4900-01A",NA,"Avastin","",1714,NA,"dead",1714,1714,0,1
+"404","TCGA-CJ-4900-11A",NA,"Avastin","",1714,NA,"dead",1714,1714,0,1
+"411","TCGA-CW-5585-01A",NA,"Sutent (Sunitinib)","",NA,2609,"alive",2609,2609,0,1
+"412","TCGA-CW-5585-11A",NA,"Sutent (Sunitinib)","",NA,2609,"alive",2609,2609,0,1
+"413","TCGA-CJ-4890-01A",1477,"Sutent","",NA,3519,"alive",3519,1477,0,0
+"414","TCGA-CJ-4890-11A",1477,"Sutent","",NA,3519,"alive",3519,1477,0,0
+"425","TCGA-CJ-4644-01A",93,"Intron A","",336,NA,"dead",336,93,0,0
+"426","TCGA-CJ-4644-11A",93,"Intron A","",336,NA,"dead",336,93,0,0
+"450","TCGA-BP-4165-01A",1838,"Sunitinib","",NA,3037,"alive",3037,1838,0,1
+"451","TCGA-BP-4165-11A",1838,"Sunitinib","",NA,3037,"alive",3037,1838,0,1
+"459","TCGA-CJ-6033-01A",144,"Gemcitabine","",224,NA,"dead",224,144,0,0
+"460","TCGA-CJ-6033-11A",144,"Gemcitabine","",224,NA,"dead",224,144,0,0
+"461","TCGA-CJ-4868-01A",37,"Tarceva","",646,646,"dead",646,37,1,0
+"462","TCGA-CJ-4868-11A",37,"Tarceva","",646,646,"dead",646,37,1,0
+"504","TCGA-B8-5162-01A",NA,"Sutent","",NA,36,"alive",36,36,1,0
+"506","TCGA-BP-4985-01A",283,"Sunitinib","",952,NA,"dead",952,283,0,0
+"507","TCGA-BP-4985-11A",283,"Sunitinib","",952,NA,"dead",952,283,0,0
+"511","TCGA-AK-3436-01A",NA,"Sutent","",NA,3331,"alive",3331,3331,0,1
+"514","TCGA-CZ-5464-01A",NA,"Pazopanib","",NA,2128,"alive",2128,2128,0,1
+"515","TCGA-CZ-5464-11A",NA,"Pazopanib","",NA,2128,"alive",2128,2128,0,1
+"526","TCGA-A3-3347-01A",610,"Sorafenib","",1610,1610,"dead",1610,610,0,0
+"527","TCGA-A3-3347-11A",610,"Sorafenib","",1610,1610,"dead",1610,610,0,0
+"554","TCGA-BP-4787-01A",259,"Temsirolimus","",480,NA,"dead",480,259,0,0
+"555","TCGA-BP-4787-11A",259,"Temsirolimus","",480,NA,"dead",480,259,0,0
+"563","TCGA-CJ-4881-01A",1881,"temsirolimus","",NA,2014,"alive",2014,1881,0,1
+"564","TCGA-CJ-4881-11A",1881,"temsirolimus","",NA,2014,"alive",2014,1881,0,1
+"583","TCGA-BP-4974-01A",35,"Sorafenib","",211,NA,"dead",211,35,1,0
+"584","TCGA-BP-4974-11A",35,"Sorafenib","",211,NA,"dead",211,35,1,0
+"600","TCGA-BP-4770-01A",208,"Interferon","",329,NA,"dead",329,208,0,0
+"601","TCGA-BP-4770-11A",208,"Interferon","",329,NA,"dead",329,208,0,0
+"638","TCGA-B0-4841-01A",108,"INF","",204,NA,"dead",204,108,0,0
+"639","TCGA-B0-4841-11A",108,"INF","",204,NA,"dead",204,108,0,0
+"640","TCGA-G6-A5PC-01A",NA,"Sutent","",242,NA,"dead",242,242,0,0
+"666","TCGA-B8-4143-01A",NA,"Interleukin-2","",709,NA,"dead",709,709,0,0
+"667","TCGA-B8-4143-11A",NA,"Interleukin-2","",709,NA,"dead",709,709,0,0
+"672","TCGA-CZ-4858-01A",597,"Interleukin 2-high dose","",2105,1943,"dead",2105,597,0,0
+"673","TCGA-CZ-4858-11A",597,"Interleukin 2-high dose","",2105,1943,"dead",2105,597,0,0
+"694","TCGA-B8-4153-01B",223,"Pazopanib","",NA,762,"alive",762,223,0,0
+"695","TCGA-B8-4153-11A",223,"Pazopanib","",NA,762,"alive",762,223,0,0
+"699","TCGA-BP-4338-01A",2572,"Everolimus","",NA,2859,"alive",2859,2572,0,1
+"700","TCGA-BP-4338-11A",2572,"Everolimus","",NA,2859,"alive",2859,2572,0,1
+"703","TCGA-CJ-4888-01A",608,"sutent","",1567,NA,"dead",1567,608,0,0
+"704","TCGA-CJ-4888-11A",608,"sutent","",1567,NA,"dead",1567,608,0,0
+"733","TCGA-CW-6097-01A",457,"Bay-439006","",571,NA,"dead",571,457,0,0
+"734","TCGA-CW-6097-11A",457,"Bay-439006","",571,NA,"dead",571,457,0,0
+"737","TCGA-CZ-5454-01A",423,"sutent (sunitinib)","",722,NA,"dead",722,423,0,0
+"738","TCGA-CZ-5454-11A",423,"sutent (sunitinib)","",722,NA,"dead",722,423,0,0
+"743","TCGA-CW-5591-01A",NA,"IL-2 (high dose)","",NA,2271,"alive",2271,2271,0,1
+"744","TCGA-CW-5591-11A",NA,"IL-2 (high dose)","",NA,2271,"alive",2271,2271,0,1
+"752","TCGA-B0-5094-01A",75,"TORISEL","",333,NA,"dead",333,75,1,0
+"753","TCGA-B0-5094-11A",75,"TORISEL","",333,NA,"dead",333,75,1,0
+"766","TCGA-CW-5590-01A",672,"Sutent (Sunitinib)","",1075,NA,"dead",1075,672,0,0
+"767","TCGA-CW-5590-11A",672,"Sutent (Sunitinib)","",1075,NA,"dead",1075,672,0,0
+"780","TCGA-CJ-4913-01A",538,"Sutent","",1173,NA,"dead",1173,538,0,0
+"781","TCGA-CJ-4913-11A",538,"Sutent","",1173,NA,"dead",1173,538,0,0
+"792","TCGA-CJ-5682-01A",55,"interferon alpha","",NA,3736,"alive",3736,55,1,0
+"793","TCGA-CJ-5682-11A",55,"interferon alpha","",NA,3736,"alive",3736,55,1,0
+"794","TCGA-B0-5107-01A",549,"SUTENT","",927,NA,"dead",927,549,0,0
+"795","TCGA-B0-5107-11A",549,"SUTENT","",927,NA,"dead",927,549,0,0
+"804","TCGA-CJ-4869-01A",1754,"Sutent","",NA,2554,"alive",2554,1754,0,1
+"805","TCGA-CJ-4869-11A",1754,"Sutent","",NA,2554,"alive",2554,1754,0,1
+"812","TCGA-CZ-4861-01A",NA,"Sorafenib - Nexavar","",446,NA,"dead",446,446,0,0
+"813","TCGA-CZ-4861-11A",NA,"Sorafenib - Nexavar","",446,NA,"dead",446,446,0,0
+"814","TCGA-BP-4334-01A",442,"Interferon","",645,645,"dead",645,442,0,0
+"815","TCGA-BP-4334-11A",442,"Interferon","",645,645,"dead",645,442,0,0
+"817","TCGA-BP-5009-01A",492,"Bevacizumab","",1092,NA,"dead",1092,492,0,0
+"818","TCGA-BP-5009-11A",492,"Bevacizumab","",1092,NA,"dead",1092,492,0,0
+"848","TCGA-BP-5201-01A",-19,"Interleukin-2","",NA,951,"alive",951,-19,1,0
+"849","TCGA-BP-5201-11A",-19,"Interleukin-2","",NA,951,"alive",951,-19,1,0
+"853","TCGA-CZ-5462-01A",NA,"sunitinib","",311,NA,"dead",311,311,0,0
+"854","TCGA-CZ-5462-11A",NA,"sunitinib","",311,NA,"dead",311,311,0,0
+"868","TCGA-CZ-5460-01A",NA,"interleukin-2","",NA,2873,"alive",2873,2873,0,1
+"869","TCGA-CZ-5460-11A",NA,"interleukin-2","",NA,2873,"alive",2873,2873,0,1
+"870","TCGA-CJ-4638-01A",70,"interleukin-2","",431,NA,"dead",431,70,1,0
+"871","TCGA-CJ-4638-11A",70,"interleukin-2","",431,NA,"dead",431,70,1,0
+"872","TCGA-CJ-5677-01A",288,"gemcitabine","",782,NA,"dead",782,288,0,0
+"873","TCGA-CJ-5677-11A",288,"gemcitabine","",782,NA,"dead",782,288,0,0
+"887","TCGA-CJ-4887-01A",322,"Oncophage","",932,NA,"dead",932,322,0,0
+"888","TCGA-CJ-4887-11A",322,"Oncophage","",932,NA,"dead",932,322,0,0
+"910","TCGA-BP-4161-01A",2685,"Sunitinib","",NA,2746,"alive",2746,2685,0,1
+"911","TCGA-BP-4161-11A",2685,"Sunitinib","",NA,2746,"alive",2746,2685,0,1
+"938","TCGA-BP-4329-01A",134,"Temsirolimus","",845,845,"dead",845,134,0,0
+"939","TCGA-BP-4329-11A",134,"Temsirolimus","",845,845,"dead",845,134,0,0
+"961","TCGA-B2-5639-01A",163,"Votrient","",1003,417,"dead",1003,163,0,0
+"962","TCGA-B2-5639-11A",163,"Votrient","",1003,417,"dead",1003,163,0,0
+"967","TCGA-CJ-4871-01A",169,"Alpha Interferon","",NA,2423,"alive",2423,169,0,0
+"968","TCGA-CJ-4871-11A",169,"Alpha Interferon","",NA,2423,"alive",2423,169,0,0
+"982","TCGA-B0-4718-01A",NA,"Bevacizumab","",NA,1778,"alive",1778,1778,0,1
+"983","TCGA-B0-4718-11A",NA,"Bevacizumab","",NA,1778,"alive",1778,1778,0,1

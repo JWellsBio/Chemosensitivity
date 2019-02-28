@@ -1,0 +1,13 @@
+"","submitter_id.samples","days_to_new_tumor_event_after_initial_treatment","drug_name","lost_follow_up","days_to_death.diagnoses","days_to_last_follow_up.diagnoses","vital_status.diagnoses","OS","PFS","most_sensitive","least_sensitive"
+"2","TCGA-3X-AAV9-01A",216,"Cisplatin","",339,NA,"dead",339,216,1,0
+"9","TCGA-ZH-A8Y4-01A",281,"Gemzar","",741,NA,"dead",741,281,1,0
+"10","TCGA-W6-AA0S-01A",NA,"cisplatin","NO",NA,808,"alive",808,808,0,0
+"22","TCGA-ZH-A8Y5-01A",NA,"Cisplatin","NO",NA,1229,"alive",1229,1229,0,1
+"25","TCGA-W5-AA2T-01A",993,"Gemcitabine","",1220,NA,"dead",1220,993,0,0
+"26","TCGA-W5-AA2T-11A",993,"Gemcitabine","",1220,NA,"dead",1220,993,0,0
+"27","TCGA-W5-AA36-01A",362,"Capecitabine","",1402,NA,"dead",1402,362,1,0
+"31","TCGA-4G-AAZO-01A",NA,"GEMCITABINE","NO",NA,1177,"alive",1177,1177,0,0
+"32","TCGA-4G-AAZO-11A",NA,"GEMCITABINE","NO",NA,1177,"alive",1177,1177,0,0
+"47","TCGA-W5-AA2Z-01A",NA,"Gemcitabine","",NA,1614,"alive",1614,1614,0,1
+"48","TCGA-W5-AA2Z-11A",NA,"Gemcitabine","",NA,1614,"alive",1614,1614,0,1
+"49","TCGA-W5-AA2H-01A",NA,"gemcitabine","NO",NA,1077,"alive",1077,1077,0,0
