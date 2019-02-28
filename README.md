@@ -27,3 +27,9 @@ The flowchart for the study design can be found in the [Images](https://github.c
 + Pan-cancer models were tested against available TCGA class/drug combinations where n > 5. Sensitivity measure used was RFS.
 + ROC curves were generated for every combination tested. An exmaple can be found [here] (https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ov_cisplatin_tcga_gdsc_auc.png)
 + A massive table with all combinaitons tested is still in progress.
+
+## Steps to repeat analysis
++ Run this script
++ Run this script
++ Run this script
++ Blah blah blah
