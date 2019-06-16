@@ -3,7 +3,7 @@ Chemosensitivity Project Scripts and Files
 **NO GENE EXPRESSION FILES ARE LOADED AT THIS TIME**
 
 ## Idea for Project
-There plenty of projects that predict sensitivity on a small scale, using only one drug and/or one cancer type. We sought to go as big as possible and build pan-cancer models to predict sensitivity for as many chemotherapy drugs as possible. One factor we considered was that it had to be able to be sequenced fairly inexpensively. The standard here would be Nanostring, which limits us to ~800 genes.
+There are plenty of projects that predict sensitivity on a small scale, using only one drug and/or one cancer type. We sought to go as big as possible and build pan-cancer models to predict sensitivity for as many chemotherapy drugs as possible. One factor we considered was that it had to be able to be sequenced fairly inexpensively. The standard here would be Nanostring, which limits us to ~800 genes.
 
 ## Study Design
 The flowchart for the study design can be found in the [Images](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/study_design.png) folder. 
