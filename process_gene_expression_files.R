@@ -7,13 +7,23 @@ library(openxlsx) # to read in excel files
 if (!require ('biomaRt')) BiocInstaller::biocLite('biomaRt')
 library(biomaRt) # for conversion between gene names, Entrez IDs, and ENSG IDs
 
+
+## functions needed ----
+#process TCGA expression files
+tcga_gene_exp <- function(tcga_class) {
+  tcga_rna_seq <- read.delim(paste0('TCGA_files/TCGA-', tcga_class, '.htseq_counts.tsv'), sep = '\t', row.names = 1, stringsAsFactors = FALSE)
+  rownames(tcga_rna_seq) <- gsub('\\..*$', '', rownames(tcga_rna_seq))
+  return(tcga_rna_seq)
+}
+
+
 ### load raw expression files ------
 ### CELL LINES
 # GDSC
 gdsc_rna_seq <- read.csv('Gene_Expression_Files/gdsc_rnaseq.csv', header = TRUE, stringsAsFactors = FALSE)
 rownames(gdsc_rna_seq) <- make.names(gdsc_rna_seq$ï.., unique = TRUE) # ENSG IDs as row names
 gdsc_rna_seq <- gdsc_rna_seq[, -1] # remove gene names
-gdsc_rna_seq <- gdsc_rna_seq[-c(17738,17739), ] # removes NAs that were there for some reason
+gdsc_rna_seq <- gdsc_rna_seq[-c(17738,17739), ] # removes NAs that were there due to previous use in excel
 colnames(gdsc_rna_seq) <- gsub('X', '', colnames(gdsc_rna_seq))
 # dimensions now: 17737 genes (by ENSG ID) x 962 cell lines (by COSMIC ID)
 
@@ -23,141 +33,86 @@ rownames(ccle_microarray) <- make.names(ccle_microarray$Description, unique = TR
 ccle_microarray <- ccle_microarray[, -1]
 # dimensions now: 18988 (by gene name) x 855 cell lines (by name and type)
 
-# NCI 60
-nci60_microarray <- read.xlsx('Gene_Expression_Files/GE and DS together no blood.xlsx', 1)
-rownames(nci60_microarray) <- nci60_microarray$Entrez.gene.id.e
-nci60_microarray <- nci60_microarray[, -1]
-# dimensions now: 25675 genes (by entrez ID) x 52 cell lines (name and type)
-
 ### TUMOR SETS (TCGA)
-
 # BLCA
-blca_tcga_rnaseq <- read.delim('TCGA_files/TCGA-BLCA.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(blca_tcga_rnaseq) <- gsub('\\..*$', '', rownames(blca_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 430 cases (TCGA ID)
+blca_tcga_rnaseq <- tcga_gene_exp('BLCA')
 
 #BRCA
-brca_tcga_rnaseq <- read.delim('TCGA_files/TCGA-BRCA.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(brca_tcga_rnaseq) <- gsub('\\..*$', '', rownames(brca_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 1217 cases (TCGA ID)
+brca_tcga_rnaseq <- tcga_gene_exp('BRCA')
 
 #CESC
-cesc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-CESC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(cesc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(cesc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 309 cases (TCGA ID)
+cesc_tcga_rnaseq <- tcga_gene_exp('CESC')
 
 #CHOL
-chol_tcga_rnaseq <- read.delim('TCGA_files/TCGA-CHOL.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(chol_tcga_rnaseq) <- gsub('\\..*$', '', rownames(chol_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 45 cases (TCGA ID)
+chol_tcga_rnaseq <- tcga_gene_exp('CHOL')
 
 #COAD
-coad_tcga_rnaseq <- read.delim('TCGA_files/TCGA-COAD.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(coad_tcga_rnaseq) <- gsub('\\..*$', '', rownames(coad_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 512 cases (TCGA ID)
+coad_tcga_rnaseq <- tcga_gene_exp('COAD')
 
 #DLBC
-dlbc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-DLBC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(dlbc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(dlbc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 48 cases (TCGA ID)
+dlbc_tcga_rnaseq <- tcga_gene_exp('DLBC')
 
 #ESCA
-esca_tcga_rnaseq <- read.delim('TCGA_files/TCGA-ESCA.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(esca_tcga_rnaseq) <- gsub('\\..*$', '', rownames(esca_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 173 cases (TCGA ID)
+esca_tcga_rnaseq <- tcga_gene_exp('ESCA')
 
 #HNSC
-hnsc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-HNSC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(hnsc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(hnsc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 546 cases (TCGA ID)
+hnsc_tcga_rnaseq <- tcga_gene_exp('HNSC')
 
 #KIRC
-kirc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-KIRC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(kirc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(kirc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 607 cases (TCGA ID)
+kirc_tcga_rnaseq <- tcga_gene_exp('KIRC')
 
 #LIHC
-lihc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-LIHC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(lihc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(lihc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 424 cases (TCGA ID)
+lihc_tcga_rnaseq <- tcga_gene_exp('LIHC')
 
 #LUAD
-luad_tcga_rnaseq <- read.delim('TCGA_files/TCGA-LUAD.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(luad_tcga_rnaseq) <- gsub('\\..*$', '', rownames(luad_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 585 cases (TCGA ID)
+luad_tcga_rnaseq <- tcga_gene_exp('LUAD')
 
 #LUSC
-lusc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-LUSC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(lusc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(lusc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 550 cases (TCGA ID)
+lusc_tcga_rnaseq <- tcga_gene_exp('LUSC')
 
 #MESO
-meso_tcga_rnaseq <- read.delim('TCGA_files/TCGA-MESO.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(meso_tcga_rnaseq) <- gsub('\\..*$', '', rownames(meso_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 86 cases (TCGA ID)
+meso_tcga_rnaseq <- tcga_gene_exp('MESO')
 
 #OV
-ov_tcga_rnaseq <- read.delim('TCGA_files/TCGA-OV.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(ov_tcga_rnaseq) <- gsub('\\..*$', '', rownames(ov_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 379 cases (TCGA ID)
+ov_tcga_rnaseq   <- tcga_gene_exp('OV')
 
 #PAAD
-paad_tcga_rnaseq <- read.delim('TCGA_files/TCGA-PAAD.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(paad_tcga_rnaseq) <- gsub('\\..*$', '', rownames(paad_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 182 cases (TCGA ID)
+paad_tcga_rnaseq <- tcga_gene_exp('PAAD')
 
 #READ
-read_tcga_rnaseq <- read.delim('TCGA_files/TCGA-READ.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(read_tcga_rnaseq) <- gsub('\\..*$', '', rownames(read_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 178 cases (TCGA ID)
+read_tcga_rnaseq <- tcga_gene_exp('READ')
 
 #SARC
-sarc_tcga_rnaseq <- read.delim('TCGA_files/TCGA-SARC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(sarc_tcga_rnaseq) <- gsub('\\..*$', '', rownames(sarc_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 265 cases (TCGA ID)
+sarc_tcga_rnaseq <- tcga_gene_exp('SARC')
 
 #SKCM
-skcm_tcga_rnaseq <- read.delim('TCGA_files/TCGA-SKCM.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(skcm_tcga_rnaseq) <- gsub('\\..*$', '', rownames(skcm_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 472 cases (TCGA ID)
+skcm_tcga_rnaseq <- tcga_gene_exp('SKCM')
 
 #STAD
-stad_tcga_rnaseq <- read.delim('TCGA_files/TCGA-STAD.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(stad_tcga_rnaseq) <- gsub('\\..*$', '', rownames(stad_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 407 cases (TCGA ID)
+stad_tcga_rnaseq <- tcga_gene_exp('STAD')
 
 #TGCT
-tgct_tcga_rnaseq <- read.delim('TCGA_files/TCGA-TGCT.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(tgct_tcga_rnaseq) <- gsub('\\..*$', '', rownames(tgct_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 156 cases (TCGA ID)
+tgct_tcga_rnaseq <- tcga_gene_exp("TGCT")
 
 #UCEC
-ucec_tcga_rnaseq <- read.delim('TCGA_files/TCGA-UCEC.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(ucec_tcga_rnaseq) <- gsub('\\..*$', '', rownames(ucec_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 583 cases (TCGA ID)
+ucec_tcga_rnaseq <- tcga_gene_exp('UCEC')
 
 #UCS
-ucs_tcga_rnaseq <- read.delim('TCGA_files/TCGA-UCS.htseq_counts.tsv', sep = '\t', row.names = 1, stringsAsFactors = FALSE)
-rownames(ucs_tcga_rnaseq) <- gsub('\\..*$', '', rownames(ucs_tcga_rnaseq))
-# dimensions now: 60483 genes (by ENSG ID) x 56 cases (TCGA ID)
+ucs_tcga_rnaseq  <- tcga_gene_exp('UCS')
 
 ## make sure all gene expression sets have the same features ------
 # makes sure model doesn't include something not in another set
 # gdsc is by ENSG ID
 # ccle is by gene name
-# nci60 is by entrez ID
 # TCGA is by ENSG ID
-# convert ccle and nci60 to ENSG
 
 # get gene names and entrez IDs
 ccle_genes <- rownames(ccle_microarray)
-nci60_genes <- rownames(nci60_microarray)
 
 # convert them to ENSG IDs
 mart <- useMart('ENSEMBL_MART_ENSEMBL')
 mart <- useDataset('hsapiens_gene_ensembl', mart)
 ccle_annots <- getBM(mart = mart, attributes = c('hgnc_symbol', 'ensembl_gene_id'), filters = 'hgnc_symbol', values = ccle_genes, uniqueRows = TRUE)
-# this can be imported as ccle_annots.csv
 ccle_annots <- ccle_annots[!duplicated(ccle_annots[, 2]), ]
 ccle_microarray <- ccle_microarray[which(rownames(ccle_microarray) %in% ccle_annots[, 1]), ]
 ccle_annots <- ccle_annots[which(ccle_annots[, 1] %in% rownames(ccle_microarray)), ]
@@ -165,17 +120,9 @@ ccle_microarray <- ccle_microarray[match(ccle_annots[, 1], rownames(ccle_microar
 rownames(ccle_microarray) <- make.names(ccle_annots[, 2], unique = TRUE)
 # dimensions now: 17846 genes (by ENSG ID) x 855 cell lines (name and type)
 
-nci60_annots <- getBM(mart = mart, attributes = c('entrezgene', 'ensembl_gene_id'), filters = 'entrezgene', values = nci60_genes, uniqueRows = TRUE)
-# this ca be imported as nci60_annots.csv
-nci60_annots <- nci60_annots[!duplicated(nci60_annots[, 2]), ]
-nci60_microarray <- nci60_microarray[which(rownames(nci60_microarray) %in% nci60_annots[, 1]), ]
-nci60_annots <- nci60_annots[which(nci60_annots[, 1] %in% rownames(nci60_microarray)), ]
-nci60_microarray <- nci60_microarray[match(nci60_annots[, 1], rownames(nci60_microarray)), ]
-rownames(nci60_microarray) <- make.names(nci60_annots[, 2], unique = TRUE)
-# dimensions now: 22788 genes (by ENSG ID) x 52 cell lines (name and type)
 
 # limit each gene expression set to common ENSG IDs
-ensg_i_need <- Reduce(intersect, list(rownames(gdsc_rna_seq), rownames(ccle_microarray), rownames(nci60_microarray)))
+ensg_i_need <- Reduce(intersect, list(rownames(gdsc_rna_seq), rownames(ccle_microarray)))
 #14209 ENSG ID in common
 
 gdsc_rna_seq <- gdsc_rna_seq[which(rownames(gdsc_rna_seq) %in% ensg_i_need), ]
@@ -184,8 +131,6 @@ gdsc_rna_seq <- gdsc_rna_seq[which(rownames(gdsc_rna_seq) %in% ensg_i_need), ]
 ccle_microarray <- ccle_microarray[which(rownames(ccle_microarray) %in% ensg_i_need), ]
 #14209 x 855
 
-nci60_microarray <- nci60_microarray[which(rownames(nci60_microarray) %in% ensg_i_need), ]
-#14209 x 52
 
 blca_tcga_rnaseq <- blca_tcga_rnaseq[which(rownames(blca_tcga_rnaseq) %in% ensg_i_need), ]
 #14209 x 430
@@ -256,7 +201,6 @@ ucs_tcga_rnaseq <- ucs_tcga_rnaseq[which(rownames(ucs_tcga_rnaseq) %in% ensg_i_n
 ## write these to files for later ------
 write.csv(gdsc_rna_seq, file = 'Processed_Gene_Expression/gdsc_rna_seq_processed.csv')
 write.csv(ccle_microarray, file = 'Processed_Gene_Expression/ccle_microarray_processed.csv')
-write.csv(nci60_microarray, file = 'Processed_Gene_Expression/nci60_microarray_processed.csv')
 write.csv(blca_tcga_rnaseq, file = 'Processed_Gene_Expression/blca_tcga_rna_seq_processed.csv')
 write.csv(brca_tcga_rnaseq, file = 'Processed_Gene_Expression/brca_tcga_rna_seq_processed.csv')
 write.csv(cesc_tcga_rnaseq, file = 'Processed_Gene_Expression/cesc_tcga_rna_seq_processed.csv')
