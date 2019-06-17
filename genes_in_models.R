@@ -2,7 +2,13 @@
 
 ### load necessary packages ----
 if (!require ('glmnet')) install.packages('glmnet')
-library(glmnet)
+library(glmnet) #for handling glm models already built
+
+if (!require ('treemap')) install.packages('treemap')
+library(treemap) #for total gene set figure
+
+if (!require ('flextable')) install.packages('flextable')
+library(flextable) #for nice tables
 
 
 ## GDSC -----
@@ -154,37 +160,32 @@ common_genes <- c(cisp_etop, cisp_meth, etop_meth)
 common_genes <- unique(common_genes)
 
 gene_list <- list(cisplatin_gene_names, etoposide_gene_names, methotrexate_gene_names)
-gene_table <- sapply(gene_list, 'length<-', max(lengths(gene_list)))
+gene_table1 <- sapply(gene_list, 'length<-', max(lengths(gene_list)))
 colnames(gene_table) <- c('Cisplatin_Genes', 'Etoposide_Genes', 'Methotrexate_Genes')
 
-library(flextable)
 ft <- flextable(as.data.frame(gene_table), cheight = 0.01)
 ft <- color(ft, i = ~ Cisplatin_Genes %in% common_genes, j = 1, color = 'red')
 ft <- color(ft, i = ~ Etoposide_Genes %in% common_genes, j = 2, color = 'red')
 ft <- color(ft, i = ~ Methotrexate_Genes %in% common_genes, j = 3, color = 'red')
 ft
-library(knitr)
-library(kableExtra)
-library(dplyr)
 
-gene_df %>% kable() %>% kable_styling()
 
 ## CCLE ----
 ## load models ----
-carboplatin_ccle_most_fit_elnet      <- readRDS('GLM_Models/carboplatin_ccle_most_model.rds')
-carboplatin_ccle_least_fit_elnet     <- readRDS('GLM_Models/carboplatin_ccle_least_model.rds')
+carboplatin_ccle_most_fit_elnet           <- readRDS('GLM_Models/carboplatin_ccle_most_model.rds')
+carboplatin_ccle_least_fit_elnet          <- readRDS('GLM_Models/carboplatin_ccle_least_model.rds')
 
 cyclophosphamide_ccle_most_fit_elnet      <- readRDS('GLM_Models/cyclophosphamide_ccle_most_model.rds')
 cyclophosphamide_ccle_least_fit_elnet     <- readRDS('GLM_Models/cyclophosphamide_ccle_least_model.rds')
 
-docetaxel_ccle_most_fit_elnet      <- readRDS('GLM_Models/docetaxel_ccle_most_model.rds')
-docetaxel_ccle_least_fit_elnet     <- readRDS('GLM_Models/docetaxel_ccle_least_model.rds')
+docetaxel_ccle_most_fit_elnet             <- readRDS('GLM_Models/docetaxel_ccle_most_model.rds')
+docetaxel_ccle_least_fit_elnet            <- readRDS('GLM_Models/docetaxel_ccle_least_model.rds')
 
-fluorouracil_ccle_most_fit_elnet      <- readRDS('GLM_Models/fluorouracil_ccle_most_model.rds')
-fluorouracil_ccle_least_fit_elnet     <- readRDS('GLM_Models/fluorouracil_ccle_least_model.rds')
+fluorouracil_ccle_most_fit_elnet          <- readRDS('GLM_Models/fluorouracil_ccle_most_model.rds')
+fluorouracil_ccle_least_fit_elnet         <- readRDS('GLM_Models/fluorouracil_ccle_least_model.rds')
 
-gemcitabine_ccle_most_fit_elnet      <- readRDS('GLM_Models/gemcitabine_ccle_most_model.rds')
-gemcitabine_ccle_least_fit_elnet     <- readRDS('GLM_Models/gemcitabine_ccle_least_model.rds')
+gemcitabine_ccle_most_fit_elnet           <- readRDS('GLM_Models/gemcitabine_ccle_most_model.rds')
+gemcitabine_ccle_least_fit_elnet          <- readRDS('GLM_Models/gemcitabine_ccle_least_model.rds')
 
 ### capture genes used in models ----
 ## CARBOPLATIN MOST SENSITIVE
@@ -439,7 +440,6 @@ colnames(gene_table) <- c('Carboplatin_Genes', 'Cyclophosphamide_Genes', 'Doceta
 flextable(as.data.frame(gene_table))
 
 ### treemap of all gene set numbers ----
-library(treemap)
 drug_labels <- c('cisplatin (GDSC)\nn = 103', 'etoposide (GDSC)\nn = 65', 'methotrexate (GDSC)\nn = 6', 'carboplatin (CCLE)\nn = 4', 
                  'cyclophosphamide (CCLE)\nn = 2', 'docetaxel (CCLE)\nn = 45', 'fluorouracil (CCLE)\nn = 9', 'gemcitabine (CCLE)\nn = 16')
 drug_numbers <- c(103, 65, 6, 4, 2, 45, 9, 16)
@@ -449,4 +449,9 @@ png(filename = 'Images/geneset_treemap.png', width = 1000)
 treemap(dtf = tree_df, vSize = 'drug_numbers', index = 'drug_labels', fontsize.labels = 10, palette = 'Dark2', title = 'Number of Genes per Drug Model (N = 248)', fontcolor.labels = 'black')
 dev.off()
 
-
+drug_labels <- c(rep('cisplatin (GDSC)\nn = 103', 2), rep('etoposide (GDSC)\nn = 65', 2), rep('methotrexate (GDSC)\nn = 6', 2), rep('carboplatin (CCLE)\nn = 4', 2), 
+                 rep('cyclophosphamide (CCLE)\nn = 2', 2), rep('docetaxel (CCLE)\nn = 45', 2), rep('fluorouracil (CCLE)\nn = 9', 2), rep('gemcitabine (CCLE)\nn = 16', 2))
+model_types <- rep(c('sensitive', 'resistant'), 8)
+drug_numbers <- c(19, 88, 8, 62, 4, 3, 1, 3, 2, 0, 18, 27, 4, 5, 1, 15)
+tree_df <- data.frame(drug_labels, model_types, drug_numbers)
+treemap(dtf = tree_df, vSize = 'drug_numbers', index = c('drug_labels', 'model_types'), fontface.labels = c(2,1), fontsize.labels = c(15,12), bg.labels = 'transparent', overlap.labels = 0.5, align.labels = list(c('center', 'center'), c('right', 'bottom')), palette = 'Dark2', title = 'Number of Genes per Drug Model (N = 247)', fontcolor.labels = 'black')
