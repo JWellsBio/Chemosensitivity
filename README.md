@@ -1,5 +1,6 @@
 # Chemosensitivity
 Chemosensitivity Project Scripts and Files
+
 **GENE EXPRESSION FILES SHOULD BE DOWNLOADED FROM LINKS BELOW**
 
 ## Idea for Project
@@ -15,21 +16,16 @@ The flowchart for the study design can be found [here](https://github.com/JWells
 + Finally, drug models were tested on human tumor datasets from [The Cancer Genome Atlas](https://cancergenome.nih.gov/).
 
 ## Results for pan-cancer models applied to testing data
-+ Pan-cancer models built from GDSC data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/GDSC_AUC_heatmap.png)
-+ Pan-cancer models built from CCLE data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/CCLE_AUC_heatmap.png)
++ Pan-cancer models built from GDSC data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/GDSC_AUC_heatmap_revised.png)
++ Pan-cancer models built from CCLE data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/CCLE_AUC_heatmap_revised.png)
 
 ## Total gene numbers
-+ The total gene set for all drugs considered comes out to 248. A break-down of number of genes needed per drug model can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/geneset_treemap.png)
++ The total gene set for all drugs considered comes out to 247. A break-down of number of genes needed per drug model can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/geneset_treemap.png)
 + A table detailing genes needed in GDSC models can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/gdsc_gene_table.PNG)
 + And for CCLE [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ccle_gene_table.PNG)
 
-## TCGA results **STILL SLIGHTLY IN PROGRESS**
-+ Pan-cancer models were tested against available TCGA class/drug combinations where n > 5. Sensitivity measure used was RFS.
-+ ROC curves were generated for every combination tested. An exmaple can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ov_cisplatin_tcga_gdsc_auc.png)
-+ A massive table with all combinaitons tested is still in progress.
+## TCGA results
++ Pan-cancer models were tested against available TCGA class/drug combinations where n >= 5. Sensitivity measure used was RFS.
++ ROC curves were generated for every combination tested as well as recurrence-free survival curves split based on predicted labels. An example can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ov_cisp_duo.png)
 
-## Steps to repeat analysis
-+ Run this script
-+ Run this script
-+ Run this script
-+ Blah blah blah
+
