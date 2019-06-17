@@ -38,10 +38,6 @@ etoposide     <- read.csv('Processed_Clinical_Data/etoposide_gdsc_clinical_proce
 gemcitabine   <- read.csv('Processed_Clinical_Data/gemcitabine_gdsc_clinical_processed.csv', row.names = 1)
 methotrexate  <- read.csv('Processed_Clinical_Data/methotrexate_gdsc_clinical_processed.csv', row.names = 1)
 
-# GDSC cell line info
-gdsc_cell_line_info <- read.csv('Clinical_Files/Cell_listTue Dec 18 19_10_36 2018 (version 1).csv', header = TRUE, stringsAsFactors = FALSE)
-gdsc_cell_line_info <- gdsc_cell_line_info[, c(1,2,5,6)]
-colnames(gdsc_cell_line_info)[c(3,4)] <- c('TCGA_class', 'Tissue_subtype')
 
 ## load gene expression data ----
 gdsc_rna_seq <- read.csv('Processed_Gene_Expression/gdsc_rna_seq_processed.csv')
@@ -53,7 +49,6 @@ colnames(gdsc_rna_seq) <- gsub('X', '', colnames(gdsc_rna_seq))
 # get names of GDSC cell lines treated with each drug
 cisplatin_lines           <- cisplatin$COSMIC_ID #680
 etoposide_lines           <- etoposide$COSMIC_ID #718
-gemcitabine_lines         <- gemcitabine$COSMIC_ID #707
 methotrexate_lines        <- methotrexate$COSMIC_ID # 679
 
 # set GDSC to usable format
@@ -85,10 +80,6 @@ etoposide_rna_seq_train     <- gdsc_train[intersect(etoposide_lines, rownames(gd
 # 352 x 14209
 etoposide_rna_seq_test      <- gdsc_test[intersect(etoposide_lines, rownames(gdsc_test)), ]
 # 366 x 14209
-gemcitabine_rna_seq_train   <- gdsc_train[intersect(gemcitabine_lines, rownames(gdsc_train)), ]
-# 347 x 14209
-gemcitabine_rna_seq_test    <- gdsc_test[intersect(gemcitabine_lines, rownames(gdsc_test)), ]
-# 360 x 14209
 methotrexate_rna_seq_train  <- gdsc_train[intersect(methotrexate_lines, rownames(gdsc_train)), ]
 # 337 x 14209
 methotrexate_rna_seq_test   <- gdsc_test[intersect(methotrexate_lines, rownames(gdsc_test)), ]
@@ -101,9 +92,6 @@ cisplatin_test         <- cisplatin[which(cisplatin$COSMIC_ID %in% rownames(cisp
 etoposide_train        <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_train)), ]
 etoposide_test         <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_test)), ]
 
-gemcitabine_train      <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_train)), ]
-gemcitabine_test       <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_test)), ]
-
 methotrexate_train     <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_train)), ]
 methotrexate_test      <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_test)), ]
 
@@ -113,9 +101,6 @@ cisplatin_rna_seq_test_scaled           <- as.data.frame(apply(cisplatin_rna_seq
 
 etoposide_rna_seq_train_scaled          <- apply(etoposide_rna_seq_train, 2, scale)
 etoposide_rna_seq_test_scaled           <- as.data.frame(apply(etoposide_rna_seq_test, 2, scale))
-
-gemcitabine_rna_seq_train_scaled        <- apply(gemcitabine_rna_seq_train, 2, scale)
-gemcitabine_rna_seq_test_scaled         <- as.data.frame(apply(gemcitabine_rna_seq_test, 2, scale))
 
 methotrexate_rna_seq_train_scaled       <- apply(methotrexate_rna_seq_train, 2, scale)
 methotrexate_rna_seq_test_scaled        <- as.data.frame(apply(methotrexate_rna_seq_test, 2, scale))
@@ -127,20 +112,12 @@ cisplatin_least_fit_elnet     <- readRDS('GLM_Models/cisplatin_least_model.rds')
 etoposide_most_fit_elnet      <- readRDS('GLM_Models/etoposide_most_model.rds')
 etoposide_least_fit_elnet     <- readRDS('GLM_Models/etoposide_least_model.rds')
 
-gemcitabine_most_fit_elnet    <- readRDS('GLM_Models/gemcitabine_most_model.rds')
-gemcitabine_least_fit_elnet   <- readRDS('GLM_Models/gemcitabine_least_model.rds')
-
 methotrexate_most_fit_elnet   <- readRDS('GLM_Models/methotrexate_most_model.rds')
 methotrexate_least_fit_elnet  <- readRDS('GLM_Models/methotrexate_least_model.rds')
 
 ### get accuracy on testing data --------
 
 ## CISPLATIN
-#new_cisplatin_most_sensitive_min <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#cisplatin_most_test_gdsc_auc_min <- auc(cisplatin_test$most_sensitive, new_cisplatin_most_sensitive_min)
-#cisplatin_most_test_gdsc_auc_min <- round(cisplatin_most_test_gdsc_auc_min, digits = 2)
-
 new_cisplatin_most_sensitive_1se <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 cisplatin_most_test_gdsc_auc_1se <- auc(cisplatin_test$most_sensitive, new_cisplatin_most_sensitive_1se)
@@ -152,11 +129,6 @@ new_cisplatin_least_sensitive_min <- predict(cisplatin_least_fit_elnet, newx = a
 cisplatin_least_test_gdsc_auc_min <- auc(cisplatin_test$least_sensitive, new_cisplatin_least_sensitive_min)
 cisplatin_least_test_gdsc_auc_min <- round(cisplatin_least_test_gdsc_auc_min, digits = 2)
 
-#new_cisplatin_least_sensitive_1se <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-#cisplatin_least_test_gdsc_auc_1se <- auc(cisplatin_test$least_sensitive, new_cisplatin_least_sensitive_1se)
-#cisplatin_least_test_gdsc_auc_1se <- round(cisplatin_least_test_gdsc_auc_1se, digits = 2)
-
 
 ## ETOPOSIDE
 new_etoposide_most_sensitive_min <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
@@ -164,44 +136,11 @@ new_etoposide_most_sensitive_min <- predict(etoposide_most_fit_elnet, newx = as.
 etoposide_most_test_gdsc_auc_min <- auc(etoposide_test$most_sensitive, new_etoposide_most_sensitive_min)
 etoposide_most_test_gdsc_auc_min <- round(etoposide_most_test_gdsc_auc_min, digits = 2)
 
-#new_etoposide_most_sensitive_1se <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-#etoposide_most_test_gdsc_auc_1se <- auc(etoposide_test$most_sensitive, new_etoposide_most_sensitive_1se)
-#etoposide_most_test_gdsc_auc_1se <- round(etoposide_most_test_gdsc_auc_1se, digits = 2)
-
 
 new_etoposide_least_sensitive_min <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
 
 etoposide_least_test_gdsc_auc_min <- auc(etoposide_test$least_sensitive, new_etoposide_least_sensitive_min)
 etoposide_least_test_gdsc_auc_min <- round(etoposide_least_test_gdsc_auc_min, digits = 2)
-
-#new_etoposide_least_sensitive_1se <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-#etoposide_least_test_gdsc_auc_1se <- auc(etoposide_test$least_sensitive, new_etoposide_least_sensitive_1se)
-#etoposide_least_test_gdsc_auc_1se <- round(etoposide_least_test_gdsc_auc_1se, digits = 2)
-
-
-## GEMCITABINE
-#new_gemcitabine_most_sensitive_min <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#gemcitabine_most_test_gdsc_auc_min <- auc(gemcitabine_test$most_sensitive, new_gemcitabine_most_sensitive_min)
-#gemcitabine_most_test_gdsc_auc_min <- round(gemcitabine_most_test_gdsc_auc_min, digits = 2)
-
-new_gemcitabine_most_sensitive_1se <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-gemcitabine_most_test_gdsc_auc_1se <- auc(gemcitabine_test$most_sensitive, new_gemcitabine_most_sensitive_1se)
-gemcitabine_most_test_gdsc_auc_1se <- round(gemcitabine_most_test_gdsc_auc_1se, digits = 2)
-
-
-#new_gemcitabine_least_sensitive_min <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#gemcitabine_least_test_gdsc_auc_min <- auc(gemcitabine_test$least_sensitive, new_gemcitabine_least_sensitive_min)
-#gemcitabine_least_test_gdsc_auc_min <- round(gemcitabine_least_test_gdsc_auc_min, digits = 2)
-
-new_gemcitabine_least_sensitive_1se <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-gemcitabine_least_test_gdsc_auc_1se <- auc(gemcitabine_test$least_sensitive, new_gemcitabine_least_sensitive_1se)
-gemcitabine_least_test_gdsc_auc_1se <- round(gemcitabine_least_test_gdsc_auc_1se, digits = 2)
 
 
 ## METHOTREXATE
@@ -210,22 +149,13 @@ new_methotrexate_most_sensitive_min <- predict(methotrexate_most_fit_elnet, newx
 methotrexate_most_test_gdsc_auc_min <- auc(methotrexate_test$most_sensitive, new_methotrexate_most_sensitive_min)
 methotrexate_most_test_gdsc_auc_min <- round(methotrexate_most_test_gdsc_auc_min, digits = 2)
 
-#new_methotrexate_most_sensitive_1se <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-#methotrexate_most_test_gdsc_auc_1se <- auc(methotrexate_test$most_sensitive, new_methotrexate_most_sensitive_1se)
-#methotrexate_most_test_gdsc_auc_1se <- round(methotrexate_most_test_gdsc_auc_1se, digits = 2)
-
-
-#new_methotrexate_least_sensitive_min <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#methotrexate_least_test_gdsc_auc_min <- auc(methotrexate_test$least_sensitive, new_methotrexate_least_sensitive_min)
-#methotrexate_least_test_gdsc_auc_min <- round(methotrexate_least_test_gdsc_auc_min, digits = 2)
 
 new_methotrexate_least_sensitive_1se <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 methotrexate_least_test_gdsc_auc_1se <- auc(methotrexate_test$least_sensitive, new_methotrexate_least_sensitive_1se)
 methotrexate_least_test_gdsc_auc_1se <- round(methotrexate_least_test_gdsc_auc_1se, digits = 2)
 
+#put them together
 overall_auc <- c(cisplatin_most_test_gdsc_auc_1se, cisplatin_least_test_gdsc_auc_min, 
                  etoposide_most_test_gdsc_auc_min, etoposide_least_test_gdsc_auc_min, 
                  gemcitabine_most_test_gdsc_auc_1se, gemcitabine_least_test_gdsc_auc_1se, 
@@ -249,6 +179,7 @@ cisplatin_soft_tissue_lines                 <- cisplatin_test$Cell_line_tissue_t
 cisplatin_thyroid_lines                     <- cisplatin_test$Cell_line_tissue_type == 'thyroid'
 cisplatin_urogenital_system_lines           <- cisplatin_test$Cell_line_tissue_type == 'urogenital_system'
 
+#test pan-cancer models against individual cancer types
 cisplatin_test_scaled_aero_dig_tract <- cisplatin_rna_seq_test_scaled[cisplatin_aero_dig_tract_lines, ]
 cisplatin_test_aero_dig_tract <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
 new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_aero_dig_tract), s = 'lambda.1se', interval = 'conf')
@@ -622,201 +553,6 @@ etoposide_least_auc <- c(etoposide_aero_dig_tract_least_auc, etoposide_bone_leas
                          etoposide_soft_tissue_least_auc, etoposide_thyroid_least_auc, 
                          etoposide_urogenital_system_least_auc)
 
-gemcitabine_aero_dig_tract_lines              <- gemcitabine_test$Cell_line_tissue_type == 'aero_dig_tract'
-gemcitabine_bone_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'bone'
-gemcitabine_breast_lines                      <- gemcitabine_test$Cell_line_tissue_type == 'breast'
-gemcitabine_digestive_system_lines            <- gemcitabine_test$Cell_line_tissue_type == 'digestive_system'
-gemcitabine_kidney_lines                      <- gemcitabine_test$Cell_line_tissue_type == 'kidney'
-gemcitabine_large_intestine_lines             <- gemcitabine_test$Cell_line_tissue_type == 'large_intestine'
-gemcitabine_lung_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'lung'
-gemcitabine_lung_NSCLC_lines                  <- gemcitabine_test$Cell_line_tissue_type == 'lung_NSCLC'
-gemcitabine_lung_SCLC_lines                   <- gemcitabine_test$Cell_line_tissue_type == 'lung_SCLC'
-gemcitabine_nervous_system_lines              <- gemcitabine_test$Cell_line_tissue_type == 'nervous_system'
-gemcitabine_neuroblastoma_lines               <- gemcitabine_test$Cell_line_tissue_type == 'neuroblastoma'
-gemcitabine_pancreas_lines                    <- gemcitabine_test$Cell_line_tissue_type == 'pancreas'
-gemcitabine_skin_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'skin'
-gemcitabine_soft_tissue_lines                 <- gemcitabine_test$Cell_line_tissue_type == 'soft_tissue'
-gemcitabine_thyroid_lines                     <- gemcitabine_test$Cell_line_tissue_type == 'thyroid'
-gemcitabine_urogenital_system_lines           <- gemcitabine_test$Cell_line_tissue_type == 'urogenital_system'
-
-gemcitabine_test_scaled_aero_dig_tract <- gemcitabine_rna_seq_test_scaled[gemcitabine_aero_dig_tract_lines, ]
-gemcitabine_test_aero_dig_tract <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_aero_dig_tract), s = 'lambda.1se', interval = 'conf')
-gemcitabine_aero_dig_tract_most_auc <- auc(gemcitabine_test_aero_dig_tract$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_bone <- gemcitabine_rna_seq_test_scaled[gemcitabine_bone_lines, ]
-gemcitabine_test_bone <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-gemcitabine_bone_most_auc <- auc(gemcitabine_test_bone$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_breast <- gemcitabine_rna_seq_test_scaled[gemcitabine_breast_lines, ]
-gemcitabine_test_breast <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-gemcitabine_breast_most_auc <- auc(gemcitabine_test_breast$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_digestive_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_digestive_system_lines, ]
-gemcitabine_test_digestive_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_digestive_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_digestive_system_most_auc <- auc(gemcitabine_test_digestive_system$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_kidney <- gemcitabine_rna_seq_test_scaled[gemcitabine_kidney_lines, ]
-gemcitabine_test_kidney <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-gemcitabine_kidney_most_auc <- auc(gemcitabine_test_kidney$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_large_intestine <- gemcitabine_rna_seq_test_scaled[gemcitabine_large_intestine_lines, ]
-gemcitabine_test_large_intestine <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-gemcitabine_large_intestine_most_auc <- auc(gemcitabine_test_large_intestine$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_lines, ]
-gemcitabine_test_lung <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_most_auc <- auc(gemcitabine_test_lung$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung_NSCLC <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_NSCLC_lines, ]
-gemcitabine_test_lung_NSCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung_NSCLC), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_NSCLC_most_auc <- auc(gemcitabine_test_lung_NSCLC$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung_SCLC <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_SCLC_lines, ]
-gemcitabine_test_lung_SCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung_SCLC), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_SCLC_most_auc <- auc(gemcitabine_test_lung_SCLC$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_nervous_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_nervous_system_lines, ]
-gemcitabine_test_nervous_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_nervous_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_nervous_system_most_auc <- auc(gemcitabine_test_nervous_system$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_neuroblastoma <- gemcitabine_rna_seq_test_scaled[gemcitabine_neuroblastoma_lines, ]
-gemcitabine_test_neuroblastoma <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_neuroblastoma), s = 'lambda.1se', interval = 'conf')
-gemcitabine_neuroblastoma_most_auc <- auc(gemcitabine_test_neuroblastoma$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_pancreas <- gemcitabine_rna_seq_test_scaled[gemcitabine_pancreas_lines, ]
-gemcitabine_test_pancreas <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-gemcitabine_pancreas_most_auc <- auc(gemcitabine_test_pancreas$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_skin <- gemcitabine_rna_seq_test_scaled[gemcitabine_skin_lines, ]
-gemcitabine_test_skin <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-gemcitabine_skin_most_auc <- auc(gemcitabine_test_skin$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_soft_tissue <- gemcitabine_rna_seq_test_scaled[gemcitabine_soft_tissue_lines, ]
-gemcitabine_test_soft_tissue <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-gemcitabine_soft_tissue_most_auc <- auc(gemcitabine_test_soft_tissue$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_thyroid <- gemcitabine_rna_seq_test_scaled[gemcitabine_thyroid_lines, ]
-gemcitabine_test_thyroid <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-gemcitabine_thyroid_most_auc <- auc(gemcitabine_test_thyroid$most_sensitive, new_ic50)
-
-gemcitabine_test_scaled_urogenital_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_urogenital_system_lines, ]
-gemcitabine_test_urogenital_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(gemcitabine_most_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_urogenital_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_urogenital_system_most_auc <- auc(gemcitabine_test_urogenital_system$most_sensitive, new_ic50)
-
-gemcitabine_most_auc <- c(gemcitabine_aero_dig_tract_most_auc, gemcitabine_bone_most_auc, 
-                        gemcitabine_breast_most_auc, gemcitabine_digestive_system_most_auc, 
-                        gemcitabine_kidney_most_auc, gemcitabine_large_intestine_most_auc, 
-                        gemcitabine_lung_most_auc, gemcitabine_lung_NSCLC_most_auc, gemcitabine_lung_SCLC_most_auc, 
-                        gemcitabine_nervous_system_most_auc, gemcitabine_neuroblastoma_most_auc, 
-                        gemcitabine_pancreas_most_auc, gemcitabine_skin_most_auc, 
-                        gemcitabine_soft_tissue_most_auc, gemcitabine_thyroid_most_auc, 
-                        gemcitabine_urogenital_system_most_auc)
-
-gemcitabine_test_scaled_aero_dig_tract <- gemcitabine_rna_seq_test_scaled[gemcitabine_aero_dig_tract_lines, ]
-gemcitabine_test_aero_dig_tract <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_aero_dig_tract), s = 'lambda.1se', interval = 'conf')
-gemcitabine_aero_dig_tract_least_auc <- auc(gemcitabine_test_aero_dig_tract$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_bone <- gemcitabine_rna_seq_test_scaled[gemcitabine_bone_lines, ]
-gemcitabine_test_bone <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-gemcitabine_bone_least_auc <- auc(gemcitabine_test_bone$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_breast <- gemcitabine_rna_seq_test_scaled[gemcitabine_breast_lines, ]
-gemcitabine_test_breast <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-gemcitabine_breast_least_auc <- auc(gemcitabine_test_breast$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_digestive_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_digestive_system_lines, ]
-gemcitabine_test_digestive_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_digestive_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_digestive_system_least_auc <- auc(gemcitabine_test_digestive_system$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_kidney <- gemcitabine_rna_seq_test_scaled[gemcitabine_kidney_lines, ]
-gemcitabine_test_kidney <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-gemcitabine_kidney_least_auc <- auc(gemcitabine_test_kidney$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_large_intestine <- gemcitabine_rna_seq_test_scaled[gemcitabine_large_intestine_lines, ]
-gemcitabine_test_large_intestine <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-gemcitabine_large_intestine_least_auc <- auc(gemcitabine_test_large_intestine$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_lines, ]
-gemcitabine_test_lung <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_least_auc <- auc(gemcitabine_test_lung$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung_NSCLC <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_NSCLC_lines, ]
-gemcitabine_test_lung_NSCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung_NSCLC), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_NSCLC_least_auc <- auc(gemcitabine_test_lung_NSCLC$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_lung_SCLC <- gemcitabine_rna_seq_test_scaled[gemcitabine_lung_SCLC_lines, ]
-gemcitabine_test_lung_SCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_lung_SCLC), s = 'lambda.1se', interval = 'conf')
-gemcitabine_lung_SCLC_least_auc <- auc(gemcitabine_test_lung_SCLC$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_nervous_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_nervous_system_lines, ]
-gemcitabine_test_nervous_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_nervous_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_nervous_system_least_auc <- auc(gemcitabine_test_nervous_system$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_neuroblastoma <- gemcitabine_rna_seq_test_scaled[gemcitabine_neuroblastoma_lines, ]
-gemcitabine_test_neuroblastoma <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_neuroblastoma), s = 'lambda.1se', interval = 'conf')
-gemcitabine_neuroblastoma_least_auc <- auc(gemcitabine_test_neuroblastoma$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_pancreas <- gemcitabine_rna_seq_test_scaled[gemcitabine_pancreas_lines, ]
-gemcitabine_test_pancreas <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-gemcitabine_pancreas_least_auc <- auc(gemcitabine_test_pancreas$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_skin <- gemcitabine_rna_seq_test_scaled[gemcitabine_skin_lines, ]
-gemcitabine_test_skin <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-gemcitabine_skin_least_auc <- auc(gemcitabine_test_skin$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_soft_tissue <- gemcitabine_rna_seq_test_scaled[gemcitabine_soft_tissue_lines, ]
-gemcitabine_test_soft_tissue <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-gemcitabine_soft_tissue_least_auc <- auc(gemcitabine_test_soft_tissue$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_thyroid <- gemcitabine_rna_seq_test_scaled[gemcitabine_thyroid_lines, ]
-gemcitabine_test_thyroid <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-gemcitabine_thyroid_least_auc <- auc(gemcitabine_test_thyroid$least_sensitive, new_ic50)
-
-gemcitabine_test_scaled_urogenital_system <- gemcitabine_rna_seq_test_scaled[gemcitabine_urogenital_system_lines, ]
-gemcitabine_test_urogenital_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(gemcitabine_least_fit_elnet, newx = as.matrix(gemcitabine_test_scaled_urogenital_system), s = 'lambda.1se', interval = 'conf')
-gemcitabine_urogenital_system_least_auc <- auc(gemcitabine_test_urogenital_system$least_sensitive, new_ic50)
-
-gemcitabine_least_auc <- c(gemcitabine_aero_dig_tract_least_auc, gemcitabine_bone_least_auc, 
-                         gemcitabine_breast_least_auc, gemcitabine_digestive_system_least_auc, 
-                         gemcitabine_kidney_least_auc, gemcitabine_large_intestine_least_auc, 
-                         gemcitabine_lung_least_auc, gemcitabine_lung_NSCLC_least_auc, gemcitabine_lung_SCLC_least_auc, 
-                         gemcitabine_nervous_system_least_auc, gemcitabine_neuroblastoma_least_auc, 
-                         gemcitabine_pancreas_least_auc, gemcitabine_skin_least_auc, 
-                         gemcitabine_soft_tissue_least_auc, gemcitabine_thyroid_least_auc, 
-                         gemcitabine_urogenital_system_least_auc)
-
 methotrexate_aero_dig_tract_lines              <- methotrexate_test$Cell_line_tissue_type == 'aero_dig_tract'
 methotrexate_bone_lines                        <- methotrexate_test$Cell_line_tissue_type == 'bone'
 methotrexate_breast_lines                      <- methotrexate_test$Cell_line_tissue_type == 'breast'
@@ -1012,6 +748,7 @@ methotrexate_least_auc <- c(methotrexate_aero_dig_tract_least_auc, methotrexate_
                          methotrexate_soft_tissue_least_auc, methotrexate_thyroid_least_auc, 
                          methotrexate_urogenital_system_least_auc)
 
+#put everything together
 all_gdsc_auc_by_type <- data.frame(cisplatin_most_auc, cisplatin_least_auc, 
                                    etoposide_most_auc, etoposide_least_auc, 
                                    gemcitabine_most_auc, gemcitabine_least_auc, 
@@ -1027,20 +764,7 @@ rownames(all_gdsc_auc_by_type) <- c('aero_dig_tract', 'bone', 'breast', 'digesti
                                     'large_intestine', 'lung', 'lung_NSCLC', 'lung_SCLC', 
                                     'nervous_system', 'neuroblastoma', 'pancreas', 'skin', 
                                     'soft_tissue', 'thyroid', 'urogenital_system', 'overall')
-for (i in 1:nrow(all_gdsc_auc_by_type)) {
-  for (j in 1:ncol(all_gdsc_auc_by_type)) {
-    if (all_gdsc_auc_by_type[i,j] == 'NaN') {
-      all_gdsc_auc_by_type[i,j] <- 0.50
-    }
-  }
-}
-for (i in 1:nrow(all_gdsc_auc_by_type)) {
-  for (j in 1:ncol(all_gdsc_auc_by_type)) {
-    if (all_gdsc_auc_by_type[i,j] < 0.50) {
-      all_gdsc_auc_by_type[i,j] <- 0.50
-    }
-  }
-}
+
 all_gdsc_auc_by_type <- round(all_gdsc_auc_by_type, digits = 2)
 all_gdsc_auc_by_type <- data.frame(t(all_gdsc_auc_by_type))
 all_gdsc_auc_by_type <- all_gdsc_auc_by_type[, c(17, 1:16)]
@@ -1049,1809 +773,6 @@ colors <- colorRampPalette(c("dodgerblue", "white", "red"))(100)
 png(filename = 'Images/GDSC_AUC_heatmap.png', width = 960)
 heatmap.2(as.matrix(all_gdsc_auc_by_type), trace = 'none', Rowv = FALSE, Colv = FALSE, col = colors, density.info = 'none', key.xlab = 'AUC', key.title = '', cexRow = 0.9, cexCol = 0.9, cellnote = all_gdsc_auc_by_type, notecol = 'black', colsep = 1, sepwidth = c(0.1,0.1), srtCol = 45, margins = c(5,8))
 dev.off()
-
-### load gene lists for each model ---
-cisplatin_most_model_min <- read.csv('GLM_Models/cisplatin_most_model_min.csv')
-cisplatin_least_model_min <- read.csv('GLM_Models/cisplatin_least_model_min.csv')
-cisplatin_most_model_1se <- read.csv('GLM_Models/cisplatin_most_model_1se.csv')
-cisplatin_least_model_1se <- read.csv('GLM_Models/cisplatin_least_model_1se.csv')
-
-etoposide_most_model_min <- read.csv('GLM_Models/etoposide_most_model_min.csv')
-etoposide_least_model_min <- read.csv('GLM_Models/etoposide_least_model_min.csv')
-etoposide_most_model_1se <- read.csv('GLM_Models/etoposide_most_model_1se.csv')
-etoposide_least_model_1se <- read.csv('GLM_Models/etoposide_least_model_1se.csv')
-
-gemcitabine_most_model_min <- read.csv('GLM_Models/gemcitabine_most_model_min.csv')
-gemcitabine_least_model_min <- read.csv('GLM_Models/gemcitabine_least_model_min.csv')
-gemcitabine_most_model_1se <- read.csv('GLM_Models/gemcitabine_most_model_1se.csv')
-gemcitabine_least_model_1se <- read.csv('GLM_Models/gemcitabine_least_model_1se.csv')
-
-methotrexate_most_model_min <- read.csv('GLM_Models/methotrexate_most_model_min.csv')
-methotrexate_least_model_min <- read.csv('GLM_Models/methotrexate_least_model_min.csv')
-methotrexate_most_model_1se <- read.csv('GLM_Models/methotrexate_most_model_1se.csv')
-methotrexate_least_model_1se <- read.csv('GLM_Models/methotrexate_least_model_1se.csv')
-
-## create table containing number of genes in each model and overall AUC ----
-# the number of genes used in min models
-min_model_genes <- c(nrow(cisplatin_most_model_min), nrow(cisplatin_least_model_min), nrow(etoposide_most_model_min), nrow(etoposide_least_model_min), 
-                     nrow(gemcitabine_most_model_min), nrow(gemcitabine_least_model_min), nrow(methotrexate_most_model_min), nrow(methotrexate_least_model_min))
-
-# the number of genes used in 1se models
-one_se_model_genes <- c(nrow(cisplatin_most_model_1se), nrow(cisplatin_least_model_1se), nrow(etoposide_most_model_1se), nrow(etoposide_least_model_1se), 
-                        nrow(gemcitabine_most_model_1se), nrow(gemcitabine_least_model_1se), nrow(methotrexate_most_model_1se), nrow(methotrexate_least_model_1se))
-
-# overall AUC values for min models
-auc_min_models <- c(cisplatin_most_test_gdsc_auc_min, cisplatin_least_test_gdsc_auc_min, etoposide_most_test_gdsc_auc_min, etoposide_least_test_gdsc_auc_min, 
-                    gemcitabine_most_test_gdsc_auc_min, gemcitabine_least_test_gdsc_auc_min, methotrexate_most_test_gdsc_auc_min, methotrexate_least_test_gdsc_auc_min)
-
-# overall AUC values for 1se models
-auc_1se_models <- c(cisplatin_most_test_gdsc_auc_1se, cisplatin_least_test_gdsc_auc_1se, etoposide_most_test_gdsc_auc_1se, etoposide_least_test_gdsc_auc_1se, 
-                    gemcitabine_most_test_gdsc_auc_1se, gemcitabine_least_test_gdsc_auc_1se, methotrexate_most_test_gdsc_auc_1se, methotrexate_least_test_gdsc_auc_1se)
-# put together
-genes_and_auc_df <- data.frame(min_model_genes, auc_min_models, one_se_model_genes, auc_1se_models)
-rownames(genes_and_auc_df) <- c('Cisplatin_most_sensitive', 'Cisplatin_least_sensitive', 'Etoposide_most_sensitive', 'Etoposide_least_sensitive', 
-                                'Gemcitabine_most_sensitive', 'Gemcitabine_least_sensitive', 'Methotrexate_most_sensitive', 'Methotrexate_least_sensitive')
-colnames(genes_and_auc_df) <- c('Number_genes_min_model', 'AUC_min_model', 'Number_genes_1se_model', 'AUC_1se_model')
-genes_and_auc_df$Number_genes_lost <- genes_and_auc_df$Number_genes_min_model - genes_and_auc_df$Number_genes_1se_model
-# creating table
-genes_auc_formattable <- formattable(genes_and_auc_df, list(
-  AUC_min_model = color_tile('white', 'red'),
-  AUC_1se_model = color_tile('white', 'red'),
-  area(col= c(Number_genes_min_model, Number_genes_1se_model, Number_genes_lost)) ~ normalize_bar('springgreen')
-))
-# and exporting it
-webshot::install_phantomjs()
-# from: https://github.com/renkun-ken/formattable/issues/26
-export_formattable <- function(f, file, width = "100%", height = NULL, 
-                               background = "white", delay = 0.2)
-{
-  w <- as.htmlwidget(f, width = width, height = height)
-  path <- html_print(w, background = background, viewer = NULL)
-  url <- paste0("file:///", gsub("\\\\", "/", normalizePath(path)))
-  webshot(url,
-          file = file,
-          selector = ".formattable_widget",
-          delay = delay)
-}
-
-export_formattable(genes_auc_formattable, file = 'Images/Genes_AUC_table.png')
-
-### get auc for individual cancer types -------
-
-# add TCGA classes to all testing data
-# CISPLATIN
-cisplatin_idx       <- gdsc_cell_line_info$COSMIC_ID %in% cisplatin_test$COSMIC_ID
-gdsc_info_cisplatin <- gdsc_cell_line_info[cisplatin_idx, ]
-cisplatin_test      <- merge(cisplatin_test, gdsc_info_cisplatin, by = 'COSMIC_ID')
-
-# ETOPOSIDE
-etoposide_idx       <- gdsc_cell_line_info$COSMIC_ID %in% etoposide_test$COSMIC_ID
-gdsc_info_etoposide <- gdsc_cell_line_info[etoposide_idx, ]
-etoposide_test      <- merge(etoposide_test, gdsc_info_etoposide, by = 'COSMIC_ID')
-
-# GEMCITABINE
-gemcitabine_idx       <- gdsc_cell_line_info$COSMIC_ID %in% gemcitabine_test$COSMIC_ID
-gdsc_info_gemcitabine <- gdsc_cell_line_info[gemcitabine_idx, ]
-gemcitabine_test      <- merge(gemcitabine_test, gdsc_info_gemcitabine, by = 'COSMIC_ID')
-
-# METHOTREXATE
-methotrexate_idx        <- gdsc_cell_line_info$COSMIC_ID %in% methotrexate_test$COSMIC_ID
-gdsc_info_methotrexate  <- gdsc_cell_line_info[methotrexate_idx, ]
-methotrexate_test       <- merge(methotrexate_test, gdsc_info_methotrexate, by = 'COSMIC_ID')
-
-# AUC by TCGA class
-## CISPLATIN
-table(cisplatin_test$TCGA_class)
-
-# BLCA 5
-cisplatin_blca_idx <- cisplatin_test$TCGA_class == 'BLCA' #5
-
-cisplatin_blca_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_blca_idx]
-actual_cisplatin_blca_most         <- cisplatin_test$most_sensitive[cisplatin_blca_idx]
-cisplatin_blca_most_min_auc        <- auc(actual_cisplatin_blca_most, cisplatin_blca_most_sensitive_min)
-
-cisplatin_blca_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_blca_idx]
-actual_cisplatin_blca_least <- cisplatin_test$least_sensitive[cisplatin_blca_idx]
-cisplatin_blca_least_min_auc <- auc(actual_cisplatin_blca_least, cisplatin_blca_least_sensitive_min)
-
-cisplatin_blca_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_blca_idx]
-actual_cisplatin_blca_most <- cisplatin_test$most_sensitive[cisplatin_blca_idx]
-cisplatin_blca_most_1se_auc <- auc(actual_cisplatin_blca_most, cisplatin_blca_most_sensitive_1se)
-
-cisplatin_blca_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_blca_idx]
-actual_cisplatin_blca_least <- cisplatin_test$least_sensitive[cisplatin_blca_idx]
-cisplatin_blca_least_1se_auc <- auc(actual_cisplatin_blca_least, cisplatin_blca_least_sensitive_1se)
-
-# BRCA
-cisplatin_brca_idx <- cisplatin_test$TCGA_class == 'BRCA' #28
-
-cisplatin_brca_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_brca_idx]
-actual_cisplatin_brca_most         <- cisplatin_test$most_sensitive[cisplatin_brca_idx]
-cisplatin_brca_most_min_auc        <- auc(actual_cisplatin_brca_most, cisplatin_brca_most_sensitive_min)
-
-cisplatin_brca_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_brca_idx]
-actual_cisplatin_brca_least <- cisplatin_test$least_sensitive[cisplatin_brca_idx]
-cisplatin_brca_least_min_auc <- auc(actual_cisplatin_brca_least, cisplatin_brca_least_sensitive_min)
-
-cisplatin_brca_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_brca_idx]
-actual_cisplatin_brca_most <- cisplatin_test$most_sensitive[cisplatin_brca_idx]
-cisplatin_brca_most_1se_auc <- auc(actual_cisplatin_brca_most, cisplatin_brca_most_sensitive_1se)
-
-cisplatin_brca_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_brca_idx]
-actual_cisplatin_brca_least <- cisplatin_test$least_sensitive[cisplatin_brca_idx]
-cisplatin_brca_least_1se_auc <- auc(actual_cisplatin_brca_least, cisplatin_brca_least_sensitive_1se)
-
-# CESC
-cisplatin_cesc_idx <- cisplatin_test$TCGA_class == 'CESC' #4
-
-cisplatin_cesc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_cesc_idx]
-actual_cisplatin_cesc_most         <- cisplatin_test$most_sensitive[cisplatin_cesc_idx]
-cisplatin_cesc_most_min_auc        <- auc(actual_cisplatin_cesc_most, cisplatin_cesc_most_sensitive_min)
-
-cisplatin_cesc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_cesc_idx]
-actual_cisplatin_cesc_least <- cisplatin_test$least_sensitive[cisplatin_cesc_idx]
-cisplatin_cesc_least_min_auc <- auc(actual_cisplatin_cesc_least, cisplatin_cesc_least_sensitive_min)
-
-cisplatin_cesc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_cesc_idx]
-actual_cisplatin_cesc_most <- cisplatin_test$most_sensitive[cisplatin_cesc_idx]
-cisplatin_cesc_most_1se_auc <- auc(actual_cisplatin_cesc_most, cisplatin_cesc_most_sensitive_1se)
-
-cisplatin_cesc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_cesc_idx]
-actual_cisplatin_cesc_least <- cisplatin_test$least_sensitive[cisplatin_cesc_idx]
-cisplatin_cesc_least_1se_auc <- auc(actual_cisplatin_cesc_least, cisplatin_cesc_least_sensitive_1se)
-
-# COREAD
-cisplatin_coread_idx <- cisplatin_test$TCGA_class == 'COREAD' #18
-
-cisplatin_coread_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_coread_idx]
-actual_cisplatin_coread_most         <- cisplatin_test$most_sensitive[cisplatin_coread_idx]
-cisplatin_coread_most_min_auc        <- auc(actual_cisplatin_coread_most, cisplatin_coread_most_sensitive_min)
-
-cisplatin_coread_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_coread_idx]
-actual_cisplatin_coread_least <- cisplatin_test$least_sensitive[cisplatin_coread_idx]
-cisplatin_coread_least_min_auc <- auc(actual_cisplatin_coread_least, cisplatin_coread_least_sensitive_min)
-
-cisplatin_coread_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_coread_idx]
-actual_cisplatin_coread_most <- cisplatin_test$most_sensitive[cisplatin_coread_idx]
-cisplatin_coread_most_1se_auc <- auc(actual_cisplatin_coread_most, cisplatin_coread_most_sensitive_1se)
-
-cisplatin_coread_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_coread_idx]
-actual_cisplatin_coread_least <- cisplatin_test$least_sensitive[cisplatin_coread_idx]
-cisplatin_coread_least_1se_auc <- auc(actual_cisplatin_coread_least, cisplatin_coread_least_sensitive_1se)
-
-# ESCA
-cisplatin_esca_idx <- cisplatin_test$TCGA_class == 'ESCA' #13
-
-cisplatin_esca_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_esca_idx]
-actual_cisplatin_esca_most         <- cisplatin_test$most_sensitive[cisplatin_esca_idx]
-cisplatin_esca_most_min_auc        <- auc(actual_cisplatin_esca_most, cisplatin_esca_most_sensitive_min)
-
-cisplatin_esca_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_esca_idx]
-actual_cisplatin_esca_least <- cisplatin_test$least_sensitive[cisplatin_esca_idx]
-cisplatin_esca_least_min_auc <- auc(actual_cisplatin_esca_least, cisplatin_esca_least_sensitive_min)
-
-cisplatin_esca_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_esca_idx]
-actual_cisplatin_esca_most <- cisplatin_test$most_sensitive[cisplatin_esca_idx]
-cisplatin_esca_most_1se_auc <- auc(actual_cisplatin_esca_most, cisplatin_esca_most_sensitive_1se)
-
-cisplatin_esca_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_esca_idx]
-actual_cisplatin_esca_least <- cisplatin_test$least_sensitive[cisplatin_esca_idx]
-cisplatin_esca_least_1se_auc <- auc(actual_cisplatin_esca_least, cisplatin_esca_least_sensitive_1se)
-
-# HNSC
-cisplatin_hnsc_idx <- cisplatin_test$TCGA_class == 'HNSC' #19
-
-cisplatin_hnsc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_hnsc_idx]
-actual_cisplatin_hnsc_most         <- cisplatin_test$most_sensitive[cisplatin_hnsc_idx]
-cisplatin_hnsc_most_min_auc        <- auc(actual_cisplatin_hnsc_most, cisplatin_hnsc_most_sensitive_min)
-
-cisplatin_hnsc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_hnsc_idx]
-actual_cisplatin_hnsc_least <- cisplatin_test$least_sensitive[cisplatin_hnsc_idx]
-cisplatin_hnsc_least_min_auc <- auc(actual_cisplatin_hnsc_least, cisplatin_hnsc_least_sensitive_min)
-
-cisplatin_hnsc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_hnsc_idx]
-actual_cisplatin_hnsc_most <- cisplatin_test$most_sensitive[cisplatin_hnsc_idx]
-cisplatin_hnsc_most_1se_auc <- auc(actual_cisplatin_hnsc_most, cisplatin_hnsc_most_sensitive_1se)
-
-cisplatin_hnsc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_hnsc_idx]
-actual_cisplatin_hnsc_least <- cisplatin_test$least_sensitive[cisplatin_hnsc_idx]
-cisplatin_hnsc_least_1se_auc <- auc(actual_cisplatin_hnsc_least, cisplatin_hnsc_least_sensitive_1se)
-
-# KIRC
-cisplatin_kirc_idx <- cisplatin_test$TCGA_class == 'KIRC' #15
-
-cisplatin_kirc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_kirc_idx]
-actual_cisplatin_kirc_most         <- cisplatin_test$most_sensitive[cisplatin_kirc_idx]
-cisplatin_kirc_most_min_auc        <- auc(actual_cisplatin_kirc_most, cisplatin_kirc_most_sensitive_min)
-
-cisplatin_kirc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_kirc_idx]
-actual_cisplatin_kirc_least <- cisplatin_test$least_sensitive[cisplatin_kirc_idx]
-cisplatin_kirc_least_min_auc <- auc(actual_cisplatin_kirc_least, cisplatin_kirc_least_sensitive_min)
-
-cisplatin_kirc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_kirc_idx]
-actual_cisplatin_kirc_most <- cisplatin_test$most_sensitive[cisplatin_kirc_idx]
-cisplatin_kirc_most_1se_auc <- auc(actual_cisplatin_kirc_most, cisplatin_kirc_most_sensitive_1se)
-
-cisplatin_kirc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_kirc_idx]
-actual_cisplatin_kirc_least <- cisplatin_test$least_sensitive[cisplatin_kirc_idx]
-cisplatin_kirc_least_1se_auc <- auc(actual_cisplatin_kirc_least, cisplatin_kirc_least_sensitive_1se)
-
-# LIHC
-cisplatin_lihc_idx <- cisplatin_test$TCGA_class == 'LIHC' #7
-
-cisplatin_lihc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_lihc_idx]
-actual_cisplatin_lihc_most         <- cisplatin_test$most_sensitive[cisplatin_lihc_idx]
-cisplatin_lihc_most_min_auc        <- auc(actual_cisplatin_lihc_most, cisplatin_lihc_most_sensitive_min)
-
-cisplatin_lihc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_lihc_idx]
-actual_cisplatin_lihc_least <- cisplatin_test$least_sensitive[cisplatin_lihc_idx]
-cisplatin_lihc_least_min_auc <- auc(actual_cisplatin_lihc_least, cisplatin_lihc_least_sensitive_min)
-
-cisplatin_lihc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_lihc_idx]
-actual_cisplatin_lihc_most <- cisplatin_test$most_sensitive[cisplatin_lihc_idx]
-cisplatin_lihc_most_1se_auc <- auc(actual_cisplatin_lihc_most, cisplatin_lihc_most_sensitive_1se)
-
-cisplatin_lihc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_lihc_idx]
-actual_cisplatin_lihc_least <- cisplatin_test$least_sensitive[cisplatin_lihc_idx]
-cisplatin_lihc_least_1se_auc <- auc(actual_cisplatin_lihc_least, cisplatin_lihc_least_sensitive_1se)
-
-# LUAD
-cisplatin_luad_idx <- cisplatin_test$TCGA_class == 'LUAD' #26
-
-cisplatin_luad_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_luad_idx]
-actual_cisplatin_luad_most         <- cisplatin_test$most_sensitive[cisplatin_luad_idx]
-cisplatin_luad_most_min_auc        <- auc(actual_cisplatin_luad_most, cisplatin_luad_most_sensitive_min)
-
-cisplatin_luad_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_luad_idx]
-actual_cisplatin_luad_least <- cisplatin_test$least_sensitive[cisplatin_luad_idx]
-cisplatin_luad_least_min_auc <- auc(actual_cisplatin_luad_least, cisplatin_luad_least_sensitive_min)
-
-cisplatin_luad_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_luad_idx]
-actual_cisplatin_luad_most <- cisplatin_test$most_sensitive[cisplatin_luad_idx]
-cisplatin_luad_most_1se_auc <- auc(actual_cisplatin_luad_most, cisplatin_luad_most_sensitive_1se)
-
-cisplatin_luad_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_luad_idx]
-actual_cisplatin_luad_least <- cisplatin_test$least_sensitive[cisplatin_luad_idx]
-cisplatin_luad_least_1se_auc <- auc(actual_cisplatin_luad_least, cisplatin_luad_least_sensitive_1se)
-
-# LUSC
-cisplatin_lusc_idx <- cisplatin_test$TCGA_class == 'LUSC' #5
-
-cisplatin_lusc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_lusc_idx]
-actual_cisplatin_lusc_most         <- cisplatin_test$most_sensitive[cisplatin_lusc_idx]
-cisplatin_lusc_most_min_auc        <- auc(actual_cisplatin_lusc_most, cisplatin_lusc_most_sensitive_min)
-
-cisplatin_lusc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_lusc_idx]
-actual_cisplatin_lusc_least <- cisplatin_test$least_sensitive[cisplatin_lusc_idx]
-cisplatin_lusc_least_min_auc <- auc(actual_cisplatin_lusc_least, cisplatin_lusc_least_sensitive_min)
-
-cisplatin_lusc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_lusc_idx]
-actual_cisplatin_lusc_most <- cisplatin_test$most_sensitive[cisplatin_lusc_idx]
-cisplatin_lusc_most_1se_auc <- auc(actual_cisplatin_lusc_most, cisplatin_lusc_most_sensitive_1se)
-
-cisplatin_lusc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_lusc_idx]
-actual_cisplatin_lusc_least <- cisplatin_test$least_sensitive[cisplatin_lusc_idx]
-cisplatin_lusc_least_1se_auc <- auc(actual_cisplatin_lusc_least, cisplatin_lusc_least_sensitive_1se)
-
-# MB
-cisplatin_mb_idx <- cisplatin_test$TCGA_class == 'MB' #3
-
-cisplatin_mb_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_mb_idx]
-actual_cisplatin_mb_most         <- cisplatin_test$most_sensitive[cisplatin_mb_idx]
-cisplatin_mb_most_min_auc        <- auc(actual_cisplatin_mb_most, cisplatin_mb_most_sensitive_min)
-
-cisplatin_mb_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_mb_idx]
-actual_cisplatin_mb_least <- cisplatin_test$least_sensitive[cisplatin_mb_idx]
-cisplatin_mb_least_min_auc <- auc(actual_cisplatin_mb_least, cisplatin_mb_least_sensitive_min)
-
-cisplatin_mb_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_mb_idx]
-actual_cisplatin_mb_most <- cisplatin_test$most_sensitive[cisplatin_mb_idx]
-cisplatin_mb_most_1se_auc <- auc(actual_cisplatin_mb_most, cisplatin_mb_most_sensitive_1se)
-
-cisplatin_mb_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_mb_idx]
-actual_cisplatin_mb_least <- cisplatin_test$least_sensitive[cisplatin_mb_idx]
-cisplatin_mb_least_1se_auc <- auc(actual_cisplatin_mb_least, cisplatin_mb_least_sensitive_1se)
-
-# MESO
-cisplatin_meso_idx <- cisplatin_test$TCGA_class == 'MESO' #5
-
-cisplatin_meso_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_meso_idx]
-actual_cisplatin_meso_most         <- cisplatin_test$most_sensitive[cisplatin_meso_idx]
-cisplatin_meso_most_min_auc        <- auc(actual_cisplatin_meso_most, cisplatin_meso_most_sensitive_min)
-
-cisplatin_meso_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_meso_idx]
-actual_cisplatin_meso_least <- cisplatin_test$least_sensitive[cisplatin_meso_idx]
-cisplatin_meso_least_min_auc <- auc(actual_cisplatin_meso_least, cisplatin_meso_least_sensitive_min)
-
-cisplatin_meso_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_meso_idx]
-actual_cisplatin_meso_most <- cisplatin_test$most_sensitive[cisplatin_meso_idx]
-cisplatin_meso_most_1se_auc <- auc(actual_cisplatin_meso_most, cisplatin_meso_most_sensitive_1se)
-
-cisplatin_meso_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_meso_idx]
-actual_cisplatin_meso_least <- cisplatin_test$least_sensitive[cisplatin_meso_idx]
-cisplatin_meso_least_1se_auc <- auc(actual_cisplatin_meso_least, cisplatin_meso_least_sensitive_1se)
-
-# NB
-cisplatin_nb_idx <- cisplatin_test$TCGA_class == 'NB' #13
-
-cisplatin_nb_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_nb_idx]
-actual_cisplatin_nb_most         <- cisplatin_test$most_sensitive[cisplatin_nb_idx]
-cisplatin_nb_most_min_auc        <- auc(actual_cisplatin_nb_most, cisplatin_nb_most_sensitive_min)
-
-cisplatin_nb_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_nb_idx]
-actual_cisplatin_nb_least <- cisplatin_test$least_sensitive[cisplatin_nb_idx]
-cisplatin_nb_least_min_auc <- auc(actual_cisplatin_nb_least, cisplatin_nb_least_sensitive_min)
-
-cisplatin_nb_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_nb_idx]
-actual_cisplatin_nb_most <- cisplatin_test$most_sensitive[cisplatin_nb_idx]
-cisplatin_nb_most_1se_auc <- auc(actual_cisplatin_nb_most, cisplatin_nb_most_sensitive_1se)
-
-cisplatin_nb_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_nb_idx]
-actual_cisplatin_nb_least <- cisplatin_test$least_sensitive[cisplatin_nb_idx]
-cisplatin_nb_least_1se_auc <- auc(actual_cisplatin_nb_least, cisplatin_nb_least_sensitive_1se)
-
-# OV
-cisplatin_ov_idx <- cisplatin_test$TCGA_class == 'OV' #17
-
-cisplatin_ov_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_ov_idx]
-actual_cisplatin_ov_most         <- cisplatin_test$most_sensitive[cisplatin_ov_idx]
-cisplatin_ov_most_min_auc        <- auc(actual_cisplatin_ov_most, cisplatin_ov_most_sensitive_min)
-
-cisplatin_ov_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_ov_idx]
-actual_cisplatin_ov_least <- cisplatin_test$least_sensitive[cisplatin_ov_idx]
-cisplatin_ov_least_min_auc <- auc(actual_cisplatin_ov_least, cisplatin_ov_least_sensitive_min)
-
-cisplatin_ov_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_ov_idx]
-actual_cisplatin_ov_most <- cisplatin_test$most_sensitive[cisplatin_ov_idx]
-cisplatin_ov_most_1se_auc <- auc(actual_cisplatin_ov_most, cisplatin_ov_most_sensitive_1se)
-
-cisplatin_ov_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_ov_idx]
-actual_cisplatin_ov_least <- cisplatin_test$least_sensitive[cisplatin_ov_idx]
-cisplatin_ov_least_1se_auc <- auc(actual_cisplatin_ov_least, cisplatin_ov_least_sensitive_1se)
-
-# PAAD
-cisplatin_paad_idx <- cisplatin_test$TCGA_class == 'PAAD' #13
-
-cisplatin_paad_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_paad_idx]
-actual_cisplatin_paad_most         <- cisplatin_test$most_sensitive[cisplatin_paad_idx]
-cisplatin_paad_most_min_auc        <- auc(actual_cisplatin_paad_most, cisplatin_paad_most_sensitive_min)
-
-cisplatin_paad_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_paad_idx]
-actual_cisplatin_paad_least <- cisplatin_test$least_sensitive[cisplatin_paad_idx]
-cisplatin_paad_least_min_auc <- auc(actual_cisplatin_paad_least, cisplatin_paad_least_sensitive_min)
-
-cisplatin_paad_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_paad_idx]
-actual_cisplatin_paad_most <- cisplatin_test$most_sensitive[cisplatin_paad_idx]
-cisplatin_paad_most_1se_auc <- auc(actual_cisplatin_paad_most, cisplatin_paad_most_sensitive_1se)
-
-cisplatin_paad_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_paad_idx]
-actual_cisplatin_paad_least <- cisplatin_test$least_sensitive[cisplatin_paad_idx]
-cisplatin_paad_least_1se_auc <- auc(actual_cisplatin_paad_least, cisplatin_paad_least_sensitive_1se)
-
-# SCLC
-cisplatin_sclc_idx <- cisplatin_test$TCGA_class == 'SCLC' #31
-
-cisplatin_sclc_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_sclc_idx]
-actual_cisplatin_sclc_most         <- cisplatin_test$most_sensitive[cisplatin_sclc_idx]
-cisplatin_sclc_most_min_auc        <- auc(actual_cisplatin_sclc_most, cisplatin_sclc_most_sensitive_min)
-
-cisplatin_sclc_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_sclc_idx]
-actual_cisplatin_sclc_least <- cisplatin_test$least_sensitive[cisplatin_sclc_idx]
-cisplatin_sclc_least_min_auc <- auc(actual_cisplatin_sclc_least, cisplatin_sclc_least_sensitive_min)
-
-cisplatin_sclc_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_sclc_idx]
-actual_cisplatin_sclc_most <- cisplatin_test$most_sensitive[cisplatin_sclc_idx]
-cisplatin_sclc_most_1se_auc <- auc(actual_cisplatin_sclc_most, cisplatin_sclc_most_sensitive_1se)
-
-cisplatin_sclc_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_sclc_idx]
-actual_cisplatin_sclc_least <- cisplatin_test$least_sensitive[cisplatin_sclc_idx]
-cisplatin_sclc_least_1se_auc <- auc(actual_cisplatin_sclc_least, cisplatin_sclc_least_sensitive_1se)
-
-# SKCM
-cisplatin_skcm_idx <- cisplatin_test$TCGA_class == 'SKCM' #26
-
-cisplatin_skcm_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_skcm_idx]
-actual_cisplatin_skcm_most         <- cisplatin_test$most_sensitive[cisplatin_skcm_idx]
-cisplatin_skcm_most_min_auc        <- auc(actual_cisplatin_skcm_most, cisplatin_skcm_most_sensitive_min)
-
-cisplatin_skcm_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_skcm_idx]
-actual_cisplatin_skcm_least <- cisplatin_test$least_sensitive[cisplatin_skcm_idx]
-cisplatin_skcm_least_min_auc <- auc(actual_cisplatin_skcm_least, cisplatin_skcm_least_sensitive_min)
-
-cisplatin_skcm_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_skcm_idx]
-actual_cisplatin_skcm_most <- cisplatin_test$most_sensitive[cisplatin_skcm_idx]
-cisplatin_skcm_most_1se_auc <- auc(actual_cisplatin_skcm_most, cisplatin_skcm_most_sensitive_1se)
-
-cisplatin_skcm_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_skcm_idx]
-actual_cisplatin_skcm_least <- cisplatin_test$least_sensitive[cisplatin_skcm_idx]
-cisplatin_skcm_least_1se_auc <- auc(actual_cisplatin_skcm_least, cisplatin_skcm_least_sensitive_1se)
-
-# STAD
-cisplatin_stad_idx <- cisplatin_test$TCGA_class == 'STAD' #8
-
-cisplatin_stad_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_stad_idx]
-actual_cisplatin_stad_most         <- cisplatin_test$most_sensitive[cisplatin_stad_idx]
-cisplatin_stad_most_min_auc        <- auc(actual_cisplatin_stad_most, cisplatin_stad_most_sensitive_min)
-
-cisplatin_stad_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_stad_idx]
-actual_cisplatin_stad_least <- cisplatin_test$least_sensitive[cisplatin_stad_idx]
-cisplatin_stad_least_min_auc <- auc(actual_cisplatin_stad_least, cisplatin_stad_least_sensitive_min)
-
-cisplatin_stad_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_stad_idx]
-actual_cisplatin_stad_most <- cisplatin_test$most_sensitive[cisplatin_stad_idx]
-cisplatin_stad_most_1se_auc <- auc(actual_cisplatin_stad_most, cisplatin_stad_most_sensitive_1se)
-
-cisplatin_stad_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_stad_idx]
-actual_cisplatin_stad_least <- cisplatin_test$least_sensitive[cisplatin_stad_idx]
-cisplatin_stad_least_1se_auc <- auc(actual_cisplatin_stad_least, cisplatin_stad_least_sensitive_1se)
-
-# UCEC
-cisplatin_ucec_idx <- cisplatin_test$TCGA_class == 'UCEC' #4
-
-cisplatin_ucec_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_ucec_idx]
-actual_cisplatin_ucec_most         <- cisplatin_test$most_sensitive[cisplatin_ucec_idx]
-cisplatin_ucec_most_min_auc        <- auc(actual_cisplatin_ucec_most, cisplatin_ucec_most_sensitive_min)
-
-cisplatin_ucec_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_ucec_idx]
-actual_cisplatin_ucec_least <- cisplatin_test$least_sensitive[cisplatin_ucec_idx]
-cisplatin_ucec_least_min_auc <- auc(actual_cisplatin_ucec_least, cisplatin_ucec_least_sensitive_min)
-
-cisplatin_ucec_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_ucec_idx]
-actual_cisplatin_ucec_most <- cisplatin_test$most_sensitive[cisplatin_ucec_idx]
-cisplatin_ucec_most_1se_auc <- auc(actual_cisplatin_ucec_most, cisplatin_ucec_most_sensitive_1se)
-
-cisplatin_ucec_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_ucec_idx]
-actual_cisplatin_ucec_least <- cisplatin_test$least_sensitive[cisplatin_ucec_idx]
-cisplatin_ucec_least_1se_auc <- auc(actual_cisplatin_ucec_least, cisplatin_ucec_least_sensitive_1se)
-
-# UNCLASSIFIED
-cisplatin_unclassified_idx <- cisplatin_test$TCGA_class == 'UNCLASSIFIED' #52
-
-cisplatin_unclassified_most_sensitive_min  <- new_cisplatin_most_sensitive_min[cisplatin_unclassified_idx]
-actual_cisplatin_unclassified_most         <- cisplatin_test$most_sensitive[cisplatin_unclassified_idx]
-cisplatin_unclassified_most_min_auc        <- auc(actual_cisplatin_unclassified_most, cisplatin_unclassified_most_sensitive_min)
-
-cisplatin_unclassified_least_sensitive_min <- new_cisplatin_least_sensitive_min[cisplatin_unclassified_idx]
-actual_cisplatin_unclassified_least <- cisplatin_test$least_sensitive[cisplatin_unclassified_idx]
-cisplatin_unclassified_least_min_auc <- auc(actual_cisplatin_unclassified_least, cisplatin_unclassified_least_sensitive_min)
-
-cisplatin_unclassified_most_sensitive_1se <- new_cisplatin_most_sensitive_1se[cisplatin_unclassified_idx]
-actual_cisplatin_unclassified_most <- cisplatin_test$most_sensitive[cisplatin_unclassified_idx]
-cisplatin_unclassified_most_1se_auc <- auc(actual_cisplatin_unclassified_most, cisplatin_unclassified_most_sensitive_1se)
-
-cisplatin_unclassified_least_sensitive_1se <- new_cisplatin_least_sensitive_1se[cisplatin_unclassified_idx]
-actual_cisplatin_unclassified_least <- cisplatin_test$least_sensitive[cisplatin_unclassified_idx]
-cisplatin_unclassified_least_1se_auc <- auc(actual_cisplatin_unclassified_least, cisplatin_unclassified_least_sensitive_1se)
-
-# ETOPOSIDE
-etoposide_blca_idx <- etoposide_test$TCGA_class == 'BLCA' #5
-
-etoposide_blca_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_blca_idx]
-actual_etoposide_blca_most         <- etoposide_test$most_sensitive[etoposide_blca_idx]
-etoposide_blca_most_min_auc        <- auc(actual_etoposide_blca_most, etoposide_blca_most_sensitive_min)
-
-etoposide_blca_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_blca_idx]
-actual_etoposide_blca_least <- etoposide_test$least_sensitive[etoposide_blca_idx]
-etoposide_blca_least_min_auc <- auc(actual_etoposide_blca_least, etoposide_blca_least_sensitive_min)
-
-etoposide_blca_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_blca_idx]
-actual_etoposide_blca_most <- etoposide_test$most_sensitive[etoposide_blca_idx]
-etoposide_blca_most_1se_auc <- auc(actual_etoposide_blca_most, etoposide_blca_most_sensitive_1se)
-
-etoposide_blca_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_blca_idx]
-actual_etoposide_blca_least <- etoposide_test$least_sensitive[etoposide_blca_idx]
-etoposide_blca_least_1se_auc <- auc(actual_etoposide_blca_least, etoposide_blca_least_sensitive_1se)
-
-# BRCA
-etoposide_brca_idx <- etoposide_test$TCGA_class == 'BRCA' #28
-
-etoposide_brca_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_brca_idx]
-actual_etoposide_brca_most         <- etoposide_test$most_sensitive[etoposide_brca_idx]
-etoposide_brca_most_min_auc        <- auc(actual_etoposide_brca_most, etoposide_brca_most_sensitive_min)
-
-etoposide_brca_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_brca_idx]
-actual_etoposide_brca_least <- etoposide_test$least_sensitive[etoposide_brca_idx]
-etoposide_brca_least_min_auc <- auc(actual_etoposide_brca_least, etoposide_brca_least_sensitive_min)
-
-etoposide_brca_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_brca_idx]
-actual_etoposide_brca_most <- etoposide_test$most_sensitive[etoposide_brca_idx]
-etoposide_brca_most_1se_auc <- auc(actual_etoposide_brca_most, etoposide_brca_most_sensitive_1se)
-
-etoposide_brca_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_brca_idx]
-actual_etoposide_brca_least <- etoposide_test$least_sensitive[etoposide_brca_idx]
-etoposide_brca_least_1se_auc <- auc(actual_etoposide_brca_least, etoposide_brca_least_sensitive_1se)
-
-# CESC
-etoposide_cesc_idx <- etoposide_test$TCGA_class == 'CESC' #4
-
-etoposide_cesc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_cesc_idx]
-actual_etoposide_cesc_most         <- etoposide_test$most_sensitive[etoposide_cesc_idx]
-etoposide_cesc_most_min_auc        <- auc(actual_etoposide_cesc_most, etoposide_cesc_most_sensitive_min)
-
-etoposide_cesc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_cesc_idx]
-actual_etoposide_cesc_least <- etoposide_test$least_sensitive[etoposide_cesc_idx]
-etoposide_cesc_least_min_auc <- auc(actual_etoposide_cesc_least, etoposide_cesc_least_sensitive_min)
-
-etoposide_cesc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_cesc_idx]
-actual_etoposide_cesc_most <- etoposide_test$most_sensitive[etoposide_cesc_idx]
-etoposide_cesc_most_1se_auc <- auc(actual_etoposide_cesc_most, etoposide_cesc_most_sensitive_1se)
-
-etoposide_cesc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_cesc_idx]
-actual_etoposide_cesc_least <- etoposide_test$least_sensitive[etoposide_cesc_idx]
-etoposide_cesc_least_1se_auc <- auc(actual_etoposide_cesc_least, etoposide_cesc_least_sensitive_1se)
-
-# COREAD
-etoposide_coread_idx <- etoposide_test$TCGA_class == 'COREAD' #18
-
-etoposide_coread_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_coread_idx]
-actual_etoposide_coread_most         <- etoposide_test$most_sensitive[etoposide_coread_idx]
-etoposide_coread_most_min_auc        <- auc(actual_etoposide_coread_most, etoposide_coread_most_sensitive_min)
-
-etoposide_coread_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_coread_idx]
-actual_etoposide_coread_least <- etoposide_test$least_sensitive[etoposide_coread_idx]
-etoposide_coread_least_min_auc <- auc(actual_etoposide_coread_least, etoposide_coread_least_sensitive_min)
-
-etoposide_coread_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_coread_idx]
-actual_etoposide_coread_most <- etoposide_test$most_sensitive[etoposide_coread_idx]
-etoposide_coread_most_1se_auc <- auc(actual_etoposide_coread_most, etoposide_coread_most_sensitive_1se)
-
-etoposide_coread_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_coread_idx]
-actual_etoposide_coread_least <- etoposide_test$least_sensitive[etoposide_coread_idx]
-etoposide_coread_least_1se_auc <- auc(actual_etoposide_coread_least, etoposide_coread_least_sensitive_1se)
-
-# ESCA
-etoposide_esca_idx <- etoposide_test$TCGA_class == 'ESCA' #13
-
-etoposide_esca_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_esca_idx]
-actual_etoposide_esca_most         <- etoposide_test$most_sensitive[etoposide_esca_idx]
-etoposide_esca_most_min_auc        <- auc(actual_etoposide_esca_most, etoposide_esca_most_sensitive_min)
-
-etoposide_esca_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_esca_idx]
-actual_etoposide_esca_least <- etoposide_test$least_sensitive[etoposide_esca_idx]
-etoposide_esca_least_min_auc <- auc(actual_etoposide_esca_least, etoposide_esca_least_sensitive_min)
-
-etoposide_esca_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_esca_idx]
-actual_etoposide_esca_most <- etoposide_test$most_sensitive[etoposide_esca_idx]
-etoposide_esca_most_1se_auc <- auc(actual_etoposide_esca_most, etoposide_esca_most_sensitive_1se)
-
-etoposide_esca_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_esca_idx]
-actual_etoposide_esca_least <- etoposide_test$least_sensitive[etoposide_esca_idx]
-etoposide_esca_least_1se_auc <- auc(actual_etoposide_esca_least, etoposide_esca_least_sensitive_1se)
-
-# HNSC
-etoposide_hnsc_idx <- etoposide_test$TCGA_class == 'HNSC' #19
-
-etoposide_hnsc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_hnsc_idx]
-actual_etoposide_hnsc_most         <- etoposide_test$most_sensitive[etoposide_hnsc_idx]
-etoposide_hnsc_most_min_auc        <- auc(actual_etoposide_hnsc_most, etoposide_hnsc_most_sensitive_min)
-
-etoposide_hnsc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_hnsc_idx]
-actual_etoposide_hnsc_least <- etoposide_test$least_sensitive[etoposide_hnsc_idx]
-etoposide_hnsc_least_min_auc <- auc(actual_etoposide_hnsc_least, etoposide_hnsc_least_sensitive_min)
-
-etoposide_hnsc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_hnsc_idx]
-actual_etoposide_hnsc_most <- etoposide_test$most_sensitive[etoposide_hnsc_idx]
-etoposide_hnsc_most_1se_auc <- auc(actual_etoposide_hnsc_most, etoposide_hnsc_most_sensitive_1se)
-
-etoposide_hnsc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_hnsc_idx]
-actual_etoposide_hnsc_least <- etoposide_test$least_sensitive[etoposide_hnsc_idx]
-etoposide_hnsc_least_1se_auc <- auc(actual_etoposide_hnsc_least, etoposide_hnsc_least_sensitive_1se)
-
-# KIRC
-etoposide_kirc_idx <- etoposide_test$TCGA_class == 'KIRC' #15
-
-etoposide_kirc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_kirc_idx]
-actual_etoposide_kirc_most         <- etoposide_test$most_sensitive[etoposide_kirc_idx]
-etoposide_kirc_most_min_auc        <- auc(actual_etoposide_kirc_most, etoposide_kirc_most_sensitive_min)
-
-etoposide_kirc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_kirc_idx]
-actual_etoposide_kirc_least <- etoposide_test$least_sensitive[etoposide_kirc_idx]
-etoposide_kirc_least_min_auc <- auc(actual_etoposide_kirc_least, etoposide_kirc_least_sensitive_min)
-
-etoposide_kirc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_kirc_idx]
-actual_etoposide_kirc_most <- etoposide_test$most_sensitive[etoposide_kirc_idx]
-etoposide_kirc_most_1se_auc <- auc(actual_etoposide_kirc_most, etoposide_kirc_most_sensitive_1se)
-
-etoposide_kirc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_kirc_idx]
-actual_etoposide_kirc_least <- etoposide_test$least_sensitive[etoposide_kirc_idx]
-etoposide_kirc_least_1se_auc <- auc(actual_etoposide_kirc_least, etoposide_kirc_least_sensitive_1se)
-
-# LIHC
-etoposide_lihc_idx <- etoposide_test$TCGA_class == 'LIHC' #7
-
-etoposide_lihc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_lihc_idx]
-actual_etoposide_lihc_most         <- etoposide_test$most_sensitive[etoposide_lihc_idx]
-etoposide_lihc_most_min_auc        <- auc(actual_etoposide_lihc_most, etoposide_lihc_most_sensitive_min)
-
-etoposide_lihc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_lihc_idx]
-actual_etoposide_lihc_least <- etoposide_test$least_sensitive[etoposide_lihc_idx]
-etoposide_lihc_least_min_auc <- auc(actual_etoposide_lihc_least, etoposide_lihc_least_sensitive_min)
-
-etoposide_lihc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_lihc_idx]
-actual_etoposide_lihc_most <- etoposide_test$most_sensitive[etoposide_lihc_idx]
-etoposide_lihc_most_1se_auc <- auc(actual_etoposide_lihc_most, etoposide_lihc_most_sensitive_1se)
-
-etoposide_lihc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_lihc_idx]
-actual_etoposide_lihc_least <- etoposide_test$least_sensitive[etoposide_lihc_idx]
-etoposide_lihc_least_1se_auc <- auc(actual_etoposide_lihc_least, etoposide_lihc_least_sensitive_1se)
-
-# LUAD
-etoposide_luad_idx <- etoposide_test$TCGA_class == 'LUAD' #26
-
-etoposide_luad_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_luad_idx]
-actual_etoposide_luad_most         <- etoposide_test$most_sensitive[etoposide_luad_idx]
-etoposide_luad_most_min_auc        <- auc(actual_etoposide_luad_most, etoposide_luad_most_sensitive_min)
-
-etoposide_luad_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_luad_idx]
-actual_etoposide_luad_least <- etoposide_test$least_sensitive[etoposide_luad_idx]
-etoposide_luad_least_min_auc <- auc(actual_etoposide_luad_least, etoposide_luad_least_sensitive_min)
-
-etoposide_luad_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_luad_idx]
-actual_etoposide_luad_most <- etoposide_test$most_sensitive[etoposide_luad_idx]
-etoposide_luad_most_1se_auc <- auc(actual_etoposide_luad_most, etoposide_luad_most_sensitive_1se)
-
-etoposide_luad_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_luad_idx]
-actual_etoposide_luad_least <- etoposide_test$least_sensitive[etoposide_luad_idx]
-etoposide_luad_least_1se_auc <- auc(actual_etoposide_luad_least, etoposide_luad_least_sensitive_1se)
-
-# LUSC
-etoposide_lusc_idx <- etoposide_test$TCGA_class == 'LUSC' #5
-
-etoposide_lusc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_lusc_idx]
-actual_etoposide_lusc_most         <- etoposide_test$most_sensitive[etoposide_lusc_idx]
-etoposide_lusc_most_min_auc        <- auc(actual_etoposide_lusc_most, etoposide_lusc_most_sensitive_min)
-
-etoposide_lusc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_lusc_idx]
-actual_etoposide_lusc_least <- etoposide_test$least_sensitive[etoposide_lusc_idx]
-etoposide_lusc_least_min_auc <- auc(actual_etoposide_lusc_least, etoposide_lusc_least_sensitive_min)
-
-etoposide_lusc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_lusc_idx]
-actual_etoposide_lusc_most <- etoposide_test$most_sensitive[etoposide_lusc_idx]
-etoposide_lusc_most_1se_auc <- auc(actual_etoposide_lusc_most, etoposide_lusc_most_sensitive_1se)
-
-etoposide_lusc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_lusc_idx]
-actual_etoposide_lusc_least <- etoposide_test$least_sensitive[etoposide_lusc_idx]
-etoposide_lusc_least_1se_auc <- auc(actual_etoposide_lusc_least, etoposide_lusc_least_sensitive_1se)
-
-# MB
-etoposide_mb_idx <- etoposide_test$TCGA_class == 'MB' #3
-
-etoposide_mb_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_mb_idx]
-actual_etoposide_mb_most         <- etoposide_test$most_sensitive[etoposide_mb_idx]
-etoposide_mb_most_min_auc        <- auc(actual_etoposide_mb_most, etoposide_mb_most_sensitive_min)
-
-etoposide_mb_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_mb_idx]
-actual_etoposide_mb_least <- etoposide_test$least_sensitive[etoposide_mb_idx]
-etoposide_mb_least_min_auc <- auc(actual_etoposide_mb_least, etoposide_mb_least_sensitive_min)
-
-etoposide_mb_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_mb_idx]
-actual_etoposide_mb_most <- etoposide_test$most_sensitive[etoposide_mb_idx]
-etoposide_mb_most_1se_auc <- auc(actual_etoposide_mb_most, etoposide_mb_most_sensitive_1se)
-
-etoposide_mb_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_mb_idx]
-actual_etoposide_mb_least <- etoposide_test$least_sensitive[etoposide_mb_idx]
-etoposide_mb_least_1se_auc <- auc(actual_etoposide_mb_least, etoposide_mb_least_sensitive_1se)
-
-# MESO
-etoposide_meso_idx <- etoposide_test$TCGA_class == 'MESO' #5
-
-etoposide_meso_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_meso_idx]
-actual_etoposide_meso_most         <- etoposide_test$most_sensitive[etoposide_meso_idx]
-etoposide_meso_most_min_auc        <- auc(actual_etoposide_meso_most, etoposide_meso_most_sensitive_min)
-
-etoposide_meso_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_meso_idx]
-actual_etoposide_meso_least <- etoposide_test$least_sensitive[etoposide_meso_idx]
-etoposide_meso_least_min_auc <- auc(actual_etoposide_meso_least, etoposide_meso_least_sensitive_min)
-
-etoposide_meso_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_meso_idx]
-actual_etoposide_meso_most <- etoposide_test$most_sensitive[etoposide_meso_idx]
-etoposide_meso_most_1se_auc <- auc(actual_etoposide_meso_most, etoposide_meso_most_sensitive_1se)
-
-etoposide_meso_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_meso_idx]
-actual_etoposide_meso_least <- etoposide_test$least_sensitive[etoposide_meso_idx]
-etoposide_meso_least_1se_auc <- auc(actual_etoposide_meso_least, etoposide_meso_least_sensitive_1se)
-
-# NB
-etoposide_nb_idx <- etoposide_test$TCGA_class == 'NB' #13
-
-etoposide_nb_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_nb_idx]
-actual_etoposide_nb_most         <- etoposide_test$most_sensitive[etoposide_nb_idx]
-etoposide_nb_most_min_auc        <- auc(actual_etoposide_nb_most, etoposide_nb_most_sensitive_min)
-
-etoposide_nb_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_nb_idx]
-actual_etoposide_nb_least <- etoposide_test$least_sensitive[etoposide_nb_idx]
-etoposide_nb_least_min_auc <- auc(actual_etoposide_nb_least, etoposide_nb_least_sensitive_min)
-
-etoposide_nb_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_nb_idx]
-actual_etoposide_nb_most <- etoposide_test$most_sensitive[etoposide_nb_idx]
-etoposide_nb_most_1se_auc <- auc(actual_etoposide_nb_most, etoposide_nb_most_sensitive_1se)
-
-etoposide_nb_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_nb_idx]
-actual_etoposide_nb_least <- etoposide_test$least_sensitive[etoposide_nb_idx]
-etoposide_nb_least_1se_auc <- auc(actual_etoposide_nb_least, etoposide_nb_least_sensitive_1se)
-
-# OV
-etoposide_ov_idx <- etoposide_test$TCGA_class == 'OV' #17
-
-etoposide_ov_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_ov_idx]
-actual_etoposide_ov_most         <- etoposide_test$most_sensitive[etoposide_ov_idx]
-etoposide_ov_most_min_auc        <- auc(actual_etoposide_ov_most, etoposide_ov_most_sensitive_min)
-
-etoposide_ov_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_ov_idx]
-actual_etoposide_ov_least <- etoposide_test$least_sensitive[etoposide_ov_idx]
-etoposide_ov_least_min_auc <- auc(actual_etoposide_ov_least, etoposide_ov_least_sensitive_min)
-
-etoposide_ov_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_ov_idx]
-actual_etoposide_ov_most <- etoposide_test$most_sensitive[etoposide_ov_idx]
-etoposide_ov_most_1se_auc <- auc(actual_etoposide_ov_most, etoposide_ov_most_sensitive_1se)
-
-etoposide_ov_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_ov_idx]
-actual_etoposide_ov_least <- etoposide_test$least_sensitive[etoposide_ov_idx]
-etoposide_ov_least_1se_auc <- auc(actual_etoposide_ov_least, etoposide_ov_least_sensitive_1se)
-
-# PAAD
-etoposide_paad_idx <- etoposide_test$TCGA_class == 'PAAD' #13
-
-etoposide_paad_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_paad_idx]
-actual_etoposide_paad_most         <- etoposide_test$most_sensitive[etoposide_paad_idx]
-etoposide_paad_most_min_auc        <- auc(actual_etoposide_paad_most, etoposide_paad_most_sensitive_min)
-
-etoposide_paad_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_paad_idx]
-actual_etoposide_paad_least <- etoposide_test$least_sensitive[etoposide_paad_idx]
-etoposide_paad_least_min_auc <- auc(actual_etoposide_paad_least, etoposide_paad_least_sensitive_min)
-
-etoposide_paad_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_paad_idx]
-actual_etoposide_paad_most <- etoposide_test$most_sensitive[etoposide_paad_idx]
-etoposide_paad_most_1se_auc <- auc(actual_etoposide_paad_most, etoposide_paad_most_sensitive_1se)
-
-etoposide_paad_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_paad_idx]
-actual_etoposide_paad_least <- etoposide_test$least_sensitive[etoposide_paad_idx]
-etoposide_paad_least_1se_auc <- auc(actual_etoposide_paad_least, etoposide_paad_least_sensitive_1se)
-
-# SCLC
-etoposide_sclc_idx <- etoposide_test$TCGA_class == 'SCLC' #31
-
-etoposide_sclc_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_sclc_idx]
-actual_etoposide_sclc_most         <- etoposide_test$most_sensitive[etoposide_sclc_idx]
-etoposide_sclc_most_min_auc        <- auc(actual_etoposide_sclc_most, etoposide_sclc_most_sensitive_min)
-
-etoposide_sclc_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_sclc_idx]
-actual_etoposide_sclc_least <- etoposide_test$least_sensitive[etoposide_sclc_idx]
-etoposide_sclc_least_min_auc <- auc(actual_etoposide_sclc_least, etoposide_sclc_least_sensitive_min)
-
-etoposide_sclc_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_sclc_idx]
-actual_etoposide_sclc_most <- etoposide_test$most_sensitive[etoposide_sclc_idx]
-etoposide_sclc_most_1se_auc <- auc(actual_etoposide_sclc_most, etoposide_sclc_most_sensitive_1se)
-
-etoposide_sclc_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_sclc_idx]
-actual_etoposide_sclc_least <- etoposide_test$least_sensitive[etoposide_sclc_idx]
-etoposide_sclc_least_1se_auc <- auc(actual_etoposide_sclc_least, etoposide_sclc_least_sensitive_1se)
-
-# SKCM
-etoposide_skcm_idx <- etoposide_test$TCGA_class == 'SKCM' #26
-
-etoposide_skcm_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_skcm_idx]
-actual_etoposide_skcm_most         <- etoposide_test$most_sensitive[etoposide_skcm_idx]
-etoposide_skcm_most_min_auc        <- auc(actual_etoposide_skcm_most, etoposide_skcm_most_sensitive_min)
-
-etoposide_skcm_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_skcm_idx]
-actual_etoposide_skcm_least <- etoposide_test$least_sensitive[etoposide_skcm_idx]
-etoposide_skcm_least_min_auc <- auc(actual_etoposide_skcm_least, etoposide_skcm_least_sensitive_min)
-
-etoposide_skcm_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_skcm_idx]
-actual_etoposide_skcm_most <- etoposide_test$most_sensitive[etoposide_skcm_idx]
-etoposide_skcm_most_1se_auc <- auc(actual_etoposide_skcm_most, etoposide_skcm_most_sensitive_1se)
-
-etoposide_skcm_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_skcm_idx]
-actual_etoposide_skcm_least <- etoposide_test$least_sensitive[etoposide_skcm_idx]
-etoposide_skcm_least_1se_auc <- auc(actual_etoposide_skcm_least, etoposide_skcm_least_sensitive_1se)
-
-# STAD
-etoposide_stad_idx <- etoposide_test$TCGA_class == 'STAD' #8
-
-etoposide_stad_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_stad_idx]
-actual_etoposide_stad_most         <- etoposide_test$most_sensitive[etoposide_stad_idx]
-etoposide_stad_most_min_auc        <- auc(actual_etoposide_stad_most, etoposide_stad_most_sensitive_min)
-
-etoposide_stad_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_stad_idx]
-actual_etoposide_stad_least <- etoposide_test$least_sensitive[etoposide_stad_idx]
-etoposide_stad_least_min_auc <- auc(actual_etoposide_stad_least, etoposide_stad_least_sensitive_min)
-
-etoposide_stad_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_stad_idx]
-actual_etoposide_stad_most <- etoposide_test$most_sensitive[etoposide_stad_idx]
-etoposide_stad_most_1se_auc <- auc(actual_etoposide_stad_most, etoposide_stad_most_sensitive_1se)
-
-etoposide_stad_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_stad_idx]
-actual_etoposide_stad_least <- etoposide_test$least_sensitive[etoposide_stad_idx]
-etoposide_stad_least_1se_auc <- auc(actual_etoposide_stad_least, etoposide_stad_least_sensitive_1se)
-
-# UCEC
-etoposide_ucec_idx <- etoposide_test$TCGA_class == 'UCEC' #4
-
-etoposide_ucec_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_ucec_idx]
-actual_etoposide_ucec_most         <- etoposide_test$most_sensitive[etoposide_ucec_idx]
-etoposide_ucec_most_min_auc        <- auc(actual_etoposide_ucec_most, etoposide_ucec_most_sensitive_min)
-
-etoposide_ucec_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_ucec_idx]
-actual_etoposide_ucec_least <- etoposide_test$least_sensitive[etoposide_ucec_idx]
-etoposide_ucec_least_min_auc <- auc(actual_etoposide_ucec_least, etoposide_ucec_least_sensitive_min)
-
-etoposide_ucec_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_ucec_idx]
-actual_etoposide_ucec_most <- etoposide_test$most_sensitive[etoposide_ucec_idx]
-etoposide_ucec_most_1se_auc <- auc(actual_etoposide_ucec_most, etoposide_ucec_most_sensitive_1se)
-
-etoposide_ucec_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_ucec_idx]
-actual_etoposide_ucec_least <- etoposide_test$least_sensitive[etoposide_ucec_idx]
-etoposide_ucec_least_1se_auc <- auc(actual_etoposide_ucec_least, etoposide_ucec_least_sensitive_1se)
-
-# UNCLASSIFIED
-etoposide_unclassified_idx <- etoposide_test$TCGA_class == 'UNCLASSIFIED' #52
-
-etoposide_unclassified_most_sensitive_min  <- new_etoposide_most_sensitive_min[etoposide_unclassified_idx]
-actual_etoposide_unclassified_most         <- etoposide_test$most_sensitive[etoposide_unclassified_idx]
-etoposide_unclassified_most_min_auc        <- auc(actual_etoposide_unclassified_most, etoposide_unclassified_most_sensitive_min)
-
-etoposide_unclassified_least_sensitive_min <- new_etoposide_least_sensitive_min[etoposide_unclassified_idx]
-actual_etoposide_unclassified_least <- etoposide_test$least_sensitive[etoposide_unclassified_idx]
-etoposide_unclassified_least_min_auc <- auc(actual_etoposide_unclassified_least, etoposide_unclassified_least_sensitive_min)
-
-etoposide_unclassified_most_sensitive_1se <- new_etoposide_most_sensitive_1se[etoposide_unclassified_idx]
-actual_etoposide_unclassified_most <- etoposide_test$most_sensitive[etoposide_unclassified_idx]
-etoposide_unclassified_most_1se_auc <- auc(actual_etoposide_unclassified_most, etoposide_unclassified_most_sensitive_1se)
-
-etoposide_unclassified_least_sensitive_1se <- new_etoposide_least_sensitive_1se[etoposide_unclassified_idx]
-actual_etoposide_unclassified_least <- etoposide_test$least_sensitive[etoposide_unclassified_idx]
-etoposide_unclassified_least_1se_auc <- auc(actual_etoposide_unclassified_least, etoposide_unclassified_least_sensitive_1se)
-
-# GEMICTABINE
-gemcitabine_blca_idx <- gemcitabine_test$TCGA_class == 'BLCA' #5
-
-gemcitabine_blca_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_blca_idx]
-actual_gemcitabine_blca_most         <- gemcitabine_test$most_sensitive[gemcitabine_blca_idx]
-gemcitabine_blca_most_min_auc        <- auc(actual_gemcitabine_blca_most, gemcitabine_blca_most_sensitive_min)
-
-gemcitabine_blca_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_blca_idx]
-actual_gemcitabine_blca_least <- gemcitabine_test$least_sensitive[gemcitabine_blca_idx]
-gemcitabine_blca_least_min_auc <- auc(actual_gemcitabine_blca_least, gemcitabine_blca_least_sensitive_min)
-
-gemcitabine_blca_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_blca_idx]
-actual_gemcitabine_blca_most <- gemcitabine_test$most_sensitive[gemcitabine_blca_idx]
-gemcitabine_blca_most_1se_auc <- auc(actual_gemcitabine_blca_most, gemcitabine_blca_most_sensitive_1se)
-
-gemcitabine_blca_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_blca_idx]
-actual_gemcitabine_blca_least <- gemcitabine_test$least_sensitive[gemcitabine_blca_idx]
-gemcitabine_blca_least_1se_auc <- auc(actual_gemcitabine_blca_least, gemcitabine_blca_least_sensitive_1se)
-
-# BRCA
-gemcitabine_brca_idx <- gemcitabine_test$TCGA_class == 'BRCA' #28
-
-gemcitabine_brca_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_brca_idx]
-actual_gemcitabine_brca_most         <- gemcitabine_test$most_sensitive[gemcitabine_brca_idx]
-gemcitabine_brca_most_min_auc        <- auc(actual_gemcitabine_brca_most, gemcitabine_brca_most_sensitive_min)
-
-gemcitabine_brca_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_brca_idx]
-actual_gemcitabine_brca_least <- gemcitabine_test$least_sensitive[gemcitabine_brca_idx]
-gemcitabine_brca_least_min_auc <- auc(actual_gemcitabine_brca_least, gemcitabine_brca_least_sensitive_min)
-
-gemcitabine_brca_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_brca_idx]
-actual_gemcitabine_brca_most <- gemcitabine_test$most_sensitive[gemcitabine_brca_idx]
-gemcitabine_brca_most_1se_auc <- auc(actual_gemcitabine_brca_most, gemcitabine_brca_most_sensitive_1se)
-
-gemcitabine_brca_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_brca_idx]
-actual_gemcitabine_brca_least <- gemcitabine_test$least_sensitive[gemcitabine_brca_idx]
-gemcitabine_brca_least_1se_auc <- auc(actual_gemcitabine_brca_least, gemcitabine_brca_least_sensitive_1se)
-
-# CESC
-gemcitabine_cesc_idx <- gemcitabine_test$TCGA_class == 'CESC' #4
-
-gemcitabine_cesc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_cesc_idx]
-actual_gemcitabine_cesc_most         <- gemcitabine_test$most_sensitive[gemcitabine_cesc_idx]
-gemcitabine_cesc_most_min_auc        <- auc(actual_gemcitabine_cesc_most, gemcitabine_cesc_most_sensitive_min)
-
-gemcitabine_cesc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_cesc_idx]
-actual_gemcitabine_cesc_least <- gemcitabine_test$least_sensitive[gemcitabine_cesc_idx]
-gemcitabine_cesc_least_min_auc <- auc(actual_gemcitabine_cesc_least, gemcitabine_cesc_least_sensitive_min)
-
-gemcitabine_cesc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_cesc_idx]
-actual_gemcitabine_cesc_most <- gemcitabine_test$most_sensitive[gemcitabine_cesc_idx]
-gemcitabine_cesc_most_1se_auc <- auc(actual_gemcitabine_cesc_most, gemcitabine_cesc_most_sensitive_1se)
-
-gemcitabine_cesc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_cesc_idx]
-actual_gemcitabine_cesc_least <- gemcitabine_test$least_sensitive[gemcitabine_cesc_idx]
-gemcitabine_cesc_least_1se_auc <- auc(actual_gemcitabine_cesc_least, gemcitabine_cesc_least_sensitive_1se)
-
-# COREAD
-gemcitabine_coread_idx <- gemcitabine_test$TCGA_class == 'COREAD' #18
-
-gemcitabine_coread_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_coread_idx]
-actual_gemcitabine_coread_most         <- gemcitabine_test$most_sensitive[gemcitabine_coread_idx]
-gemcitabine_coread_most_min_auc        <- auc(actual_gemcitabine_coread_most, gemcitabine_coread_most_sensitive_min)
-
-gemcitabine_coread_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_coread_idx]
-actual_gemcitabine_coread_least <- gemcitabine_test$least_sensitive[gemcitabine_coread_idx]
-gemcitabine_coread_least_min_auc <- auc(actual_gemcitabine_coread_least, gemcitabine_coread_least_sensitive_min)
-
-gemcitabine_coread_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_coread_idx]
-actual_gemcitabine_coread_most <- gemcitabine_test$most_sensitive[gemcitabine_coread_idx]
-gemcitabine_coread_most_1se_auc <- auc(actual_gemcitabine_coread_most, gemcitabine_coread_most_sensitive_1se)
-
-gemcitabine_coread_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_coread_idx]
-actual_gemcitabine_coread_least <- gemcitabine_test$least_sensitive[gemcitabine_coread_idx]
-gemcitabine_coread_least_1se_auc <- auc(actual_gemcitabine_coread_least, gemcitabine_coread_least_sensitive_1se)
-
-# ESCA
-gemcitabine_esca_idx <- gemcitabine_test$TCGA_class == 'ESCA' #13
-
-gemcitabine_esca_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_esca_idx]
-actual_gemcitabine_esca_most         <- gemcitabine_test$most_sensitive[gemcitabine_esca_idx]
-gemcitabine_esca_most_min_auc        <- auc(actual_gemcitabine_esca_most, gemcitabine_esca_most_sensitive_min)
-
-gemcitabine_esca_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_esca_idx]
-actual_gemcitabine_esca_least <- gemcitabine_test$least_sensitive[gemcitabine_esca_idx]
-gemcitabine_esca_least_min_auc <- auc(actual_gemcitabine_esca_least, gemcitabine_esca_least_sensitive_min)
-
-gemcitabine_esca_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_esca_idx]
-actual_gemcitabine_esca_most <- gemcitabine_test$most_sensitive[gemcitabine_esca_idx]
-gemcitabine_esca_most_1se_auc <- auc(actual_gemcitabine_esca_most, gemcitabine_esca_most_sensitive_1se)
-
-gemcitabine_esca_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_esca_idx]
-actual_gemcitabine_esca_least <- gemcitabine_test$least_sensitive[gemcitabine_esca_idx]
-gemcitabine_esca_least_1se_auc <- auc(actual_gemcitabine_esca_least, gemcitabine_esca_least_sensitive_1se)
-
-# HNSC
-gemcitabine_hnsc_idx <- gemcitabine_test$TCGA_class == 'HNSC' #19
-
-gemcitabine_hnsc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_hnsc_idx]
-actual_gemcitabine_hnsc_most         <- gemcitabine_test$most_sensitive[gemcitabine_hnsc_idx]
-gemcitabine_hnsc_most_min_auc        <- auc(actual_gemcitabine_hnsc_most, gemcitabine_hnsc_most_sensitive_min)
-
-gemcitabine_hnsc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_hnsc_idx]
-actual_gemcitabine_hnsc_least <- gemcitabine_test$least_sensitive[gemcitabine_hnsc_idx]
-gemcitabine_hnsc_least_min_auc <- auc(actual_gemcitabine_hnsc_least, gemcitabine_hnsc_least_sensitive_min)
-
-gemcitabine_hnsc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_hnsc_idx]
-actual_gemcitabine_hnsc_most <- gemcitabine_test$most_sensitive[gemcitabine_hnsc_idx]
-gemcitabine_hnsc_most_1se_auc <- auc(actual_gemcitabine_hnsc_most, gemcitabine_hnsc_most_sensitive_1se)
-
-gemcitabine_hnsc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_hnsc_idx]
-actual_gemcitabine_hnsc_least <- gemcitabine_test$least_sensitive[gemcitabine_hnsc_idx]
-gemcitabine_hnsc_least_1se_auc <- auc(actual_gemcitabine_hnsc_least, gemcitabine_hnsc_least_sensitive_1se)
-
-# KIRC
-gemcitabine_kirc_idx <- gemcitabine_test$TCGA_class == 'KIRC' #15
-
-gemcitabine_kirc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_kirc_idx]
-actual_gemcitabine_kirc_most         <- gemcitabine_test$most_sensitive[gemcitabine_kirc_idx]
-gemcitabine_kirc_most_min_auc        <- auc(actual_gemcitabine_kirc_most, gemcitabine_kirc_most_sensitive_min)
-
-gemcitabine_kirc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_kirc_idx]
-actual_gemcitabine_kirc_least <- gemcitabine_test$least_sensitive[gemcitabine_kirc_idx]
-gemcitabine_kirc_least_min_auc <- auc(actual_gemcitabine_kirc_least, gemcitabine_kirc_least_sensitive_min)
-
-gemcitabine_kirc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_kirc_idx]
-actual_gemcitabine_kirc_most <- gemcitabine_test$most_sensitive[gemcitabine_kirc_idx]
-gemcitabine_kirc_most_1se_auc <- auc(actual_gemcitabine_kirc_most, gemcitabine_kirc_most_sensitive_1se)
-
-gemcitabine_kirc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_kirc_idx]
-actual_gemcitabine_kirc_least <- gemcitabine_test$least_sensitive[gemcitabine_kirc_idx]
-gemcitabine_kirc_least_1se_auc <- auc(actual_gemcitabine_kirc_least, gemcitabine_kirc_least_sensitive_1se)
-
-# LIHC
-gemcitabine_lihc_idx <- gemcitabine_test$TCGA_class == 'LIHC' #7
-
-gemcitabine_lihc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_lihc_idx]
-actual_gemcitabine_lihc_most         <- gemcitabine_test$most_sensitive[gemcitabine_lihc_idx]
-gemcitabine_lihc_most_min_auc        <- auc(actual_gemcitabine_lihc_most, gemcitabine_lihc_most_sensitive_min)
-
-gemcitabine_lihc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_lihc_idx]
-actual_gemcitabine_lihc_least <- gemcitabine_test$least_sensitive[gemcitabine_lihc_idx]
-gemcitabine_lihc_least_min_auc <- auc(actual_gemcitabine_lihc_least, gemcitabine_lihc_least_sensitive_min)
-
-gemcitabine_lihc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_lihc_idx]
-actual_gemcitabine_lihc_most <- gemcitabine_test$most_sensitive[gemcitabine_lihc_idx]
-gemcitabine_lihc_most_1se_auc <- auc(actual_gemcitabine_lihc_most, gemcitabine_lihc_most_sensitive_1se)
-
-gemcitabine_lihc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_lihc_idx]
-actual_gemcitabine_lihc_least <- gemcitabine_test$least_sensitive[gemcitabine_lihc_idx]
-gemcitabine_lihc_least_1se_auc <- auc(actual_gemcitabine_lihc_least, gemcitabine_lihc_least_sensitive_1se)
-
-# LUAD
-gemcitabine_luad_idx <- gemcitabine_test$TCGA_class == 'LUAD' #26
-
-gemcitabine_luad_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_luad_idx]
-actual_gemcitabine_luad_most         <- gemcitabine_test$most_sensitive[gemcitabine_luad_idx]
-gemcitabine_luad_most_min_auc        <- auc(actual_gemcitabine_luad_most, gemcitabine_luad_most_sensitive_min)
-
-gemcitabine_luad_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_luad_idx]
-actual_gemcitabine_luad_least <- gemcitabine_test$least_sensitive[gemcitabine_luad_idx]
-gemcitabine_luad_least_min_auc <- auc(actual_gemcitabine_luad_least, gemcitabine_luad_least_sensitive_min)
-
-gemcitabine_luad_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_luad_idx]
-actual_gemcitabine_luad_most <- gemcitabine_test$most_sensitive[gemcitabine_luad_idx]
-gemcitabine_luad_most_1se_auc <- auc(actual_gemcitabine_luad_most, gemcitabine_luad_most_sensitive_1se)
-
-gemcitabine_luad_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_luad_idx]
-actual_gemcitabine_luad_least <- gemcitabine_test$least_sensitive[gemcitabine_luad_idx]
-gemcitabine_luad_least_1se_auc <- auc(actual_gemcitabine_luad_least, gemcitabine_luad_least_sensitive_1se)
-
-# LUSC
-gemcitabine_lusc_idx <- gemcitabine_test$TCGA_class == 'LUSC' #5
-
-gemcitabine_lusc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_lusc_idx]
-actual_gemcitabine_lusc_most         <- gemcitabine_test$most_sensitive[gemcitabine_lusc_idx]
-gemcitabine_lusc_most_min_auc        <- auc(actual_gemcitabine_lusc_most, gemcitabine_lusc_most_sensitive_min)
-
-gemcitabine_lusc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_lusc_idx]
-actual_gemcitabine_lusc_least <- gemcitabine_test$least_sensitive[gemcitabine_lusc_idx]
-gemcitabine_lusc_least_min_auc <- auc(actual_gemcitabine_lusc_least, gemcitabine_lusc_least_sensitive_min)
-
-gemcitabine_lusc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_lusc_idx]
-actual_gemcitabine_lusc_most <- gemcitabine_test$most_sensitive[gemcitabine_lusc_idx]
-gemcitabine_lusc_most_1se_auc <- auc(actual_gemcitabine_lusc_most, gemcitabine_lusc_most_sensitive_1se)
-
-gemcitabine_lusc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_lusc_idx]
-actual_gemcitabine_lusc_least <- gemcitabine_test$least_sensitive[gemcitabine_lusc_idx]
-gemcitabine_lusc_least_1se_auc <- auc(actual_gemcitabine_lusc_least, gemcitabine_lusc_least_sensitive_1se)
-
-# MB
-gemcitabine_mb_idx <- gemcitabine_test$TCGA_class == 'MB' #3
-
-gemcitabine_mb_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_mb_idx]
-actual_gemcitabine_mb_most         <- gemcitabine_test$most_sensitive[gemcitabine_mb_idx]
-gemcitabine_mb_most_min_auc        <- auc(actual_gemcitabine_mb_most, gemcitabine_mb_most_sensitive_min)
-
-gemcitabine_mb_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_mb_idx]
-actual_gemcitabine_mb_least <- gemcitabine_test$least_sensitive[gemcitabine_mb_idx]
-gemcitabine_mb_least_min_auc <- auc(actual_gemcitabine_mb_least, gemcitabine_mb_least_sensitive_min)
-
-gemcitabine_mb_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_mb_idx]
-actual_gemcitabine_mb_most <- gemcitabine_test$most_sensitive[gemcitabine_mb_idx]
-gemcitabine_mb_most_1se_auc <- auc(actual_gemcitabine_mb_most, gemcitabine_mb_most_sensitive_1se)
-
-gemcitabine_mb_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_mb_idx]
-actual_gemcitabine_mb_least <- gemcitabine_test$least_sensitive[gemcitabine_mb_idx]
-gemcitabine_mb_least_1se_auc <- auc(actual_gemcitabine_mb_least, gemcitabine_mb_least_sensitive_1se)
-
-# MESO
-gemcitabine_meso_idx <- gemcitabine_test$TCGA_class == 'MESO' #5
-
-gemcitabine_meso_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_meso_idx]
-actual_gemcitabine_meso_most         <- gemcitabine_test$most_sensitive[gemcitabine_meso_idx]
-gemcitabine_meso_most_min_auc        <- auc(actual_gemcitabine_meso_most, gemcitabine_meso_most_sensitive_min)
-
-gemcitabine_meso_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_meso_idx]
-actual_gemcitabine_meso_least <- gemcitabine_test$least_sensitive[gemcitabine_meso_idx]
-gemcitabine_meso_least_min_auc <- auc(actual_gemcitabine_meso_least, gemcitabine_meso_least_sensitive_min)
-
-gemcitabine_meso_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_meso_idx]
-actual_gemcitabine_meso_most <- gemcitabine_test$most_sensitive[gemcitabine_meso_idx]
-gemcitabine_meso_most_1se_auc <- auc(actual_gemcitabine_meso_most, gemcitabine_meso_most_sensitive_1se)
-
-gemcitabine_meso_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_meso_idx]
-actual_gemcitabine_meso_least <- gemcitabine_test$least_sensitive[gemcitabine_meso_idx]
-gemcitabine_meso_least_1se_auc <- auc(actual_gemcitabine_meso_least, gemcitabine_meso_least_sensitive_1se)
-
-# NB
-gemcitabine_nb_idx <- gemcitabine_test$TCGA_class == 'NB' #13
-
-gemcitabine_nb_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_nb_idx]
-actual_gemcitabine_nb_most         <- gemcitabine_test$most_sensitive[gemcitabine_nb_idx]
-gemcitabine_nb_most_min_auc        <- auc(actual_gemcitabine_nb_most, gemcitabine_nb_most_sensitive_min)
-
-gemcitabine_nb_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_nb_idx]
-actual_gemcitabine_nb_least <- gemcitabine_test$least_sensitive[gemcitabine_nb_idx]
-gemcitabine_nb_least_min_auc <- auc(actual_gemcitabine_nb_least, gemcitabine_nb_least_sensitive_min)
-
-gemcitabine_nb_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_nb_idx]
-actual_gemcitabine_nb_most <- gemcitabine_test$most_sensitive[gemcitabine_nb_idx]
-gemcitabine_nb_most_1se_auc <- auc(actual_gemcitabine_nb_most, gemcitabine_nb_most_sensitive_1se)
-
-gemcitabine_nb_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_nb_idx]
-actual_gemcitabine_nb_least <- gemcitabine_test$least_sensitive[gemcitabine_nb_idx]
-gemcitabine_nb_least_1se_auc <- auc(actual_gemcitabine_nb_least, gemcitabine_nb_least_sensitive_1se)
-
-# OV
-gemcitabine_ov_idx <- gemcitabine_test$TCGA_class == 'OV' #17
-
-gemcitabine_ov_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_ov_idx]
-actual_gemcitabine_ov_most         <- gemcitabine_test$most_sensitive[gemcitabine_ov_idx]
-gemcitabine_ov_most_min_auc        <- auc(actual_gemcitabine_ov_most, gemcitabine_ov_most_sensitive_min)
-
-gemcitabine_ov_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_ov_idx]
-actual_gemcitabine_ov_least <- gemcitabine_test$least_sensitive[gemcitabine_ov_idx]
-gemcitabine_ov_least_min_auc <- auc(actual_gemcitabine_ov_least, gemcitabine_ov_least_sensitive_min)
-
-gemcitabine_ov_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_ov_idx]
-actual_gemcitabine_ov_most <- gemcitabine_test$most_sensitive[gemcitabine_ov_idx]
-gemcitabine_ov_most_1se_auc <- auc(actual_gemcitabine_ov_most, gemcitabine_ov_most_sensitive_1se)
-
-gemcitabine_ov_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_ov_idx]
-actual_gemcitabine_ov_least <- gemcitabine_test$least_sensitive[gemcitabine_ov_idx]
-gemcitabine_ov_least_1se_auc <- auc(actual_gemcitabine_ov_least, gemcitabine_ov_least_sensitive_1se)
-
-# PAAD
-gemcitabine_paad_idx <- gemcitabine_test$TCGA_class == 'PAAD' #13
-
-gemcitabine_paad_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_paad_idx]
-actual_gemcitabine_paad_most         <- gemcitabine_test$most_sensitive[gemcitabine_paad_idx]
-gemcitabine_paad_most_min_auc        <- auc(actual_gemcitabine_paad_most, gemcitabine_paad_most_sensitive_min)
-
-gemcitabine_paad_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_paad_idx]
-actual_gemcitabine_paad_least <- gemcitabine_test$least_sensitive[gemcitabine_paad_idx]
-gemcitabine_paad_least_min_auc <- auc(actual_gemcitabine_paad_least, gemcitabine_paad_least_sensitive_min)
-
-gemcitabine_paad_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_paad_idx]
-actual_gemcitabine_paad_most <- gemcitabine_test$most_sensitive[gemcitabine_paad_idx]
-gemcitabine_paad_most_1se_auc <- auc(actual_gemcitabine_paad_most, gemcitabine_paad_most_sensitive_1se)
-
-gemcitabine_paad_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_paad_idx]
-actual_gemcitabine_paad_least <- gemcitabine_test$least_sensitive[gemcitabine_paad_idx]
-gemcitabine_paad_least_1se_auc <- auc(actual_gemcitabine_paad_least, gemcitabine_paad_least_sensitive_1se)
-
-# SCLC
-gemcitabine_sclc_idx <- gemcitabine_test$TCGA_class == 'SCLC' #31
-
-gemcitabine_sclc_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_sclc_idx]
-actual_gemcitabine_sclc_most         <- gemcitabine_test$most_sensitive[gemcitabine_sclc_idx]
-gemcitabine_sclc_most_min_auc        <- auc(actual_gemcitabine_sclc_most, gemcitabine_sclc_most_sensitive_min)
-
-gemcitabine_sclc_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_sclc_idx]
-actual_gemcitabine_sclc_least <- gemcitabine_test$least_sensitive[gemcitabine_sclc_idx]
-gemcitabine_sclc_least_min_auc <- auc(actual_gemcitabine_sclc_least, gemcitabine_sclc_least_sensitive_min)
-
-gemcitabine_sclc_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_sclc_idx]
-actual_gemcitabine_sclc_most <- gemcitabine_test$most_sensitive[gemcitabine_sclc_idx]
-gemcitabine_sclc_most_1se_auc <- auc(actual_gemcitabine_sclc_most, gemcitabine_sclc_most_sensitive_1se)
-
-gemcitabine_sclc_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_sclc_idx]
-actual_gemcitabine_sclc_least <- gemcitabine_test$least_sensitive[gemcitabine_sclc_idx]
-gemcitabine_sclc_least_1se_auc <- auc(actual_gemcitabine_sclc_least, gemcitabine_sclc_least_sensitive_1se)
-
-# SKCM
-gemcitabine_skcm_idx <- gemcitabine_test$TCGA_class == 'SKCM' #26
-
-gemcitabine_skcm_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_skcm_idx]
-actual_gemcitabine_skcm_most         <- gemcitabine_test$most_sensitive[gemcitabine_skcm_idx]
-gemcitabine_skcm_most_min_auc        <- auc(actual_gemcitabine_skcm_most, gemcitabine_skcm_most_sensitive_min)
-
-gemcitabine_skcm_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_skcm_idx]
-actual_gemcitabine_skcm_least <- gemcitabine_test$least_sensitive[gemcitabine_skcm_idx]
-gemcitabine_skcm_least_min_auc <- auc(actual_gemcitabine_skcm_least, gemcitabine_skcm_least_sensitive_min)
-
-gemcitabine_skcm_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_skcm_idx]
-actual_gemcitabine_skcm_most <- gemcitabine_test$most_sensitive[gemcitabine_skcm_idx]
-gemcitabine_skcm_most_1se_auc <- auc(actual_gemcitabine_skcm_most, gemcitabine_skcm_most_sensitive_1se)
-
-gemcitabine_skcm_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_skcm_idx]
-actual_gemcitabine_skcm_least <- gemcitabine_test$least_sensitive[gemcitabine_skcm_idx]
-gemcitabine_skcm_least_1se_auc <- auc(actual_gemcitabine_skcm_least, gemcitabine_skcm_least_sensitive_1se)
-
-# STAD
-gemcitabine_stad_idx <- gemcitabine_test$TCGA_class == 'STAD' #8
-
-gemcitabine_stad_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_stad_idx]
-actual_gemcitabine_stad_most         <- gemcitabine_test$most_sensitive[gemcitabine_stad_idx]
-gemcitabine_stad_most_min_auc        <- auc(actual_gemcitabine_stad_most, gemcitabine_stad_most_sensitive_min)
-
-gemcitabine_stad_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_stad_idx]
-actual_gemcitabine_stad_least <- gemcitabine_test$least_sensitive[gemcitabine_stad_idx]
-gemcitabine_stad_least_min_auc <- auc(actual_gemcitabine_stad_least, gemcitabine_stad_least_sensitive_min)
-
-gemcitabine_stad_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_stad_idx]
-actual_gemcitabine_stad_most <- gemcitabine_test$most_sensitive[gemcitabine_stad_idx]
-gemcitabine_stad_most_1se_auc <- auc(actual_gemcitabine_stad_most, gemcitabine_stad_most_sensitive_1se)
-
-gemcitabine_stad_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_stad_idx]
-actual_gemcitabine_stad_least <- gemcitabine_test$least_sensitive[gemcitabine_stad_idx]
-gemcitabine_stad_least_1se_auc <- auc(actual_gemcitabine_stad_least, gemcitabine_stad_least_sensitive_1se)
-
-# UCEC
-gemcitabine_ucec_idx <- gemcitabine_test$TCGA_class == 'UCEC' #4
-
-gemcitabine_ucec_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_ucec_idx]
-actual_gemcitabine_ucec_most         <- gemcitabine_test$most_sensitive[gemcitabine_ucec_idx]
-gemcitabine_ucec_most_min_auc        <- auc(actual_gemcitabine_ucec_most, gemcitabine_ucec_most_sensitive_min)
-
-gemcitabine_ucec_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_ucec_idx]
-actual_gemcitabine_ucec_least <- gemcitabine_test$least_sensitive[gemcitabine_ucec_idx]
-gemcitabine_ucec_least_min_auc <- auc(actual_gemcitabine_ucec_least, gemcitabine_ucec_least_sensitive_min)
-
-gemcitabine_ucec_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_ucec_idx]
-actual_gemcitabine_ucec_most <- gemcitabine_test$most_sensitive[gemcitabine_ucec_idx]
-gemcitabine_ucec_most_1se_auc <- auc(actual_gemcitabine_ucec_most, gemcitabine_ucec_most_sensitive_1se)
-
-gemcitabine_ucec_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_ucec_idx]
-actual_gemcitabine_ucec_least <- gemcitabine_test$least_sensitive[gemcitabine_ucec_idx]
-gemcitabine_ucec_least_1se_auc <- auc(actual_gemcitabine_ucec_least, gemcitabine_ucec_least_sensitive_1se)
-
-# UNCLASSIFIED
-gemcitabine_unclassified_idx <- gemcitabine_test$TCGA_class == 'UNCLASSIFIED' #52
-
-gemcitabine_unclassified_most_sensitive_min  <- new_gemcitabine_most_sensitive_min[gemcitabine_unclassified_idx]
-actual_gemcitabine_unclassified_most         <- gemcitabine_test$most_sensitive[gemcitabine_unclassified_idx]
-gemcitabine_unclassified_most_min_auc        <- auc(actual_gemcitabine_unclassified_most, gemcitabine_unclassified_most_sensitive_min)
-
-gemcitabine_unclassified_least_sensitive_min <- new_gemcitabine_least_sensitive_min[gemcitabine_unclassified_idx]
-actual_gemcitabine_unclassified_least <- gemcitabine_test$least_sensitive[gemcitabine_unclassified_idx]
-gemcitabine_unclassified_least_min_auc <- auc(actual_gemcitabine_unclassified_least, gemcitabine_unclassified_least_sensitive_min)
-
-gemcitabine_unclassified_most_sensitive_1se <- new_gemcitabine_most_sensitive_1se[gemcitabine_unclassified_idx]
-actual_gemcitabine_unclassified_most <- gemcitabine_test$most_sensitive[gemcitabine_unclassified_idx]
-gemcitabine_unclassified_most_1se_auc <- auc(actual_gemcitabine_unclassified_most, gemcitabine_unclassified_most_sensitive_1se)
-
-gemcitabine_unclassified_least_sensitive_1se <- new_gemcitabine_least_sensitive_1se[gemcitabine_unclassified_idx]
-actual_gemcitabine_unclassified_least <- gemcitabine_test$least_sensitive[gemcitabine_unclassified_idx]
-gemcitabine_unclassified_least_1se_auc <- auc(actual_gemcitabine_unclassified_least, gemcitabine_unclassified_least_sensitive_1se)
-
-# METHOTREXATE
-methotrexate_blca_idx <- methotrexate_test$TCGA_class == 'BLCA' #5
-
-methotrexate_blca_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_blca_idx]
-actual_methotrexate_blca_most         <- methotrexate_test$most_sensitive[methotrexate_blca_idx]
-methotrexate_blca_most_min_auc        <- auc(actual_methotrexate_blca_most, methotrexate_blca_most_sensitive_min)
-
-methotrexate_blca_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_blca_idx]
-actual_methotrexate_blca_least <- methotrexate_test$least_sensitive[methotrexate_blca_idx]
-methotrexate_blca_least_min_auc <- auc(actual_methotrexate_blca_least, methotrexate_blca_least_sensitive_min)
-
-methotrexate_blca_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_blca_idx]
-actual_methotrexate_blca_most <- methotrexate_test$most_sensitive[methotrexate_blca_idx]
-methotrexate_blca_most_1se_auc <- auc(actual_methotrexate_blca_most, methotrexate_blca_most_sensitive_1se)
-
-methotrexate_blca_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_blca_idx]
-actual_methotrexate_blca_least <- methotrexate_test$least_sensitive[methotrexate_blca_idx]
-methotrexate_blca_least_1se_auc <- auc(actual_methotrexate_blca_least, methotrexate_blca_least_sensitive_1se)
-
-# BRCA
-methotrexate_brca_idx <- methotrexate_test$TCGA_class == 'BRCA' #28
-
-methotrexate_brca_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_brca_idx]
-actual_methotrexate_brca_most         <- methotrexate_test$most_sensitive[methotrexate_brca_idx]
-methotrexate_brca_most_min_auc        <- auc(actual_methotrexate_brca_most, methotrexate_brca_most_sensitive_min)
-
-methotrexate_brca_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_brca_idx]
-actual_methotrexate_brca_least <- methotrexate_test$least_sensitive[methotrexate_brca_idx]
-methotrexate_brca_least_min_auc <- auc(actual_methotrexate_brca_least, methotrexate_brca_least_sensitive_min)
-
-methotrexate_brca_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_brca_idx]
-actual_methotrexate_brca_most <- methotrexate_test$most_sensitive[methotrexate_brca_idx]
-methotrexate_brca_most_1se_auc <- auc(actual_methotrexate_brca_most, methotrexate_brca_most_sensitive_1se)
-
-methotrexate_brca_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_brca_idx]
-actual_methotrexate_brca_least <- methotrexate_test$least_sensitive[methotrexate_brca_idx]
-methotrexate_brca_least_1se_auc <- auc(actual_methotrexate_brca_least, methotrexate_brca_least_sensitive_1se)
-
-# CESC
-methotrexate_cesc_idx <- methotrexate_test$TCGA_class == 'CESC' #4
-
-methotrexate_cesc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_cesc_idx]
-actual_methotrexate_cesc_most         <- methotrexate_test$most_sensitive[methotrexate_cesc_idx]
-methotrexate_cesc_most_min_auc        <- auc(actual_methotrexate_cesc_most, methotrexate_cesc_most_sensitive_min)
-
-methotrexate_cesc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_cesc_idx]
-actual_methotrexate_cesc_least <- methotrexate_test$least_sensitive[methotrexate_cesc_idx]
-methotrexate_cesc_least_min_auc <- auc(actual_methotrexate_cesc_least, methotrexate_cesc_least_sensitive_min)
-
-methotrexate_cesc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_cesc_idx]
-actual_methotrexate_cesc_most <- methotrexate_test$most_sensitive[methotrexate_cesc_idx]
-methotrexate_cesc_most_1se_auc <- auc(actual_methotrexate_cesc_most, methotrexate_cesc_most_sensitive_1se)
-
-methotrexate_cesc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_cesc_idx]
-actual_methotrexate_cesc_least <- methotrexate_test$least_sensitive[methotrexate_cesc_idx]
-methotrexate_cesc_least_1se_auc <- auc(actual_methotrexate_cesc_least, methotrexate_cesc_least_sensitive_1se)
-
-# COREAD
-methotrexate_coread_idx <- methotrexate_test$TCGA_class == 'COREAD' #18
-
-methotrexate_coread_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_coread_idx]
-actual_methotrexate_coread_most         <- methotrexate_test$most_sensitive[methotrexate_coread_idx]
-methotrexate_coread_most_min_auc        <- auc(actual_methotrexate_coread_most, methotrexate_coread_most_sensitive_min)
-
-methotrexate_coread_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_coread_idx]
-actual_methotrexate_coread_least <- methotrexate_test$least_sensitive[methotrexate_coread_idx]
-methotrexate_coread_least_min_auc <- auc(actual_methotrexate_coread_least, methotrexate_coread_least_sensitive_min)
-
-methotrexate_coread_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_coread_idx]
-actual_methotrexate_coread_most <- methotrexate_test$most_sensitive[methotrexate_coread_idx]
-methotrexate_coread_most_1se_auc <- auc(actual_methotrexate_coread_most, methotrexate_coread_most_sensitive_1se)
-
-methotrexate_coread_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_coread_idx]
-actual_methotrexate_coread_least <- methotrexate_test$least_sensitive[methotrexate_coread_idx]
-methotrexate_coread_least_1se_auc <- auc(actual_methotrexate_coread_least, methotrexate_coread_least_sensitive_1se)
-
-# ESCA
-methotrexate_esca_idx <- methotrexate_test$TCGA_class == 'ESCA' #13
-
-methotrexate_esca_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_esca_idx]
-actual_methotrexate_esca_most         <- methotrexate_test$most_sensitive[methotrexate_esca_idx]
-methotrexate_esca_most_min_auc        <- auc(actual_methotrexate_esca_most, methotrexate_esca_most_sensitive_min)
-
-methotrexate_esca_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_esca_idx]
-actual_methotrexate_esca_least <- methotrexate_test$least_sensitive[methotrexate_esca_idx]
-methotrexate_esca_least_min_auc <- auc(actual_methotrexate_esca_least, methotrexate_esca_least_sensitive_min)
-
-methotrexate_esca_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_esca_idx]
-actual_methotrexate_esca_most <- methotrexate_test$most_sensitive[methotrexate_esca_idx]
-methotrexate_esca_most_1se_auc <- auc(actual_methotrexate_esca_most, methotrexate_esca_most_sensitive_1se)
-
-methotrexate_esca_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_esca_idx]
-actual_methotrexate_esca_least <- methotrexate_test$least_sensitive[methotrexate_esca_idx]
-methotrexate_esca_least_1se_auc <- auc(actual_methotrexate_esca_least, methotrexate_esca_least_sensitive_1se)
-
-# HNSC
-methotrexate_hnsc_idx <- methotrexate_test$TCGA_class == 'HNSC' #19
-
-methotrexate_hnsc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_hnsc_idx]
-actual_methotrexate_hnsc_most         <- methotrexate_test$most_sensitive[methotrexate_hnsc_idx]
-methotrexate_hnsc_most_min_auc        <- auc(actual_methotrexate_hnsc_most, methotrexate_hnsc_most_sensitive_min)
-
-methotrexate_hnsc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_hnsc_idx]
-actual_methotrexate_hnsc_least <- methotrexate_test$least_sensitive[methotrexate_hnsc_idx]
-methotrexate_hnsc_least_min_auc <- auc(actual_methotrexate_hnsc_least, methotrexate_hnsc_least_sensitive_min)
-
-methotrexate_hnsc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_hnsc_idx]
-actual_methotrexate_hnsc_most <- methotrexate_test$most_sensitive[methotrexate_hnsc_idx]
-methotrexate_hnsc_most_1se_auc <- auc(actual_methotrexate_hnsc_most, methotrexate_hnsc_most_sensitive_1se)
-
-methotrexate_hnsc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_hnsc_idx]
-actual_methotrexate_hnsc_least <- methotrexate_test$least_sensitive[methotrexate_hnsc_idx]
-methotrexate_hnsc_least_1se_auc <- auc(actual_methotrexate_hnsc_least, methotrexate_hnsc_least_sensitive_1se)
-
-# KIRC
-methotrexate_kirc_idx <- methotrexate_test$TCGA_class == 'KIRC' #15
-
-methotrexate_kirc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_kirc_idx]
-actual_methotrexate_kirc_most         <- methotrexate_test$most_sensitive[methotrexate_kirc_idx]
-methotrexate_kirc_most_min_auc        <- auc(actual_methotrexate_kirc_most, methotrexate_kirc_most_sensitive_min)
-
-methotrexate_kirc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_kirc_idx]
-actual_methotrexate_kirc_least <- methotrexate_test$least_sensitive[methotrexate_kirc_idx]
-methotrexate_kirc_least_min_auc <- auc(actual_methotrexate_kirc_least, methotrexate_kirc_least_sensitive_min)
-
-methotrexate_kirc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_kirc_idx]
-actual_methotrexate_kirc_most <- methotrexate_test$most_sensitive[methotrexate_kirc_idx]
-methotrexate_kirc_most_1se_auc <- auc(actual_methotrexate_kirc_most, methotrexate_kirc_most_sensitive_1se)
-
-methotrexate_kirc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_kirc_idx]
-actual_methotrexate_kirc_least <- methotrexate_test$least_sensitive[methotrexate_kirc_idx]
-methotrexate_kirc_least_1se_auc <- auc(actual_methotrexate_kirc_least, methotrexate_kirc_least_sensitive_1se)
-
-# LIHC
-methotrexate_lihc_idx <- methotrexate_test$TCGA_class == 'LIHC' #7
-
-methotrexate_lihc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_lihc_idx]
-actual_methotrexate_lihc_most         <- methotrexate_test$most_sensitive[methotrexate_lihc_idx]
-methotrexate_lihc_most_min_auc        <- auc(actual_methotrexate_lihc_most, methotrexate_lihc_most_sensitive_min)
-
-methotrexate_lihc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_lihc_idx]
-actual_methotrexate_lihc_least <- methotrexate_test$least_sensitive[methotrexate_lihc_idx]
-methotrexate_lihc_least_min_auc <- auc(actual_methotrexate_lihc_least, methotrexate_lihc_least_sensitive_min)
-
-methotrexate_lihc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_lihc_idx]
-actual_methotrexate_lihc_most <- methotrexate_test$most_sensitive[methotrexate_lihc_idx]
-methotrexate_lihc_most_1se_auc <- auc(actual_methotrexate_lihc_most, methotrexate_lihc_most_sensitive_1se)
-
-methotrexate_lihc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_lihc_idx]
-actual_methotrexate_lihc_least <- methotrexate_test$least_sensitive[methotrexate_lihc_idx]
-methotrexate_lihc_least_1se_auc <- auc(actual_methotrexate_lihc_least, methotrexate_lihc_least_sensitive_1se)
-
-# LUAD
-methotrexate_luad_idx <- methotrexate_test$TCGA_class == 'LUAD' #26
-
-methotrexate_luad_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_luad_idx]
-actual_methotrexate_luad_most         <- methotrexate_test$most_sensitive[methotrexate_luad_idx]
-methotrexate_luad_most_min_auc        <- auc(actual_methotrexate_luad_most, methotrexate_luad_most_sensitive_min)
-
-methotrexate_luad_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_luad_idx]
-actual_methotrexate_luad_least <- methotrexate_test$least_sensitive[methotrexate_luad_idx]
-methotrexate_luad_least_min_auc <- auc(actual_methotrexate_luad_least, methotrexate_luad_least_sensitive_min)
-
-methotrexate_luad_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_luad_idx]
-actual_methotrexate_luad_most <- methotrexate_test$most_sensitive[methotrexate_luad_idx]
-methotrexate_luad_most_1se_auc <- auc(actual_methotrexate_luad_most, methotrexate_luad_most_sensitive_1se)
-
-methotrexate_luad_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_luad_idx]
-actual_methotrexate_luad_least <- methotrexate_test$least_sensitive[methotrexate_luad_idx]
-methotrexate_luad_least_1se_auc <- auc(actual_methotrexate_luad_least, methotrexate_luad_least_sensitive_1se)
-
-# LUSC
-methotrexate_lusc_idx <- methotrexate_test$TCGA_class == 'LUSC' #5
-
-methotrexate_lusc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_lusc_idx]
-actual_methotrexate_lusc_most         <- methotrexate_test$most_sensitive[methotrexate_lusc_idx]
-methotrexate_lusc_most_min_auc        <- auc(actual_methotrexate_lusc_most, methotrexate_lusc_most_sensitive_min)
-
-methotrexate_lusc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_lusc_idx]
-actual_methotrexate_lusc_least <- methotrexate_test$least_sensitive[methotrexate_lusc_idx]
-methotrexate_lusc_least_min_auc <- auc(actual_methotrexate_lusc_least, methotrexate_lusc_least_sensitive_min)
-
-methotrexate_lusc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_lusc_idx]
-actual_methotrexate_lusc_most <- methotrexate_test$most_sensitive[methotrexate_lusc_idx]
-methotrexate_lusc_most_1se_auc <- auc(actual_methotrexate_lusc_most, methotrexate_lusc_most_sensitive_1se)
-
-methotrexate_lusc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_lusc_idx]
-actual_methotrexate_lusc_least <- methotrexate_test$least_sensitive[methotrexate_lusc_idx]
-methotrexate_lusc_least_1se_auc <- auc(actual_methotrexate_lusc_least, methotrexate_lusc_least_sensitive_1se)
-
-# MB
-methotrexate_mb_idx <- methotrexate_test$TCGA_class == 'MB' #3
-
-methotrexate_mb_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_mb_idx]
-actual_methotrexate_mb_most         <- methotrexate_test$most_sensitive[methotrexate_mb_idx]
-methotrexate_mb_most_min_auc        <- auc(actual_methotrexate_mb_most, methotrexate_mb_most_sensitive_min)
-
-methotrexate_mb_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_mb_idx]
-actual_methotrexate_mb_least <- methotrexate_test$least_sensitive[methotrexate_mb_idx]
-methotrexate_mb_least_min_auc <- auc(actual_methotrexate_mb_least, methotrexate_mb_least_sensitive_min)
-
-methotrexate_mb_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_mb_idx]
-actual_methotrexate_mb_most <- methotrexate_test$most_sensitive[methotrexate_mb_idx]
-methotrexate_mb_most_1se_auc <- auc(actual_methotrexate_mb_most, methotrexate_mb_most_sensitive_1se)
-
-methotrexate_mb_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_mb_idx]
-actual_methotrexate_mb_least <- methotrexate_test$least_sensitive[methotrexate_mb_idx]
-methotrexate_mb_least_1se_auc <- auc(actual_methotrexate_mb_least, methotrexate_mb_least_sensitive_1se)
-
-# MESO
-methotrexate_meso_idx <- methotrexate_test$TCGA_class == 'MESO' #5
-
-methotrexate_meso_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_meso_idx]
-actual_methotrexate_meso_most         <- methotrexate_test$most_sensitive[methotrexate_meso_idx]
-methotrexate_meso_most_min_auc        <- auc(actual_methotrexate_meso_most, methotrexate_meso_most_sensitive_min)
-
-methotrexate_meso_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_meso_idx]
-actual_methotrexate_meso_least <- methotrexate_test$least_sensitive[methotrexate_meso_idx]
-methotrexate_meso_least_min_auc <- auc(actual_methotrexate_meso_least, methotrexate_meso_least_sensitive_min)
-
-methotrexate_meso_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_meso_idx]
-actual_methotrexate_meso_most <- methotrexate_test$most_sensitive[methotrexate_meso_idx]
-methotrexate_meso_most_1se_auc <- auc(actual_methotrexate_meso_most, methotrexate_meso_most_sensitive_1se)
-
-methotrexate_meso_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_meso_idx]
-actual_methotrexate_meso_least <- methotrexate_test$least_sensitive[methotrexate_meso_idx]
-methotrexate_meso_least_1se_auc <- auc(actual_methotrexate_meso_least, methotrexate_meso_least_sensitive_1se)
-
-# NB
-methotrexate_nb_idx <- methotrexate_test$TCGA_class == 'NB' #13
-
-methotrexate_nb_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_nb_idx]
-actual_methotrexate_nb_most         <- methotrexate_test$most_sensitive[methotrexate_nb_idx]
-methotrexate_nb_most_min_auc        <- auc(actual_methotrexate_nb_most, methotrexate_nb_most_sensitive_min)
-
-methotrexate_nb_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_nb_idx]
-actual_methotrexate_nb_least <- methotrexate_test$least_sensitive[methotrexate_nb_idx]
-methotrexate_nb_least_min_auc <- auc(actual_methotrexate_nb_least, methotrexate_nb_least_sensitive_min)
-
-methotrexate_nb_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_nb_idx]
-actual_methotrexate_nb_most <- methotrexate_test$most_sensitive[methotrexate_nb_idx]
-methotrexate_nb_most_1se_auc <- auc(actual_methotrexate_nb_most, methotrexate_nb_most_sensitive_1se)
-
-methotrexate_nb_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_nb_idx]
-actual_methotrexate_nb_least <- methotrexate_test$least_sensitive[methotrexate_nb_idx]
-methotrexate_nb_least_1se_auc <- auc(actual_methotrexate_nb_least, methotrexate_nb_least_sensitive_1se)
-
-# OV
-methotrexate_ov_idx <- methotrexate_test$TCGA_class == 'OV' #17
-
-methotrexate_ov_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_ov_idx]
-actual_methotrexate_ov_most         <- methotrexate_test$most_sensitive[methotrexate_ov_idx]
-methotrexate_ov_most_min_auc        <- auc(actual_methotrexate_ov_most, methotrexate_ov_most_sensitive_min)
-
-methotrexate_ov_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_ov_idx]
-actual_methotrexate_ov_least <- methotrexate_test$least_sensitive[methotrexate_ov_idx]
-methotrexate_ov_least_min_auc <- auc(actual_methotrexate_ov_least, methotrexate_ov_least_sensitive_min)
-
-methotrexate_ov_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_ov_idx]
-actual_methotrexate_ov_most <- methotrexate_test$most_sensitive[methotrexate_ov_idx]
-methotrexate_ov_most_1se_auc <- auc(actual_methotrexate_ov_most, methotrexate_ov_most_sensitive_1se)
-
-methotrexate_ov_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_ov_idx]
-actual_methotrexate_ov_least <- methotrexate_test$least_sensitive[methotrexate_ov_idx]
-methotrexate_ov_least_1se_auc <- auc(actual_methotrexate_ov_least, methotrexate_ov_least_sensitive_1se)
-
-# PAAD
-methotrexate_paad_idx <- methotrexate_test$TCGA_class == 'PAAD' #13
-
-methotrexate_paad_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_paad_idx]
-actual_methotrexate_paad_most         <- methotrexate_test$most_sensitive[methotrexate_paad_idx]
-methotrexate_paad_most_min_auc        <- auc(actual_methotrexate_paad_most, methotrexate_paad_most_sensitive_min)
-
-methotrexate_paad_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_paad_idx]
-actual_methotrexate_paad_least <- methotrexate_test$least_sensitive[methotrexate_paad_idx]
-methotrexate_paad_least_min_auc <- auc(actual_methotrexate_paad_least, methotrexate_paad_least_sensitive_min)
-
-methotrexate_paad_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_paad_idx]
-actual_methotrexate_paad_most <- methotrexate_test$most_sensitive[methotrexate_paad_idx]
-methotrexate_paad_most_1se_auc <- auc(actual_methotrexate_paad_most, methotrexate_paad_most_sensitive_1se)
-
-methotrexate_paad_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_paad_idx]
-actual_methotrexate_paad_least <- methotrexate_test$least_sensitive[methotrexate_paad_idx]
-methotrexate_paad_least_1se_auc <- auc(actual_methotrexate_paad_least, methotrexate_paad_least_sensitive_1se)
-
-# SCLC
-methotrexate_sclc_idx <- methotrexate_test$TCGA_class == 'SCLC' #31
-
-methotrexate_sclc_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_sclc_idx]
-actual_methotrexate_sclc_most         <- methotrexate_test$most_sensitive[methotrexate_sclc_idx]
-methotrexate_sclc_most_min_auc        <- auc(actual_methotrexate_sclc_most, methotrexate_sclc_most_sensitive_min)
-
-methotrexate_sclc_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_sclc_idx]
-actual_methotrexate_sclc_least <- methotrexate_test$least_sensitive[methotrexate_sclc_idx]
-methotrexate_sclc_least_min_auc <- auc(actual_methotrexate_sclc_least, methotrexate_sclc_least_sensitive_min)
-
-methotrexate_sclc_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_sclc_idx]
-actual_methotrexate_sclc_most <- methotrexate_test$most_sensitive[methotrexate_sclc_idx]
-methotrexate_sclc_most_1se_auc <- auc(actual_methotrexate_sclc_most, methotrexate_sclc_most_sensitive_1se)
-
-methotrexate_sclc_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_sclc_idx]
-actual_methotrexate_sclc_least <- methotrexate_test$least_sensitive[methotrexate_sclc_idx]
-methotrexate_sclc_least_1se_auc <- auc(actual_methotrexate_sclc_least, methotrexate_sclc_least_sensitive_1se)
-
-# SKCM
-methotrexate_skcm_idx <- methotrexate_test$TCGA_class == 'SKCM' #26
-
-methotrexate_skcm_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_skcm_idx]
-actual_methotrexate_skcm_most         <- methotrexate_test$most_sensitive[methotrexate_skcm_idx]
-methotrexate_skcm_most_min_auc        <- auc(actual_methotrexate_skcm_most, methotrexate_skcm_most_sensitive_min)
-
-methotrexate_skcm_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_skcm_idx]
-actual_methotrexate_skcm_least <- methotrexate_test$least_sensitive[methotrexate_skcm_idx]
-methotrexate_skcm_least_min_auc <- auc(actual_methotrexate_skcm_least, methotrexate_skcm_least_sensitive_min)
-
-methotrexate_skcm_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_skcm_idx]
-actual_methotrexate_skcm_most <- methotrexate_test$most_sensitive[methotrexate_skcm_idx]
-methotrexate_skcm_most_1se_auc <- auc(actual_methotrexate_skcm_most, methotrexate_skcm_most_sensitive_1se)
-
-methotrexate_skcm_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_skcm_idx]
-actual_methotrexate_skcm_least <- methotrexate_test$least_sensitive[methotrexate_skcm_idx]
-methotrexate_skcm_least_1se_auc <- auc(actual_methotrexate_skcm_least, methotrexate_skcm_least_sensitive_1se)
-
-# STAD
-methotrexate_stad_idx <- methotrexate_test$TCGA_class == 'STAD' #8
-
-methotrexate_stad_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_stad_idx]
-actual_methotrexate_stad_most         <- methotrexate_test$most_sensitive[methotrexate_stad_idx]
-methotrexate_stad_most_min_auc        <- auc(actual_methotrexate_stad_most, methotrexate_stad_most_sensitive_min)
-
-methotrexate_stad_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_stad_idx]
-actual_methotrexate_stad_least <- methotrexate_test$least_sensitive[methotrexate_stad_idx]
-methotrexate_stad_least_min_auc <- auc(actual_methotrexate_stad_least, methotrexate_stad_least_sensitive_min)
-
-methotrexate_stad_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_stad_idx]
-actual_methotrexate_stad_most <- methotrexate_test$most_sensitive[methotrexate_stad_idx]
-methotrexate_stad_most_1se_auc <- auc(actual_methotrexate_stad_most, methotrexate_stad_most_sensitive_1se)
-
-methotrexate_stad_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_stad_idx]
-actual_methotrexate_stad_least <- methotrexate_test$least_sensitive[methotrexate_stad_idx]
-methotrexate_stad_least_1se_auc <- auc(actual_methotrexate_stad_least, methotrexate_stad_least_sensitive_1se)
-
-# UCEC
-methotrexate_ucec_idx <- methotrexate_test$TCGA_class == 'UCEC' #4
-
-methotrexate_ucec_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_ucec_idx]
-actual_methotrexate_ucec_most         <- methotrexate_test$most_sensitive[methotrexate_ucec_idx]
-methotrexate_ucec_most_min_auc        <- auc(actual_methotrexate_ucec_most, methotrexate_ucec_most_sensitive_min)
-
-methotrexate_ucec_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_ucec_idx]
-actual_methotrexate_ucec_least <- methotrexate_test$least_sensitive[methotrexate_ucec_idx]
-methotrexate_ucec_least_min_auc <- auc(actual_methotrexate_ucec_least, methotrexate_ucec_least_sensitive_min)
-
-methotrexate_ucec_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_ucec_idx]
-actual_methotrexate_ucec_most <- methotrexate_test$most_sensitive[methotrexate_ucec_idx]
-methotrexate_ucec_most_1se_auc <- auc(actual_methotrexate_ucec_most, methotrexate_ucec_most_sensitive_1se)
-
-methotrexate_ucec_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_ucec_idx]
-actual_methotrexate_ucec_least <- methotrexate_test$least_sensitive[methotrexate_ucec_idx]
-methotrexate_ucec_least_1se_auc <- auc(actual_methotrexate_ucec_least, methotrexate_ucec_least_sensitive_1se)
-
-# UNCLASSIFIED
-methotrexate_unclassified_idx <- methotrexate_test$TCGA_class == 'UNCLASSIFIED' #52
-
-methotrexate_unclassified_most_sensitive_min  <- new_methotrexate_most_sensitive_min[methotrexate_unclassified_idx]
-actual_methotrexate_unclassified_most         <- methotrexate_test$most_sensitive[methotrexate_unclassified_idx]
-methotrexate_unclassified_most_min_auc        <- auc(actual_methotrexate_unclassified_most, methotrexate_unclassified_most_sensitive_min)
-
-methotrexate_unclassified_least_sensitive_min <- new_methotrexate_least_sensitive_min[methotrexate_unclassified_idx]
-actual_methotrexate_unclassified_least <- methotrexate_test$least_sensitive[methotrexate_unclassified_idx]
-methotrexate_unclassified_least_min_auc <- auc(actual_methotrexate_unclassified_least, methotrexate_unclassified_least_sensitive_min)
-
-methotrexate_unclassified_most_sensitive_1se <- new_methotrexate_most_sensitive_1se[methotrexate_unclassified_idx]
-actual_methotrexate_unclassified_most <- methotrexate_test$most_sensitive[methotrexate_unclassified_idx]
-methotrexate_unclassified_most_1se_auc <- auc(actual_methotrexate_unclassified_most, methotrexate_unclassified_most_sensitive_1se)
-
-methotrexate_unclassified_least_sensitive_1se <- new_methotrexate_least_sensitive_1se[methotrexate_unclassified_idx]
-actual_methotrexate_unclassified_least <- methotrexate_test$least_sensitive[methotrexate_unclassified_idx]
-methotrexate_unclassified_least_1se_auc <- auc(actual_methotrexate_unclassified_least, methotrexate_unclassified_least_sensitive_1se)
-
-### put it together and graph -----
-cisplatin_most_min_auc <- c(cisplatin_blca_most_min_auc, cisplatin_brca_most_min_auc, cisplatin_cesc_most_min_auc, 
-                            cisplatin_coread_most_min_auc, cisplatin_esca_most_min_auc, cisplatin_hnsc_most_min_auc, 
-                            cisplatin_kirc_most_min_auc, cisplatin_lihc_most_min_auc, cisplatin_luad_most_min_auc, 
-                            cisplatin_lusc_most_min_auc, cisplatin_mb_most_min_auc, cisplatin_meso_most_min_auc, 
-                            cisplatin_nb_most_min_auc, cisplatin_ov_most_min_auc, cisplatin_paad_most_min_auc, 
-                            cisplatin_sclc_most_min_auc, cisplatin_skcm_most_min_auc, cisplatin_stad_most_min_auc, 
-                            cisplatin_ucec_most_min_auc, cisplatin_unclassified_most_min_auc)
-
-cisplatin_least_min_auc <- c(cisplatin_blca_least_min_auc, cisplatin_brca_least_min_auc, cisplatin_cesc_least_min_auc, 
-                             cisplatin_coread_least_min_auc, cisplatin_esca_least_min_auc, cisplatin_hnsc_least_min_auc, 
-                             cisplatin_kirc_least_min_auc, cisplatin_lihc_least_min_auc, cisplatin_luad_least_min_auc, 
-                             cisplatin_lusc_least_min_auc, cisplatin_mb_least_min_auc, cisplatin_meso_least_min_auc, 
-                             cisplatin_nb_least_min_auc, cisplatin_ov_least_min_auc, cisplatin_paad_least_min_auc, 
-                             cisplatin_sclc_least_min_auc, cisplatin_skcm_least_min_auc, cisplatin_stad_least_min_auc, 
-                             cisplatin_ucec_least_min_auc, cisplatin_unclassified_least_min_auc)
-
-cisplatin_most_1se_auc <- c(cisplatin_blca_most_1se_auc, cisplatin_brca_most_1se_auc, cisplatin_cesc_most_1se_auc, 
-                            cisplatin_coread_most_1se_auc, cisplatin_esca_most_1se_auc, cisplatin_hnsc_most_1se_auc, 
-                            cisplatin_kirc_most_1se_auc, cisplatin_lihc_most_1se_auc, cisplatin_luad_most_1se_auc, 
-                            cisplatin_lusc_most_1se_auc, cisplatin_mb_most_1se_auc, cisplatin_meso_most_1se_auc, 
-                            cisplatin_nb_most_1se_auc, cisplatin_ov_most_1se_auc, cisplatin_paad_most_1se_auc, 
-                            cisplatin_sclc_most_1se_auc, cisplatin_skcm_most_1se_auc, cisplatin_stad_most_1se_auc, 
-                            cisplatin_ucec_most_1se_auc, cisplatin_unclassified_most_1se_auc)
-
-cisplatin_least_1se_auc <- c(cisplatin_blca_least_1se_auc, cisplatin_brca_least_1se_auc, cisplatin_cesc_least_1se_auc, 
-                             cisplatin_coread_least_1se_auc, cisplatin_esca_least_1se_auc, cisplatin_hnsc_least_1se_auc, 
-                             cisplatin_kirc_least_1se_auc, cisplatin_lihc_least_1se_auc, cisplatin_luad_least_1se_auc, 
-                             cisplatin_lusc_least_1se_auc, cisplatin_mb_least_1se_auc, cisplatin_meso_least_1se_auc, 
-                             cisplatin_nb_least_1se_auc, cisplatin_ov_least_1se_auc, cisplatin_paad_least_1se_auc, 
-                             cisplatin_sclc_least_1se_auc, cisplatin_skcm_least_1se_auc, cisplatin_stad_least_1se_auc, 
-                             cisplatin_ucec_least_1se_auc, cisplatin_unclassified_least_1se_auc)
-
-etoposide_most_min_auc <- c(etoposide_blca_most_min_auc, etoposide_brca_most_min_auc, etoposide_cesc_most_min_auc, 
-                            etoposide_coread_most_min_auc, etoposide_esca_most_min_auc, etoposide_hnsc_most_min_auc, 
-                            etoposide_kirc_most_min_auc, etoposide_lihc_most_min_auc, etoposide_luad_most_min_auc, 
-                            etoposide_lusc_most_min_auc, etoposide_mb_most_min_auc, etoposide_meso_most_min_auc, 
-                            etoposide_nb_most_min_auc, etoposide_ov_most_min_auc, etoposide_paad_most_min_auc, 
-                            etoposide_sclc_most_min_auc, etoposide_skcm_most_min_auc, etoposide_stad_most_min_auc, 
-                            etoposide_ucec_most_min_auc, etoposide_unclassified_most_min_auc)
-
-etoposide_least_min_auc <- c(etoposide_blca_least_min_auc, etoposide_brca_least_min_auc, etoposide_cesc_least_min_auc, 
-                             etoposide_coread_least_min_auc, etoposide_esca_least_min_auc, etoposide_hnsc_least_min_auc, 
-                             etoposide_kirc_least_min_auc, etoposide_lihc_least_min_auc, etoposide_luad_least_min_auc, 
-                             etoposide_lusc_least_min_auc, etoposide_mb_least_min_auc, etoposide_meso_least_min_auc, 
-                             etoposide_nb_least_min_auc, etoposide_ov_least_min_auc, etoposide_paad_least_min_auc, 
-                             etoposide_sclc_least_min_auc, etoposide_skcm_least_min_auc, etoposide_stad_least_min_auc, 
-                             etoposide_ucec_least_min_auc, etoposide_unclassified_least_min_auc)
-
-etoposide_most_1se_auc <- c(etoposide_blca_most_1se_auc, etoposide_brca_most_1se_auc, etoposide_cesc_most_1se_auc, 
-                            etoposide_coread_most_1se_auc, etoposide_esca_most_1se_auc, etoposide_hnsc_most_1se_auc, 
-                            etoposide_kirc_most_1se_auc, etoposide_lihc_most_1se_auc, etoposide_luad_most_1se_auc, 
-                            etoposide_lusc_most_1se_auc, etoposide_mb_most_1se_auc, etoposide_meso_most_1se_auc, 
-                            etoposide_nb_most_1se_auc, etoposide_ov_most_1se_auc, etoposide_paad_most_1se_auc, 
-                            etoposide_sclc_most_1se_auc, etoposide_skcm_most_1se_auc, etoposide_stad_most_1se_auc, 
-                            etoposide_ucec_most_1se_auc, etoposide_unclassified_most_1se_auc)
-
-etoposide_least_1se_auc <- c(etoposide_blca_least_1se_auc, etoposide_brca_least_1se_auc, etoposide_cesc_least_1se_auc, 
-                             etoposide_coread_least_1se_auc, etoposide_esca_least_1se_auc, etoposide_hnsc_least_1se_auc, 
-                             etoposide_kirc_least_1se_auc, etoposide_lihc_least_1se_auc, etoposide_luad_least_1se_auc, 
-                             etoposide_lusc_least_1se_auc, etoposide_mb_least_1se_auc, etoposide_meso_least_1se_auc, 
-                             etoposide_nb_least_1se_auc, etoposide_ov_least_1se_auc, etoposide_paad_least_1se_auc, 
-                             etoposide_sclc_least_1se_auc, etoposide_skcm_least_1se_auc, etoposide_stad_least_1se_auc, 
-                             etoposide_ucec_least_1se_auc, etoposide_unclassified_least_1se_auc)
-
-gemcitabine_most_min_auc <- c(gemcitabine_blca_most_min_auc, gemcitabine_brca_most_min_auc, gemcitabine_cesc_most_min_auc, 
-                            gemcitabine_coread_most_min_auc, gemcitabine_esca_most_min_auc, gemcitabine_hnsc_most_min_auc, 
-                            gemcitabine_kirc_most_min_auc, gemcitabine_lihc_most_min_auc, gemcitabine_luad_most_min_auc, 
-                            gemcitabine_lusc_most_min_auc, gemcitabine_mb_most_min_auc, gemcitabine_meso_most_min_auc, 
-                            gemcitabine_nb_most_min_auc, gemcitabine_ov_most_min_auc, gemcitabine_paad_most_min_auc, 
-                            gemcitabine_sclc_most_min_auc, gemcitabine_skcm_most_min_auc, gemcitabine_stad_most_min_auc, 
-                            gemcitabine_ucec_most_min_auc, gemcitabine_unclassified_most_min_auc)
-
-gemcitabine_least_min_auc <- c(gemcitabine_blca_least_min_auc, gemcitabine_brca_least_min_auc, gemcitabine_cesc_least_min_auc, 
-                             gemcitabine_coread_least_min_auc, gemcitabine_esca_least_min_auc, gemcitabine_hnsc_least_min_auc, 
-                             gemcitabine_kirc_least_min_auc, gemcitabine_lihc_least_min_auc, gemcitabine_luad_least_min_auc, 
-                             gemcitabine_lusc_least_min_auc, gemcitabine_mb_least_min_auc, gemcitabine_meso_least_min_auc, 
-                             gemcitabine_nb_least_min_auc, gemcitabine_ov_least_min_auc, gemcitabine_paad_least_min_auc, 
-                             gemcitabine_sclc_least_min_auc, gemcitabine_skcm_least_min_auc, gemcitabine_stad_least_min_auc, 
-                             gemcitabine_ucec_least_min_auc, gemcitabine_unclassified_least_min_auc)
-
-gemcitabine_most_1se_auc <- c(gemcitabine_blca_most_1se_auc, gemcitabine_brca_most_1se_auc, gemcitabine_cesc_most_1se_auc, 
-                            gemcitabine_coread_most_1se_auc, gemcitabine_esca_most_1se_auc, gemcitabine_hnsc_most_1se_auc, 
-                            gemcitabine_kirc_most_1se_auc, gemcitabine_lihc_most_1se_auc, gemcitabine_luad_most_1se_auc, 
-                            gemcitabine_lusc_most_1se_auc, gemcitabine_mb_most_1se_auc, gemcitabine_meso_most_1se_auc, 
-                            gemcitabine_nb_most_1se_auc, gemcitabine_ov_most_1se_auc, gemcitabine_paad_most_1se_auc, 
-                            gemcitabine_sclc_most_1se_auc, gemcitabine_skcm_most_1se_auc, gemcitabine_stad_most_1se_auc, 
-                            gemcitabine_ucec_most_1se_auc, gemcitabine_unclassified_most_1se_auc)
-
-gemcitabine_least_1se_auc <- c(gemcitabine_blca_least_1se_auc, gemcitabine_brca_least_1se_auc, gemcitabine_cesc_least_1se_auc, 
-                             gemcitabine_coread_least_1se_auc, gemcitabine_esca_least_1se_auc, gemcitabine_hnsc_least_1se_auc, 
-                             gemcitabine_kirc_least_1se_auc, gemcitabine_lihc_least_1se_auc, gemcitabine_luad_least_1se_auc, 
-                             gemcitabine_lusc_least_1se_auc, gemcitabine_mb_least_1se_auc, gemcitabine_meso_least_1se_auc, 
-                             gemcitabine_nb_least_1se_auc, gemcitabine_ov_least_1se_auc, gemcitabine_paad_least_1se_auc, 
-                             gemcitabine_sclc_least_1se_auc, gemcitabine_skcm_least_1se_auc, gemcitabine_stad_least_1se_auc, 
-                             gemcitabine_ucec_least_1se_auc, gemcitabine_unclassified_least_1se_auc)
-
-methotrexate_most_min_auc <- c(methotrexate_blca_most_min_auc, methotrexate_brca_most_min_auc, methotrexate_cesc_most_min_auc, 
-                            methotrexate_coread_most_min_auc, methotrexate_esca_most_min_auc, methotrexate_hnsc_most_min_auc, 
-                            methotrexate_kirc_most_min_auc, methotrexate_lihc_most_min_auc, methotrexate_luad_most_min_auc, 
-                            methotrexate_lusc_most_min_auc, methotrexate_mb_most_min_auc, methotrexate_meso_most_min_auc, 
-                            methotrexate_nb_most_min_auc, methotrexate_ov_most_min_auc, methotrexate_paad_most_min_auc, 
-                            methotrexate_sclc_most_min_auc, methotrexate_skcm_most_min_auc, methotrexate_stad_most_min_auc, 
-                            methotrexate_ucec_most_min_auc, methotrexate_unclassified_most_min_auc)
-
-methotrexate_least_min_auc <- c(methotrexate_blca_least_min_auc, methotrexate_brca_least_min_auc, methotrexate_cesc_least_min_auc, 
-                             methotrexate_coread_least_min_auc, methotrexate_esca_least_min_auc, methotrexate_hnsc_least_min_auc, 
-                             methotrexate_kirc_least_min_auc, methotrexate_lihc_least_min_auc, methotrexate_luad_least_min_auc, 
-                             methotrexate_lusc_least_min_auc, methotrexate_mb_least_min_auc, methotrexate_meso_least_min_auc, 
-                             methotrexate_nb_least_min_auc, methotrexate_ov_least_min_auc, methotrexate_paad_least_min_auc, 
-                             methotrexate_sclc_least_min_auc, methotrexate_skcm_least_min_auc, methotrexate_stad_least_min_auc, 
-                             methotrexate_ucec_least_min_auc, methotrexate_unclassified_least_min_auc)
-
-methotrexate_most_1se_auc <- c(methotrexate_blca_most_1se_auc, methotrexate_brca_most_1se_auc, methotrexate_cesc_most_1se_auc, 
-                            methotrexate_coread_most_1se_auc, methotrexate_esca_most_1se_auc, methotrexate_hnsc_most_1se_auc, 
-                            methotrexate_kirc_most_1se_auc, methotrexate_lihc_most_1se_auc, methotrexate_luad_most_1se_auc, 
-                            methotrexate_lusc_most_1se_auc, methotrexate_mb_most_1se_auc, methotrexate_meso_most_1se_auc, 
-                            methotrexate_nb_most_1se_auc, methotrexate_ov_most_1se_auc, methotrexate_paad_most_1se_auc, 
-                            methotrexate_sclc_most_1se_auc, methotrexate_skcm_most_1se_auc, methotrexate_stad_most_1se_auc, 
-                            methotrexate_ucec_most_1se_auc, methotrexate_unclassified_most_1se_auc)
-
-methotrexate_least_1se_auc <- c(methotrexate_blca_least_1se_auc, methotrexate_brca_least_1se_auc, methotrexate_cesc_least_1se_auc, 
-                             methotrexate_coread_least_1se_auc, methotrexate_esca_least_1se_auc, methotrexate_hnsc_least_1se_auc, 
-                             methotrexate_kirc_least_1se_auc, methotrexate_lihc_least_1se_auc, methotrexate_luad_least_1se_auc, 
-                             methotrexate_lusc_least_1se_auc, methotrexate_mb_least_1se_auc, methotrexate_meso_least_1se_auc, 
-                             methotrexate_nb_least_1se_auc, methotrexate_ov_least_1se_auc, methotrexate_paad_least_1se_auc, 
-                             methotrexate_sclc_least_1se_auc, methotrexate_skcm_least_1se_auc, methotrexate_stad_least_1se_auc, 
-                             methotrexate_ucec_least_1se_auc, methotrexate_unclassified_least_1se_auc)
-
-
-all_models_auc_cancer_type <- data.frame(cisplatin_most_min_auc, cisplatin_most_1se_auc, 
-                                         cisplatin_least_min_auc, cisplatin_least_1se_auc,
-                                         etoposide_most_min_auc, etoposide_most_1se_auc, 
-                                         etoposide_least_min_auc, etoposide_least_1se_auc, 
-                                         gemcitabine_most_min_auc, gemcitabine_most_1se_auc, 
-                                         gemcitabine_least_min_auc, gemcitabine_least_1se_auc, 
-                                         methotrexate_most_min_auc, methotrexate_most_1se_auc, 
-                                         methotrexate_least_min_auc, methotrexate_least_1se_auc)
-for (i in 1:nrow(all_models_auc_cancer_type)) {
-  for (j in 1:ncol(all_models_auc_cancer_type)) {
-    if (all_models_auc_cancer_type[i,j] == 'NaN') {
-      all_models_auc_cancer_type[i,j] <- 0.5
-    }
-  }
-}
-
-for (i in 1:nrow(all_models_auc_cancer_type)) {
-  for (j in 1:ncol(all_models_auc_cancer_type)) {
-    if (all_models_auc_cancer_type[i,j] < 0.5) {
-      all_models_auc_cancer_type[i,j] <- 0.5
-    }
-  }
-}
-
-rownames(all_models_auc_cancer_type) <- c('BLCA', 'BRCA', 'CESC', 'COREAD', 'ESCA', 'HNSC', 
-                                          'KIRC', 'LIHC', 'LUAD', 'LUSC', 'MB', 'MESO', 
-                                          'NB', 'OV', 'PAAD', 'SCLC', 'SKCM', 'STAD', 
-                                          'UCEC', 'UNCLASSIFIED')
-all_models_auc_cancer_type <- round(all_models_auc_cancer_type, digits = 2)
-all_mat <- as.matrix(all_models_auc_cancer_type)
-colors <- colorRampPalette(c('blue', 'white', 'red'))(100)
-heatmap.2(all_mat, trace = 'none', Rowv = FALSE, Colv = FALSE, col = colors, key = FALSE, 
-          cexRow = 0.9, cexCol = 0.7, margins = c(8,8))
-
-### graphing auc curves for gdsc testing results ---------
-#pred <- prediction(new_bleo_most_sensitive_min[bleo_unclassified_idx], bleomycin_test$most_sensitive[bleo_unclassified_idx])
-#pred2 <- prediction(new_bleo_most_sensitive_1se[bleo_unclassified_idx], bleomycin_test$most_sensitive[bleo_unclassified_idx])
-#pred3 <- prediction(new_bleo_least_sensitive_min[bleo_unclassified_idx], bleomycin_test$least_sensitive[bleo_unclassified_idx])
-#pred4 <- prediction(new_bleo_least_sensitive_1se[bleo_unclassified_idx], bleomycin_test$least_sensitive[bleo_unclassified_idx])
-
-#perf <- performance(pred, 'tpr', 'fpr')
-#perf2 <- performance(pred2, 'tpr', 'fpr')
-#perf3 <- performance(pred3, 'tpr', 'fpr')
-#perf4 <- performance(pred4, 'tpr', 'fpr')
-
-#png(file = '')
-#plot(perf, col = 'red')
-#plot(perf2, col = 'blue', add = TRUE)
-#plot(perf3, col = 'red', lty = 2, add = TRUE)
-#plot(perf4, col = 'blue', lty = 2, add = TRUE)
-#abline(0,1, lty = 3)
-#auc <- performance(pred4, 'auc')
-#auc <- unlist(slot(auc, 'y.values'))
-#minauc <- min(round(auc, digits = 2))
-#maxauc <- max(round(auc, digits = 2))
-#minauct <- paste(c('minAUC = '), minauc, sep = '')
-#maxauct <- paste(c("max(AUC) = "),maxauc,sep="")
-#legend(0.7,0.6,c('most_min (0.76)', 'most_1se (0.75)', 'least_min (0.92)', 'least_1se (0.90)'), lty = c(1,1,2,2), col = c('red', 'blue', 'red', 'blue'), border="white",cex=0.9,box.col = "white")
-#dev.off()
 
 
 ### testing on TCGA classes treated with drug ----
@@ -2919,11 +840,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/blca_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'BLCA treated with cisplatin')
-plot(perf3, col = 'blue', add = TRUE)
+plot(perf2, col = colors_i_need[2], lwd = 2, lty = 2, main = 'BLCA treated with cisplatin')
+plot(perf3, col = colors_i_need[2], add = TRUE, lwd = 2)
 #plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.55)', 'least_sensitive (AUC = 0.69)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.69)', 'resistant model (AUC = 0.55)'), cex = 0.8, lty = c(1,2), lwd = 2, col = colors_i_need[2], bty = 'n')
 dev.off()
 
 # BLCA W GEMCITABINE (30)
@@ -3200,12 +1121,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/brca_methotrexate_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = 'red', main = 'BRCA treated with methotrexate (GDSC)')
+plot(perf, col = colors_i_need[8], lty = 2, lwd =1, main = 'BRCA treated with methotrexate (GDSC)')
 #plot(perf2, col = 'red', lty = 2)
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[8], lty = 1, lwd = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 1.0)', 'least_sensitive (AUC = 0.64)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.55, y = 0.4, legend = c('sensitive model (AUC = 0.64)', 'resistant model (AUC = 1.0)'), lwd = 2, lty = c(1,2), col = colors_i_need[8], cex = 0.8, bty = 'n')
 dev.off()
 
 # CESC W CISPLATIN (104)
@@ -3413,11 +1334,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/esca_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'ESCA treated with cisplatin')
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+plot(perf2, col = colors_i_need[2], lwd = 2, lty = 2, main = 'ESCA treated with cisplatin')
+plot(perf3, col = colors_i_need[2], lwd = 2, add = TRUE)
+#plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (NA)', 'most_1se (1.0)', 'least_min (0.00)', 'least_1se (0.00)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.50)', 'resistant model (AUC = 0.67)'), lwd = 2, lty = c(1,2), col = colors_i_need[2], cex = 0.8, bty = 'n')
 dev.off()
 
 # HNSC W CISPLATIN (71)
@@ -3483,12 +1404,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/hnsc_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+#plot(perf, col = 'red')
+plot(perf2, col = colors_i_need[2], lwd = 2, lty = 2, main = 'HNSC treated with cisplatin')
+plot(perf3, col = colors_i_need[2], lwd = 2, add = TRUE)
+#plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (NA)', 'most_1se (1.0)', 'least_min (0.00)', 'least_1se (0.00)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.53)', 'resistant model (AUC = 0.61)'), lty = c(1,2), col = colors_i_need[2], cex = 0.8, bty = 'n', lwd = 2)
 dev.off()
 
 # KIRC W GEMCITABINE (6)
@@ -3790,6 +1711,13 @@ luad_matching_idx <- colnames(luad_gene) %in% luad_clinical_etoposide_short$subm
 luad_gene_short <- luad_gene[, luad_matching_idx]
 luad_gene_short <- t(luad_gene_short)
 luad_gene_short_scaled <- apply(luad_gene_short, 2, scale)
+for(i in 1:nrow(luad_gene_short_scaled)) {
+  for (j in 1:ncol(luad_gene_short_scaled)) {
+    if (is.na(luad_gene_short_scaled[i,j]) == TRUE) {
+      luad_gene_short_scaled[i,j] <- 0
+    }
+  }
+}
 
 rm(luad_tcga_most_min_auc)
 rm(luad_tcga_most_1se_auc)
@@ -3834,12 +1762,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/luad_etoposide_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = 'red', main = 'LUAD treated with etoposide (GDSC)')
-plot(perf2, col = 'red', lty = 1, main = 'LUAD treated with etoposide (GDSC)')
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+plot(perf, col = colors_i_need[5], lwd = 2, lty = 2, main = 'LUAD treated with etoposide (GDSC)')
+#plot(perf2, col = 'red', lty = 1, main = 'LUAD treated with etoposide (GDSC)')
+plot(perf3, col = colors_i_need[5], lwd = 2, lty =1, add = TRUE)
+#plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (NA)', 'most_1se (1.0)', 'least_min (0.00)', 'least_1se (0.00)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.5, y = 0.3, legend = c('sensitive model (AUC = 1.0)', 'resistant model (AUC = 0.50'), lwd = 2, cex = 0.8, lty = c(1,2), col = colors_i_need[5], bty = 'n')
 dev.off()
 
 # LUAD W GEMCITABINE (18)
@@ -4259,11 +2187,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/ov_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'OV treated with cisplatin')
-plot(perf3, col = 'blue', add = TRUE)
+plot(perf2, col = colors_i_need[2], lty = 2, main = 'OV treated with cisplatin', lwd = 2)
+plot(perf3, col = colors_i_need[2], add = TRUE, lwd = 2)
 #plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.83)', 'least_sensitive (AUC = 0.80)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.4, y = 0.4, legend = c('sensitive model (AUC = 0.80)', 'resistant model (AUC = 0.83)'), lty = c(1,2), lwd = 2, col = c(colors_i_need[2], colors_i_need[2]), bty = 'n', cex = 0.8)
 dev.off()
 
 # OV W DOXORUBICIN (5)
@@ -4709,6 +2637,13 @@ stad_matching_idx <- colnames(stad_gene) %in% stad_clinical_etoposide_short$subm
 stad_gene_short <- stad_gene[, stad_matching_idx]
 stad_gene_short <- t(stad_gene_short)
 stad_gene_short_scaled <- apply(stad_gene_short, 2, scale)
+for(i in 1:nrow(stad_gene_short_scaled)) {
+  for (j in 1:ncol(stad_gene_short_scaled)) {
+    if (is.na(stad_gene_short_scaled[i,j]) == TRUE) {
+      stad_gene_short_scaled[i,j] <- 0
+    }
+  }
+}
 
 rm(stad_tcga_most_min_auc)
 rm(stad_tcga_most_1se_auc)
@@ -5046,10 +2981,8 @@ dev.off()
 carboplatin_ccle <- read.csv('Processed_Clinical_Data/carboplatin_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
 cyclophosphamide_ccle <- read.csv('Processed_Clinical_Data/cyclophosphamide_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
 docetaxel_ccle <- read.csv('Processed_Clinical_Data/docetaxel_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
-etoposide_ccle <- read.csv('Processed_Clinical_Data/etoposide_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
 fluorouracil_ccle <- read.csv('Processed_Clinical_Data/fluorouracil_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
 gemcitabine_ccle <- read.csv('Processed_Clinical_Data/gemcitabine_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
-methotrexate_ccle <- read.csv('Processed_Clinical_Data/methotrexate_ccle_clinical_processed.csv', row.names = 1, stringsAsFactors = FALSE)
 
 ## load gene expression data ----
 ccle_microarray <- read.csv('Processed_Gene_Expression/ccle_microarray_processed.csv', row.names = 1)
@@ -5064,14 +2997,10 @@ cyclophosphamide_lines <- cyclophosphamide_ccle$Cell.line.name #335
 cyclophosphamide_lines <- as.character(cyclophosphamide_lines)
 docetaxel_lines <- docetaxel_ccle$Cell.line.name #302
 docetaxel_lines <- as.character(docetaxel_lines)
-etoposide_lines <- etoposide_ccle$Cell.line.name #649
-etoposide_lines <- as.character(etoposide_lines)
 fluorouracil_lines <- fluorouracil_ccle$Cell.line.name #652
 fluorouracil_lines <- as.character(fluorouracil_lines)
 gemcitabine_lines <- gemcitabine_ccle$Cell.line.name #589
 gemcitabine_lines <- as.character(gemcitabine_lines)
-methotrexate_lines <- methotrexate_ccle$Cell.line.name #622
-methotrexate_lines <- as.character(methotrexate_lines)
 
 
 ccle <- data.frame(t(ccle_microarray))
@@ -5103,11 +3032,6 @@ docetaxel_rna_seq_train     <- ccle_train[intersect(docetaxel_lines, rownames(cc
 docetaxel_rna_seq_test      <- ccle_test[intersect(docetaxel_lines, rownames(ccle_test)), ]
 # 155 x 14209
 
-etoposide_rna_seq_train     <- ccle_train[intersect(etoposide_lines, rownames(ccle_train)), ]
-# 310 x 14209
-etoposide_rna_seq_test      <- ccle_test[intersect(etoposide_lines, rownames(ccle_test)), ]
-# 307 x 14209
-
 fluorouracil_rna_seq_train     <- ccle_train[intersect(fluorouracil_lines, rownames(ccle_train)), ]
 # 313 x 14209
 fluorouracil_rna_seq_test      <- ccle_test[intersect(fluorouracil_lines, rownames(ccle_test)), ]
@@ -5117,11 +3041,6 @@ gemcitabine_rna_seq_train     <- ccle_train[intersect(gemcitabine_lines, rowname
 # 276 x 14209
 gemcitabine_rna_seq_test      <- ccle_test[intersect(gemcitabine_lines, rownames(ccle_test)), ]
 # 286 x 14209
-
-methotrexate_rna_seq_train     <- ccle_train[intersect(methotrexate_lines, rownames(ccle_train)), ]
-# 299 x 14209
-methotrexate_rna_seq_test      <- ccle_test[intersect(methotrexate_lines, rownames(ccle_test)), ]
-# 295 x 14209
 
 
 carboplatin_train        <- carboplatin_ccle[which(carboplatin_ccle$Cell.line.name %in% rownames(carboplatin_rna_seq_train)), ]
@@ -5133,17 +3052,13 @@ cyclophosphamide_test         <- cyclophosphamide_ccle[which(cyclophosphamide_cc
 docetaxel_train        <- docetaxel_ccle[which(docetaxel_ccle$Cell.line.name %in% rownames(docetaxel_rna_seq_train)), ]
 docetaxel_test         <- docetaxel_ccle[which(docetaxel_ccle$Cell.line.name %in% rownames(docetaxel_rna_seq_test)), ]
 
-etoposide_train        <- etoposide_ccle[which(etoposide_ccle$Cell.line.name %in% rownames(etoposide_rna_seq_train)), ]
-etoposide_test         <- etoposide_ccle[which(etoposide_ccle$Cell.line.name %in% rownames(etoposide_rna_seq_test)), ]
-
 fluorouracil_train        <- fluorouracil_ccle[which(fluorouracil_ccle$Cell.line.name %in% rownames(fluorouracil_rna_seq_train)), ]
 fluorouracil_test         <- fluorouracil_ccle[which(fluorouracil_ccle$Cell.line.name %in% rownames(fluorouracil_rna_seq_test)), ]
 
 gemcitabine_train        <- gemcitabine_ccle[which(gemcitabine_ccle$Cell.line.name %in% rownames(gemcitabine_rna_seq_train)), ]
 gemcitabine_test         <- gemcitabine_ccle[which(gemcitabine_ccle$Cell.line.name %in% rownames(gemcitabine_rna_seq_test)), ]
 
-methotrexate_train        <- methotrexate_ccle[which(methotrexate_ccle$Cell.line.name %in% rownames(methotrexate_rna_seq_train)), ]
-methotrexate_test         <- methotrexate_ccle[which(methotrexate_ccle$Cell.line.name %in% rownames(methotrexate_rna_seq_test)), ]
+
 
 carboplatin_rna_seq_train_scaled          <- apply(carboplatin_rna_seq_train, 2, scale)
 carboplatin_rna_seq_test_scaled           <- as.data.frame(apply(carboplatin_rna_seq_test, 2, scale))
@@ -5154,17 +3069,12 @@ cyclophosphamide_rna_seq_test_scaled           <- as.data.frame(apply(cyclophosp
 docetaxel_rna_seq_train_scaled          <- apply(docetaxel_rna_seq_train, 2, scale)
 docetaxel_rna_seq_test_scaled           <- as.data.frame(apply(docetaxel_rna_seq_test, 2, scale))
 
-etoposide_rna_seq_train_scaled          <- apply(etoposide_rna_seq_train, 2, scale)
-etoposide_rna_seq_test_scaled           <- as.data.frame(apply(etoposide_rna_seq_test, 2, scale))
-
 fluorouracil_rna_seq_train_scaled          <- apply(fluorouracil_rna_seq_train, 2, scale)
 fluorouracil_rna_seq_test_scaled           <- as.data.frame(apply(fluorouracil_rna_seq_test, 2, scale))
 
 gemcitabine_rna_seq_train_scaled          <- apply(gemcitabine_rna_seq_train, 2, scale)
 gemcitabine_rna_seq_test_scaled           <- as.data.frame(apply(gemcitabine_rna_seq_test, 2, scale))
 
-methotrexate_rna_seq_train_scaled          <- apply(methotrexate_rna_seq_train, 2, scale)
-methotrexate_rna_seq_test_scaled           <- as.data.frame(apply(methotrexate_rna_seq_test, 2, scale))
 
 
 ### load models ----
@@ -5177,37 +3087,21 @@ cyclophosphamide_ccle_least_fit_elnet     <- readRDS('GLM_Models/cyclophosphamid
 docetaxel_ccle_most_fit_elnet   <- readRDS('GLM_Models/docetaxel_ccle_most_model.rds')
 docetaxel_ccle_least_fit_elnet  <- readRDS('GLM_Models/docetaxel_ccle_least_model.rds')
 
-etoposide_ccle_most_fit_elnet <- readRDS('GLM_Models/etoposide_ccle_most_model.rds')
-etoposide_ccle_least_fit_elnet <- readRDS('GLM_Models/etoposide_ccle_least_model.rds')
-
 fluorouracil_ccle_most_fit_elnet <- readRDS('GLM_Models/fluorouracil_ccle_most_model.rds')
 fluorouracil_ccle_least_fit_elnet <- readRDS('GLM_Models/fluorouracil_ccle_least_model.rds')
 
 gemcitabine_ccle_most_fit_elnet <- readRDS('GLM_Models/gemcitabine_ccle_most_model.rds')
 gemcitabine_ccle_least_fit_elnet <- readRDS('GLM_Models/gemcitabine_ccle_least_model.rds')
 
-methotrexate_ccle_most_fit_elnet <- readRDS('GLM_Models/methotrexate_ccle_most_model.rds')
-methotrexate_ccle_least_fit_elnet <- readRDS('GLM_Models/methotrexate_ccle_least_model.rds')
-
 
 ### get accuracy on testing data --------
 
 ## CARBOPLATIN
-#new_carboplatin_most_sensitive_min <- predict(carboplatin_ccle_most_fit_elnet, newx = as.matrix(carboplatin_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#carboplatin_most_test_gdsc_auc_min <- auc(carboplatin_test$most_sensitive, new_carboplatin_most_sensitive_min)
-#carboplatin_most_test_gdsc_auc_min <- round(carboplatin_most_test_gdsc_auc_min, digits = 2)
-
 new_carboplatin_most_sensitive_1se <- predict(carboplatin_ccle_most_fit_elnet, newx = as.matrix(carboplatin_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 carboplatin_most_test_gdsc_auc_1se <- auc(carboplatin_test$most_sensitive, new_carboplatin_most_sensitive_1se)
 carboplatin_most_test_gdsc_auc_1se <- round(carboplatin_most_test_gdsc_auc_1se, digits = 2)
 
-
-#new_carboplatin_least_sensitive_min <- predict(carboplatin_ccle_least_fit_elnet, newx = as.matrix(carboplatin_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#carboplatin_least_test_gdsc_auc_min <- auc(carboplatin_test$least_sensitive, new_carboplatin_least_sensitive_min)
-#carboplatin_least_test_gdsc_auc_min <- round(carboplatin_least_test_gdsc_auc_min, digits = 2)
 
 new_carboplatin_least_sensitive_1se <- predict(carboplatin_ccle_least_fit_elnet, newx = as.matrix(carboplatin_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
@@ -5215,21 +3109,11 @@ carboplatin_least_test_gdsc_auc_1se <- auc(carboplatin_test$least_sensitive, new
 carboplatin_least_test_gdsc_auc_1se <- round(carboplatin_least_test_gdsc_auc_1se, digits = 2)
 
 ## cyclophosphamide
-#new_cyclophosphamide_most_sensitive_min <- predict(cyclophosphamide_ccle_most_fit_elnet, newx = as.matrix(cyclophosphamide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#cyclophosphamide_most_test_gdsc_auc_min <- auc(cyclophosphamide_test$most_sensitive, new_cyclophosphamide_most_sensitive_min)
-#cyclophosphamide_most_test_gdsc_auc_min <- round(cyclophosphamide_most_test_gdsc_auc_min, digits = 2)
-
 new_cyclophosphamide_most_sensitive_1se <- predict(cyclophosphamide_ccle_most_fit_elnet, newx = as.matrix(cyclophosphamide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 cyclophosphamide_most_test_gdsc_auc_1se <- auc(cyclophosphamide_test$most_sensitive, new_cyclophosphamide_most_sensitive_1se)
 cyclophosphamide_most_test_gdsc_auc_1se <- round(cyclophosphamide_most_test_gdsc_auc_1se, digits = 2)
 
-
-#new_cyclophosphamide_least_sensitive_min <- predict(cyclophosphamide_ccle_least_fit_elnet, newx = as.matrix(cyclophosphamide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#cyclophosphamide_least_test_gdsc_auc_min <- auc(cyclophosphamide_test$least_sensitive, new_cyclophosphamide_least_sensitive_min)
-#cyclophosphamide_least_test_gdsc_auc_min <- round(cyclophosphamide_least_test_gdsc_auc_min, digits = 2)
 
 new_cyclophosphamide_least_sensitive_1se <- predict(cyclophosphamide_ccle_least_fit_elnet, newx = as.matrix(cyclophosphamide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
@@ -5237,11 +3121,6 @@ cyclophosphamide_least_test_gdsc_auc_1se <- auc(cyclophosphamide_test$least_sens
 cyclophosphamide_least_test_gdsc_auc_1se <- round(cyclophosphamide_least_test_gdsc_auc_1se, digits = 2)
 
 ## docetaxel
-#new_docetaxel_most_sensitive_min <- predict(docetaxel_ccle_most_fit_elnet, newx = as.matrix(docetaxel_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#docetaxel_most_test_gdsc_auc_min <- auc(docetaxel_test$most_sensitive, new_docetaxel_most_sensitive_min)
-#docetaxel_most_test_gdsc_auc_min <- round(docetaxel_most_test_gdsc_auc_min, digits = 2)
-
 new_docetaxel_most_sensitive_1se <- predict(docetaxel_ccle_most_fit_elnet, newx = as.matrix(docetaxel_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 docetaxel_most_test_gdsc_auc_1se <- auc(docetaxel_test$most_sensitive, new_docetaxel_most_sensitive_1se)
@@ -5253,49 +3132,12 @@ new_docetaxel_least_sensitive_min <- predict(docetaxel_ccle_least_fit_elnet, new
 docetaxel_least_test_gdsc_auc_min <- auc(docetaxel_test$least_sensitive, new_docetaxel_least_sensitive_min)
 docetaxel_least_test_gdsc_auc_min <- round(docetaxel_least_test_gdsc_auc_min, digits = 2)
 
-#new_docetaxel_least_sensitive_1se <- predict(docetaxel_ccle_least_fit_elnet, newx = as.matrix(docetaxel_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-#docetaxel_least_test_gdsc_auc_1se <- auc(docetaxel_test$least_sensitive, new_docetaxel_least_sensitive_1se)
-#docetaxel_least_test_gdsc_auc_1se <- round(docetaxel_least_test_gdsc_auc_1se, digits = 2)
-
-## etoposide
-#new_etoposide_most_sensitive_min <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#etoposide_most_test_gdsc_auc_min <- auc(etoposide_test$most_sensitive, new_etoposide_most_sensitive_min)
-#etoposide_most_test_gdsc_auc_min <- round(etoposide_most_test_gdsc_auc_min, digits = 2)
-
-new_etoposide_most_sensitive_1se <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-etoposide_most_test_gdsc_auc_1se <- auc(etoposide_test$most_sensitive, new_etoposide_most_sensitive_1se)
-etoposide_most_test_gdsc_auc_1se <- round(etoposide_most_test_gdsc_auc_1se, digits = 2)
-
-
-#new_etoposide_least_sensitive_min <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#etoposide_least_test_gdsc_auc_min <- auc(etoposide_test$least_sensitive, new_etoposide_least_sensitive_min)
-#etoposide_least_test_gdsc_auc_min <- round(etoposide_least_test_gdsc_auc_min, digits = 2)
-
-new_etoposide_least_sensitive_1se <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-etoposide_least_test_gdsc_auc_1se <- auc(etoposide_test$least_sensitive, new_etoposide_least_sensitive_1se)
-etoposide_least_test_gdsc_auc_1se <- round(etoposide_least_test_gdsc_auc_1se, digits = 2)
-
 ## fluorouracil
-#new_fluorouracil_most_sensitive_min <- predict(fluorouracil_ccle_most_fit_elnet, newx = as.matrix(fluorouracil_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#fluorouracil_most_test_gdsc_auc_min <- auc(fluorouracil_test$most_sensitive, new_fluorouracil_most_sensitive_min)
-#fluorouracil_most_test_gdsc_auc_min <- round(fluorouracil_most_test_gdsc_auc_min, digits = 2)
-
 new_fluorouracil_most_sensitive_1se <- predict(fluorouracil_ccle_most_fit_elnet, newx = as.matrix(fluorouracil_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 fluorouracil_most_test_gdsc_auc_1se <- auc(fluorouracil_test$most_sensitive, new_fluorouracil_most_sensitive_1se)
 fluorouracil_most_test_gdsc_auc_1se <- round(fluorouracil_most_test_gdsc_auc_1se, digits = 2)
 
-
-#new_fluorouracil_least_sensitive_min <- predict(fluorouracil_ccle_least_fit_elnet, newx = as.matrix(fluorouracil_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#fluorouracil_least_test_gdsc_auc_min <- auc(fluorouracil_test$least_sensitive, new_fluorouracil_least_sensitive_min)
-#fluorouracil_least_test_gdsc_auc_min <- round(fluorouracil_least_test_gdsc_auc_min, digits = 2)
 
 new_fluorouracil_least_sensitive_1se <- predict(fluorouracil_ccle_least_fit_elnet, newx = as.matrix(fluorouracil_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
@@ -5303,56 +3145,24 @@ fluorouracil_least_test_gdsc_auc_1se <- auc(fluorouracil_test$least_sensitive, n
 fluorouracil_least_test_gdsc_auc_1se <- round(fluorouracil_least_test_gdsc_auc_1se, digits = 2)
 
 ## gemcitabine
-#new_gemcitabine_most_sensitive_min <- predict(gemcitabine_ccle_most_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#gemcitabine_most_test_gdsc_auc_min <- auc(gemcitabine_test$most_sensitive, new_gemcitabine_most_sensitive_min)
-#gemcitabine_most_test_gdsc_auc_min <- round(gemcitabine_most_test_gdsc_auc_min, digits = 2)
-
 new_gemcitabine_most_sensitive_1se <- predict(gemcitabine_ccle_most_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 gemcitabine_most_test_gdsc_auc_1se <- auc(gemcitabine_test$most_sensitive, new_gemcitabine_most_sensitive_1se)
 gemcitabine_most_test_gdsc_auc_1se <- round(gemcitabine_most_test_gdsc_auc_1se, digits = 2)
 
 
-#new_gemcitabine_least_sensitive_min <- predict(gemcitabine_ccle_least_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#gemcitabine_least_test_gdsc_auc_min <- auc(gemcitabine_test$least_sensitive, new_gemcitabine_least_sensitive_min)
-#gemcitabine_least_test_gdsc_auc_min <- round(gemcitabine_least_test_gdsc_auc_min, digits = 2)
-
 new_gemcitabine_least_sensitive_1se <- predict(gemcitabine_ccle_least_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
 gemcitabine_least_test_gdsc_auc_1se <- auc(gemcitabine_test$least_sensitive, new_gemcitabine_least_sensitive_1se)
 gemcitabine_least_test_gdsc_auc_1se <- round(gemcitabine_least_test_gdsc_auc_1se, digits = 2)
 
-## methotrexate
-#new_methotrexate_most_sensitive_min <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#methotrexate_most_test_gdsc_auc_min <- auc(methotrexate_test$most_sensitive, new_methotrexate_most_sensitive_min)
-#methotrexate_most_test_gdsc_auc_min <- round(methotrexate_most_test_gdsc_auc_min, digits = 2)
-
-new_methotrexate_most_sensitive_1se <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-methotrexate_most_test_gdsc_auc_1se <- auc(methotrexate_test$most_sensitive, new_methotrexate_most_sensitive_1se)
-methotrexate_most_test_gdsc_auc_1se <- round(methotrexate_most_test_gdsc_auc_1se, digits = 2)
-
-
-#new_methotrexate_least_sensitive_min <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-#methotrexate_least_test_gdsc_auc_min <- auc(methotrexate_test$least_sensitive, new_methotrexate_least_sensitive_min)
-#methotrexate_least_test_gdsc_auc_min <- round(methotrexate_least_test_gdsc_auc_min, digits = 2)
-
-new_methotrexate_least_sensitive_1se <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
-
-methotrexate_least_test_gdsc_auc_1se <- auc(methotrexate_test$least_sensitive, new_methotrexate_least_sensitive_1se)
-methotrexate_least_test_gdsc_auc_1se <- round(methotrexate_least_test_gdsc_auc_1se, digits = 2)
 
 overall_auc <- c(carboplatin_most_test_gdsc_auc_1se, carboplatin_least_test_gdsc_auc_1se, 
                  cyclophosphamide_most_test_gdsc_auc_1se, cyclophosphamide_least_test_gdsc_auc_1se, 
                  docetaxel_most_test_gdsc_auc_1se, docetaxel_least_test_gdsc_auc_min, 
-                 etoposide_most_test_gdsc_auc_1se, etoposide_least_test_gdsc_auc_1se, 
                  fluorouracil_most_test_gdsc_auc_1se, fluorouracil_least_test_gdsc_auc_1se, 
-                 gemcitabine_most_test_gdsc_auc_1se, gemcitabine_least_test_gdsc_auc_1se, 
-                 methotrexate_most_test_gdsc_auc_1se, methotrexate_least_test_gdsc_auc_1se)
+                 gemcitabine_most_test_gdsc_auc_1se, gemcitabine_least_test_gdsc_auc_1se)
+
 # subsetting lines by cancer type
 carboplatin_autonomic_ganglia_lines              <- carboplatin_test$Tissue == 'autonomic_ganglia'
 carboplatin_biliary_tract_lines                  <- carboplatin_test$Tissue == 'biliary_tract'
@@ -6155,273 +3965,6 @@ docetaxel_least_auc <- c(docetaxel_autonomic_ganglia_least_auc, docetaxel_biliar
                            docetaxel_thyroid_least_auc, docetaxel_upper_aerodigestive_tract_least_auc, 
                            docetaxel_urinary_tract_least_auc)
 
-etoposide_autonomic_ganglia_lines              <- etoposide_test$Tissue == 'autonomic_ganglia'
-etoposide_biliary_tract_lines                  <- etoposide_test$Tissue == 'biliary_tract'
-etoposide_bone_lines                           <- etoposide_test$Tissue == 'bone'
-etoposide_breast_lines                         <- etoposide_test$Tissue == 'breast'
-etoposide_central_nervous_system_lines         <- etoposide_test$Tissue == 'central_nervous_system'
-etoposide_endometrium_lines                    <- etoposide_test$Tissue == 'endometrium'
-etoposide_kidney_lines                         <- etoposide_test$Tissue == 'kidney'
-etoposide_large_intestine_lines                <- etoposide_test$Tissue == 'large_intestine'
-etoposide_liver_lines                          <- etoposide_test$Tissue == 'liver'
-etoposide_lung_lines                           <- etoposide_test$Tissue == 'lung'
-etoposide_oesaphagus_lines                     <- etoposide_test$Tissue == 'oesphagus'
-etoposide_ovary_lines                          <- etoposide_test$Tissue == 'ovary'
-etoposide_pancreas_lines                       <- etoposide_test$Tissue == 'pancreas'
-etoposide_pleura_lines                         <- etoposide_test$Tissue == 'pleura'
-etoposide_prostate_lines                       <- etoposide_test$Tissue == 'prostate'
-etoposide_salivary_gland_lines                 <- etoposide_test$Tissue == 'salivary_gland'
-etoposide_skin_lines                           <- etoposide_test$Tissue == 'skin'
-etoposide_soft_tissue_lines                    <- etoposide_test$Tissue == 'soft_tissue'
-etoposide_stomach_lines                        <- etoposide_test$Tissue == 'stomach'
-etoposide_thyroid_lines                        <- etoposide_test$Tissue == 'thyroid'
-etoposide_upper_aerodigestive_tract_lines      <- etoposide_test$Tissue == 'upper_aerodigestive_tract'
-etoposide_urinary_tract_lines                  <- etoposide_test$Tissue == 'urinary_tract'
-
-etoposide_test_scaled_autonomic_ganglia <- etoposide_rna_seq_test_scaled[etoposide_autonomic_ganglia_lines, ]
-etoposide_test_autonomic_ganglia <- etoposide_test[which(etoposide_test$Tissue == 'autonomic_ganglia'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_autonomic_ganglia), s = 'lambda.1se', interval = 'conf')
-etoposide_autonomic_ganglia_most_auc <- auc(etoposide_test_autonomic_ganglia$most_sensitive, new_ic50)
-
-etoposide_test_scaled_biliary_tract <- etoposide_rna_seq_test_scaled[etoposide_biliary_tract_lines, ]
-etoposide_test_biliary_tract <- etoposide_test[which(etoposide_test$Tissue == 'biliary_tract'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_biliary_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_biliary_tract_most_auc <- auc(etoposide_test_biliary_tract$most_sensitive, new_ic50)
-
-etoposide_test_scaled_bone <- etoposide_rna_seq_test_scaled[etoposide_bone_lines, ]
-etoposide_test_bone <- etoposide_test[which(etoposide_test$Tissue == 'bone'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-etoposide_bone_most_auc <- auc(etoposide_test_bone$most_sensitive, new_ic50)
-
-etoposide_test_scaled_breast <- etoposide_rna_seq_test_scaled[etoposide_breast_lines, ]
-etoposide_test_breast <- etoposide_test[which(etoposide_test$Tissue == 'breast'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-etoposide_breast_most_auc <- auc(etoposide_test_breast$most_sensitive, new_ic50)
-
-etoposide_test_scaled_central_nervous_system <- etoposide_rna_seq_test_scaled[etoposide_central_nervous_system_lines, ]
-etoposide_test_central_nervous_system <- etoposide_test[which(etoposide_test$Tissue == 'central_nervous_system'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_central_nervous_system), s = 'lambda.1se', interval = 'conf')
-etoposide_central_nervous_system_most_auc <- auc(etoposide_test_central_nervous_system$most_sensitive, new_ic50)
-
-etoposide_test_scaled_endometrium <- etoposide_rna_seq_test_scaled[etoposide_endometrium_lines, ]
-etoposide_test_endometrium <- etoposide_test[which(etoposide_test$Tissue == 'endometrium'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_endometrium), s = 'lambda.1se', interval = 'conf')
-etoposide_endometrium_most_auc <- auc(etoposide_test_endometrium$most_sensitive, new_ic50)
-
-etoposide_test_scaled_kidney <- etoposide_rna_seq_test_scaled[etoposide_kidney_lines, ]
-etoposide_test_kidney <- etoposide_test[which(etoposide_test$Tissue == 'kidney'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-etoposide_kidney_most_auc <- auc(etoposide_test_kidney$most_sensitive, new_ic50)
-
-etoposide_test_scaled_large_intestine <- etoposide_rna_seq_test_scaled[etoposide_large_intestine_lines, ]
-etoposide_test_large_intestine <- etoposide_test[which(etoposide_test$Tissue == 'large_intestine'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-etoposide_large_intestine_most_auc <- auc(etoposide_test_large_intestine$most_sensitive, new_ic50)
-
-etoposide_test_scaled_liver <- etoposide_rna_seq_test_scaled[etoposide_liver_lines, ]
-etoposide_test_liver <- etoposide_test[which(etoposide_test$Tissue == 'liver'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_liver), s = 'lambda.1se', interval = 'conf')
-etoposide_liver_most_auc <- auc(etoposide_test_liver$most_sensitive, new_ic50)
-
-etoposide_test_scaled_lung <- etoposide_rna_seq_test_scaled[etoposide_lung_lines, ]
-etoposide_test_lung <- etoposide_test[which(etoposide_test$Tissue == 'lung'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-etoposide_lung_most_auc <- auc(etoposide_test_lung$most_sensitive, new_ic50)
-
-etoposide_test_scaled_oesaphagus <- etoposide_rna_seq_test_scaled[etoposide_oesaphagus_lines, ]
-etoposide_test_oesaphagus <- etoposide_test[which(etoposide_test$Tissue == 'oesaphagus'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_oesaphagus), s = 'lambda.1se', interval = 'conf')
-etoposide_oesaphagus_most_auc <- auc(etoposide_test_oesaphagus$most_sensitive, new_ic50)
-
-etoposide_test_scaled_ovary <- etoposide_rna_seq_test_scaled[etoposide_ovary_lines, ]
-etoposide_test_ovary <- etoposide_test[which(etoposide_test$Tissue == 'ovary'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_ovary), s = 'lambda.1se', interval = 'conf')
-etoposide_ovary_most_auc <- auc(etoposide_test_ovary$most_sensitive, new_ic50)
-
-etoposide_test_scaled_pancreas <- etoposide_rna_seq_test_scaled[etoposide_pancreas_lines, ]
-etoposide_test_pancreas <- etoposide_test[which(etoposide_test$Tissue == 'pancreas'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-etoposide_pancreas_most_auc <- auc(etoposide_test_pancreas$most_sensitive, new_ic50)
-
-etoposide_test_scaled_pleura <- etoposide_rna_seq_test_scaled[etoposide_pleura_lines, ]
-etoposide_test_pleura <- etoposide_test[which(etoposide_test$Tissue == 'pleura'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_pleura), s = 'lambda.1se', interval = 'conf')
-etoposide_pleura_most_auc <- auc(etoposide_test_pleura$most_sensitive, new_ic50)
-
-etoposide_test_scaled_prostate <- etoposide_rna_seq_test_scaled[etoposide_prostate_lines, ]
-etoposide_test_prostate <- etoposide_test[which(etoposide_test$Tissue == 'prostate'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_prostate), s = 'lambda.1se', interval = 'conf')
-etoposide_prostate_most_auc <- auc(etoposide_test_prostate$most_sensitive, new_ic50)
-
-etoposide_test_scaled_salivary_gland <- etoposide_rna_seq_test_scaled[etoposide_salivary_gland_lines, ]
-etoposide_test_salivary_gland <- etoposide_test[which(etoposide_test$Tissue == 'salivary_gland'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_salivary_gland), s = 'lambda.1se', interval = 'conf')
-etoposide_salivary_gland_most_auc <- auc(etoposide_test_salivary_gland$most_sensitive, new_ic50)
-
-etoposide_test_scaled_skin <- etoposide_rna_seq_test_scaled[etoposide_skin_lines, ]
-etoposide_test_skin <- etoposide_test[which(etoposide_test$Tissue == 'skin'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-etoposide_skin_most_auc <- auc(etoposide_test_skin$most_sensitive, new_ic50)
-
-etoposide_test_scaled_soft_tissue <- etoposide_rna_seq_test_scaled[etoposide_soft_tissue_lines, ]
-etoposide_test_soft_tissue <- etoposide_test[which(etoposide_test$Tissue == 'soft_tissue'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-etoposide_soft_tissue_most_auc <- auc(etoposide_test_soft_tissue$most_sensitive, new_ic50)
-
-etoposide_test_scaled_stomach <- etoposide_rna_seq_test_scaled[etoposide_stomach_lines, ]
-etoposide_test_stomach <- etoposide_test[which(etoposide_test$Tissue == 'stomach'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_stomach), s = 'lambda.1se', interval = 'conf')
-etoposide_stomach_most_auc <- auc(etoposide_test_stomach$most_sensitive, new_ic50)
-
-etoposide_test_scaled_thyroid <- etoposide_rna_seq_test_scaled[etoposide_thyroid_lines, ]
-etoposide_test_thyroid <- etoposide_test[which(etoposide_test$Tissue == 'thyroid'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-etoposide_thyroid_most_auc <- auc(etoposide_test_thyroid$most_sensitive, new_ic50)
-
-etoposide_test_scaled_upper_aerodigestive_tract <- etoposide_rna_seq_test_scaled[etoposide_upper_aerodigestive_tract_lines, ]
-etoposide_test_upper_aerodigestive_tract <- etoposide_test[which(etoposide_test$Tissue == 'upper_aerodigestive_tract'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_upper_aerodigestive_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_upper_aerodigestive_tract_most_auc <- auc(etoposide_test_upper_aerodigestive_tract$most_sensitive, new_ic50)
-
-etoposide_test_scaled_urinary_tract <- etoposide_rna_seq_test_scaled[etoposide_urinary_tract_lines, ]
-etoposide_test_urinary_tract <- etoposide_test[which(etoposide_test$Tissue == 'urinary_tract'), ]
-new_ic50 <- predict(etoposide_ccle_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_urinary_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_urinary_tract_most_auc <- auc(etoposide_test_urinary_tract$most_sensitive, new_ic50)
-
-etoposide_most_auc <- c(etoposide_autonomic_ganglia_most_auc, etoposide_biliary_tract_most_auc, 
-                          etoposide_bone_most_auc, etoposide_breast_most_auc, etoposide_central_nervous_system_most_auc, 
-                          etoposide_endometrium_most_auc, etoposide_kidney_most_auc, 
-                          etoposide_large_intestine_most_auc, etoposide_liver_most_auc, 
-                          etoposide_lung_most_auc, etoposide_oesaphagus_most_auc, 
-                          etoposide_ovary_most_auc, etoposide_pancreas_most_auc, 
-                          etoposide_pleura_most_auc, etoposide_prostate_most_auc, 
-                          etoposide_salivary_gland_most_auc, etoposide_skin_most_auc, 
-                          etoposide_soft_tissue_most_auc, etoposide_stomach_most_auc, 
-                          etoposide_thyroid_most_auc, etoposide_upper_aerodigestive_tract_most_auc, 
-                          etoposide_urinary_tract_most_auc)
-
-etoposide_test_scaled_autonomic_ganglia <- etoposide_rna_seq_test_scaled[etoposide_autonomic_ganglia_lines, ]
-etoposide_test_autonomic_ganglia <- etoposide_test[which(etoposide_test$Tissue == 'autonomic_ganglia'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_autonomic_ganglia), s = 'lambda.1se', interval = 'conf')
-etoposide_autonomic_ganglia_least_auc <- auc(etoposide_test_autonomic_ganglia$least_sensitive, new_ic50)
-
-etoposide_test_scaled_biliary_tract <- etoposide_rna_seq_test_scaled[etoposide_biliary_tract_lines, ]
-etoposide_test_biliary_tract <- etoposide_test[which(etoposide_test$Tissue == 'biliary_tract'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_biliary_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_biliary_tract_least_auc <- auc(etoposide_test_biliary_tract$least_sensitive, new_ic50)
-
-etoposide_test_scaled_bone <- etoposide_rna_seq_test_scaled[etoposide_bone_lines, ]
-etoposide_test_bone <- etoposide_test[which(etoposide_test$Tissue == 'bone'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-etoposide_bone_least_auc <- auc(etoposide_test_bone$least_sensitive, new_ic50)
-
-etoposide_test_scaled_breast <- etoposide_rna_seq_test_scaled[etoposide_breast_lines, ]
-etoposide_test_breast <- etoposide_test[which(etoposide_test$Tissue == 'breast'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-etoposide_breast_least_auc <- auc(etoposide_test_breast$least_sensitive, new_ic50)
-
-etoposide_test_scaled_central_nervous_system <- etoposide_rna_seq_test_scaled[etoposide_central_nervous_system_lines, ]
-etoposide_test_central_nervous_system <- etoposide_test[which(etoposide_test$Tissue == 'central_nervous_system'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_central_nervous_system), s = 'lambda.1se', interval = 'conf')
-etoposide_central_nervous_system_least_auc <- auc(etoposide_test_central_nervous_system$least_sensitive, new_ic50)
-
-etoposide_test_scaled_endometrium <- etoposide_rna_seq_test_scaled[etoposide_endometrium_lines, ]
-etoposide_test_endometrium <- etoposide_test[which(etoposide_test$Tissue == 'endometrium'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_endometrium), s = 'lambda.1se', interval = 'conf')
-etoposide_endometrium_least_auc <- auc(etoposide_test_endometrium$least_sensitive, new_ic50)
-
-etoposide_test_scaled_kidney <- etoposide_rna_seq_test_scaled[etoposide_kidney_lines, ]
-etoposide_test_kidney <- etoposide_test[which(etoposide_test$Tissue == 'kidney'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-etoposide_kidney_least_auc <- auc(etoposide_test_kidney$least_sensitive, new_ic50)
-
-etoposide_test_scaled_large_intestine <- etoposide_rna_seq_test_scaled[etoposide_large_intestine_lines, ]
-etoposide_test_large_intestine <- etoposide_test[which(etoposide_test$Tissue == 'large_intestine'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-etoposide_large_intestine_least_auc <- auc(etoposide_test_large_intestine$least_sensitive, new_ic50)
-
-etoposide_test_scaled_liver <- etoposide_rna_seq_test_scaled[etoposide_liver_lines, ]
-etoposide_test_liver <- etoposide_test[which(etoposide_test$Tissue == 'liver'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_liver), s = 'lambda.1se', interval = 'conf')
-etoposide_liver_least_auc <- auc(etoposide_test_liver$least_sensitive, new_ic50)
-
-etoposide_test_scaled_lung <- etoposide_rna_seq_test_scaled[etoposide_lung_lines, ]
-etoposide_test_lung <- etoposide_test[which(etoposide_test$Tissue == 'lung'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-etoposide_lung_least_auc <- auc(etoposide_test_lung$least_sensitive, new_ic50)
-
-etoposide_test_scaled_oesaphagus <- etoposide_rna_seq_test_scaled[etoposide_oesaphagus_lines, ]
-etoposide_test_oesaphagus <- etoposide_test[which(etoposide_test$Tissue == 'oesaphagus'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_oesaphagus), s = 'lambda.1se', interval = 'conf')
-etoposide_oesaphagus_least_auc <- auc(etoposide_test_oesaphagus$least_sensitive, new_ic50)
-
-etoposide_test_scaled_ovary <- etoposide_rna_seq_test_scaled[etoposide_ovary_lines, ]
-etoposide_test_ovary <- etoposide_test[which(etoposide_test$Tissue == 'ovary'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_ovary), s = 'lambda.1se', interval = 'conf')
-etoposide_ovary_least_auc <- auc(etoposide_test_ovary$least_sensitive, new_ic50)
-
-etoposide_test_scaled_pancreas <- etoposide_rna_seq_test_scaled[etoposide_pancreas_lines, ]
-etoposide_test_pancreas <- etoposide_test[which(etoposide_test$Tissue == 'pancreas'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-etoposide_pancreas_least_auc <- auc(etoposide_test_pancreas$least_sensitive, new_ic50)
-
-etoposide_test_scaled_pleura <- etoposide_rna_seq_test_scaled[etoposide_pleura_lines, ]
-etoposide_test_pleura <- etoposide_test[which(etoposide_test$Tissue == 'pleura'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_pleura), s = 'lambda.1se', interval = 'conf')
-etoposide_pleura_least_auc <- auc(etoposide_test_pleura$least_sensitive, new_ic50)
-
-etoposide_test_scaled_prostate <- etoposide_rna_seq_test_scaled[etoposide_prostate_lines, ]
-etoposide_test_prostate <- etoposide_test[which(etoposide_test$Tissue == 'prostate'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_prostate), s = 'lambda.1se', interval = 'conf')
-etoposide_prostate_least_auc <- auc(etoposide_test_prostate$least_sensitive, new_ic50)
-
-etoposide_test_scaled_salivary_gland <- etoposide_rna_seq_test_scaled[etoposide_salivary_gland_lines, ]
-etoposide_test_salivary_gland <- etoposide_test[which(etoposide_test$Tissue == 'salivary_gland'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_salivary_gland), s = 'lambda.1se', interval = 'conf')
-etoposide_salivary_gland_least_auc <- auc(etoposide_test_salivary_gland$least_sensitive, new_ic50)
-
-etoposide_test_scaled_skin <- etoposide_rna_seq_test_scaled[etoposide_skin_lines, ]
-etoposide_test_skin <- etoposide_test[which(etoposide_test$Tissue == 'skin'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-etoposide_skin_least_auc <- auc(etoposide_test_skin$least_sensitive, new_ic50)
-
-etoposide_test_scaled_soft_tissue <- etoposide_rna_seq_test_scaled[etoposide_soft_tissue_lines, ]
-etoposide_test_soft_tissue <- etoposide_test[which(etoposide_test$Tissue == 'soft_tissue'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-etoposide_soft_tissue_least_auc <- auc(etoposide_test_soft_tissue$least_sensitive, new_ic50)
-
-etoposide_test_scaled_stomach <- etoposide_rna_seq_test_scaled[etoposide_stomach_lines, ]
-etoposide_test_stomach <- etoposide_test[which(etoposide_test$Tissue == 'stomach'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_stomach), s = 'lambda.1se', interval = 'conf')
-etoposide_stomach_least_auc <- auc(etoposide_test_stomach$least_sensitive, new_ic50)
-
-etoposide_test_scaled_thyroid <- etoposide_rna_seq_test_scaled[etoposide_thyroid_lines, ]
-etoposide_test_thyroid <- etoposide_test[which(etoposide_test$Tissue == 'thyroid'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-etoposide_thyroid_least_auc <- auc(etoposide_test_thyroid$least_sensitive, new_ic50)
-
-etoposide_test_scaled_upper_aerodigestive_tract <- etoposide_rna_seq_test_scaled[etoposide_upper_aerodigestive_tract_lines, ]
-etoposide_test_upper_aerodigestive_tract <- etoposide_test[which(etoposide_test$Tissue == 'upper_aerodigestive_tract'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_upper_aerodigestive_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_upper_aerodigestive_tract_least_auc <- auc(etoposide_test_upper_aerodigestive_tract$least_sensitive, new_ic50)
-
-etoposide_test_scaled_urinary_tract <- etoposide_rna_seq_test_scaled[etoposide_urinary_tract_lines, ]
-etoposide_test_urinary_tract <- etoposide_test[which(etoposide_test$Tissue == 'urinary_tract'), ]
-new_ic50 <- predict(etoposide_ccle_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_urinary_tract), s = 'lambda.1se', interval = 'conf')
-etoposide_urinary_tract_least_auc <- auc(etoposide_test_urinary_tract$least_sensitive, new_ic50)
-
-etoposide_least_auc <- c(etoposide_autonomic_ganglia_least_auc, etoposide_biliary_tract_least_auc, 
-                           etoposide_bone_least_auc, etoposide_breast_least_auc, etoposide_central_nervous_system_least_auc, 
-                           etoposide_endometrium_least_auc, etoposide_kidney_least_auc, 
-                           etoposide_large_intestine_least_auc, etoposide_liver_least_auc, 
-                           etoposide_lung_least_auc, etoposide_oesaphagus_least_auc, 
-                           etoposide_ovary_least_auc, etoposide_pancreas_least_auc, 
-                           etoposide_pleura_least_auc, etoposide_prostate_least_auc, 
-                           etoposide_salivary_gland_least_auc, etoposide_skin_least_auc, 
-                           etoposide_soft_tissue_least_auc, etoposide_stomach_least_auc, 
-                           etoposide_thyroid_least_auc, etoposide_upper_aerodigestive_tract_least_auc, 
-                           etoposide_urinary_tract_least_auc)
-
 fluorouracil_autonomic_ganglia_lines              <- fluorouracil_test$Tissue == 'autonomic_ganglia'
 fluorouracil_biliary_tract_lines                  <- fluorouracil_test$Tissue == 'biliary_tract'
 fluorouracil_bone_lines                           <- fluorouracil_test$Tissue == 'bone'
@@ -6956,315 +4499,33 @@ gemcitabine_least_auc <- c(gemcitabine_autonomic_ganglia_least_auc, gemcitabine_
                            gemcitabine_thyroid_least_auc, gemcitabine_upper_aerodigestive_tract_least_auc, 
                            gemcitabine_urinary_tract_least_auc)
 
-methotrexate_autonomic_ganglia_lines              <- methotrexate_test$Tissue == 'autonomic_ganglia'
-methotrexate_biliary_tract_lines                  <- methotrexate_test$Tissue == 'biliary_tract'
-methotrexate_bone_lines                           <- methotrexate_test$Tissue == 'bone'
-methotrexate_breast_lines                         <- methotrexate_test$Tissue == 'breast'
-methotrexate_central_nervous_system_lines         <- methotrexate_test$Tissue == 'central_nervous_system'
-methotrexate_endometrium_lines                    <- methotrexate_test$Tissue == 'endometrium'
-methotrexate_kidney_lines                         <- methotrexate_test$Tissue == 'kidney'
-methotrexate_large_intestine_lines                <- methotrexate_test$Tissue == 'large_intestine'
-methotrexate_liver_lines                          <- methotrexate_test$Tissue == 'liver'
-methotrexate_lung_lines                           <- methotrexate_test$Tissue == 'lung'
-methotrexate_oesaphagus_lines                     <- methotrexate_test$Tissue == 'oesphagus'
-methotrexate_ovary_lines                          <- methotrexate_test$Tissue == 'ovary'
-methotrexate_pancreas_lines                       <- methotrexate_test$Tissue == 'pancreas'
-methotrexate_pleura_lines                         <- methotrexate_test$Tissue == 'pleura'
-methotrexate_prostate_lines                       <- methotrexate_test$Tissue == 'prostate'
-methotrexate_salivary_gland_lines                 <- methotrexate_test$Tissue == 'salivary_gland'
-methotrexate_skin_lines                           <- methotrexate_test$Tissue == 'skin'
-methotrexate_soft_tissue_lines                    <- methotrexate_test$Tissue == 'soft_tissue'
-methotrexate_stomach_lines                        <- methotrexate_test$Tissue == 'stomach'
-methotrexate_thyroid_lines                        <- methotrexate_test$Tissue == 'thyroid'
-methotrexate_upper_aerodigestive_tract_lines      <- methotrexate_test$Tissue == 'upper_aerodigestive_tract'
-methotrexate_urinary_tract_lines                  <- methotrexate_test$Tissue == 'urinary_tract'
-
-methotrexate_test_scaled_autonomic_ganglia <- methotrexate_rna_seq_test_scaled[methotrexate_autonomic_ganglia_lines, ]
-methotrexate_test_autonomic_ganglia <- methotrexate_test[which(methotrexate_test$Tissue == 'autonomic_ganglia'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_autonomic_ganglia), s = 'lambda.1se', interval = 'conf')
-methotrexate_autonomic_ganglia_most_auc <- auc(methotrexate_test_autonomic_ganglia$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_biliary_tract <- methotrexate_rna_seq_test_scaled[methotrexate_biliary_tract_lines, ]
-methotrexate_test_biliary_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'biliary_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_biliary_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_biliary_tract_most_auc <- auc(methotrexate_test_biliary_tract$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_bone <- methotrexate_rna_seq_test_scaled[methotrexate_bone_lines, ]
-methotrexate_test_bone <- methotrexate_test[which(methotrexate_test$Tissue == 'bone'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-methotrexate_bone_most_auc <- auc(methotrexate_test_bone$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_breast <- methotrexate_rna_seq_test_scaled[methotrexate_breast_lines, ]
-methotrexate_test_breast <- methotrexate_test[which(methotrexate_test$Tissue == 'breast'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-methotrexate_breast_most_auc <- auc(methotrexate_test_breast$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_central_nervous_system <- methotrexate_rna_seq_test_scaled[methotrexate_central_nervous_system_lines, ]
-methotrexate_test_central_nervous_system <- methotrexate_test[which(methotrexate_test$Tissue == 'central_nervous_system'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_central_nervous_system), s = 'lambda.1se', interval = 'conf')
-methotrexate_central_nervous_system_most_auc <- auc(methotrexate_test_central_nervous_system$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_endometrium <- methotrexate_rna_seq_test_scaled[methotrexate_endometrium_lines, ]
-methotrexate_test_endometrium <- methotrexate_test[which(methotrexate_test$Tissue == 'endometrium'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_endometrium), s = 'lambda.1se', interval = 'conf')
-methotrexate_endometrium_most_auc <- auc(methotrexate_test_endometrium$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_kidney <- methotrexate_rna_seq_test_scaled[methotrexate_kidney_lines, ]
-methotrexate_test_kidney <- methotrexate_test[which(methotrexate_test$Tissue == 'kidney'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-methotrexate_kidney_most_auc <- auc(methotrexate_test_kidney$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_large_intestine <- methotrexate_rna_seq_test_scaled[methotrexate_large_intestine_lines, ]
-methotrexate_test_large_intestine <- methotrexate_test[which(methotrexate_test$Tissue == 'large_intestine'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-methotrexate_large_intestine_most_auc <- auc(methotrexate_test_large_intestine$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_liver <- methotrexate_rna_seq_test_scaled[methotrexate_liver_lines, ]
-methotrexate_test_liver <- methotrexate_test[which(methotrexate_test$Tissue == 'liver'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_liver), s = 'lambda.1se', interval = 'conf')
-methotrexate_liver_most_auc <- auc(methotrexate_test_liver$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_lung <- methotrexate_rna_seq_test_scaled[methotrexate_lung_lines, ]
-methotrexate_test_lung <- methotrexate_test[which(methotrexate_test$Tissue == 'lung'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-methotrexate_lung_most_auc <- auc(methotrexate_test_lung$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_oesaphagus <- methotrexate_rna_seq_test_scaled[methotrexate_oesaphagus_lines, ]
-methotrexate_test_oesaphagus <- methotrexate_test[which(methotrexate_test$Tissue == 'oesaphagus'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_oesaphagus), s = 'lambda.1se', interval = 'conf')
-methotrexate_oesaphagus_most_auc <- auc(methotrexate_test_oesaphagus$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_ovary <- methotrexate_rna_seq_test_scaled[methotrexate_ovary_lines, ]
-methotrexate_test_ovary <- methotrexate_test[which(methotrexate_test$Tissue == 'ovary'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_ovary), s = 'lambda.1se', interval = 'conf')
-methotrexate_ovary_most_auc <- auc(methotrexate_test_ovary$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_pancreas <- methotrexate_rna_seq_test_scaled[methotrexate_pancreas_lines, ]
-methotrexate_test_pancreas <- methotrexate_test[which(methotrexate_test$Tissue == 'pancreas'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-methotrexate_pancreas_most_auc <- auc(methotrexate_test_pancreas$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_pleura <- methotrexate_rna_seq_test_scaled[methotrexate_pleura_lines, ]
-methotrexate_test_pleura <- methotrexate_test[which(methotrexate_test$Tissue == 'pleura'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pleura), s = 'lambda.1se', interval = 'conf')
-methotrexate_pleura_most_auc <- auc(methotrexate_test_pleura$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_prostate <- methotrexate_rna_seq_test_scaled[methotrexate_prostate_lines, ]
-methotrexate_test_prostate <- methotrexate_test[which(methotrexate_test$Tissue == 'prostate'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_prostate), s = 'lambda.1se', interval = 'conf')
-methotrexate_prostate_most_auc <- auc(methotrexate_test_prostate$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_salivary_gland <- methotrexate_rna_seq_test_scaled[methotrexate_salivary_gland_lines, ]
-methotrexate_test_salivary_gland <- methotrexate_test[which(methotrexate_test$Tissue == 'salivary_gland'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_salivary_gland), s = 'lambda.1se', interval = 'conf')
-methotrexate_salivary_gland_most_auc <- auc(methotrexate_test_salivary_gland$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_skin <- methotrexate_rna_seq_test_scaled[methotrexate_skin_lines, ]
-methotrexate_test_skin <- methotrexate_test[which(methotrexate_test$Tissue == 'skin'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-methotrexate_skin_most_auc <- auc(methotrexate_test_skin$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_soft_tissue <- methotrexate_rna_seq_test_scaled[methotrexate_soft_tissue_lines, ]
-methotrexate_test_soft_tissue <- methotrexate_test[which(methotrexate_test$Tissue == 'soft_tissue'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-methotrexate_soft_tissue_most_auc <- auc(methotrexate_test_soft_tissue$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_stomach <- methotrexate_rna_seq_test_scaled[methotrexate_stomach_lines, ]
-methotrexate_test_stomach <- methotrexate_test[which(methotrexate_test$Tissue == 'stomach'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_stomach), s = 'lambda.1se', interval = 'conf')
-methotrexate_stomach_most_auc <- auc(methotrexate_test_stomach$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_thyroid <- methotrexate_rna_seq_test_scaled[methotrexate_thyroid_lines, ]
-methotrexate_test_thyroid <- methotrexate_test[which(methotrexate_test$Tissue == 'thyroid'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-methotrexate_thyroid_most_auc <- auc(methotrexate_test_thyroid$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_upper_aerodigestive_tract <- methotrexate_rna_seq_test_scaled[methotrexate_upper_aerodigestive_tract_lines, ]
-methotrexate_test_upper_aerodigestive_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'upper_aerodigestive_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_upper_aerodigestive_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_upper_aerodigestive_tract_most_auc <- auc(methotrexate_test_upper_aerodigestive_tract$most_sensitive, new_ic50)
-
-methotrexate_test_scaled_urinary_tract <- methotrexate_rna_seq_test_scaled[methotrexate_urinary_tract_lines, ]
-methotrexate_test_urinary_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'urinary_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_urinary_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_urinary_tract_most_auc <- auc(methotrexate_test_urinary_tract$most_sensitive, new_ic50)
-
-methotrexate_most_auc <- c(methotrexate_autonomic_ganglia_most_auc, methotrexate_biliary_tract_most_auc, 
-                          methotrexate_bone_most_auc, methotrexate_breast_most_auc, methotrexate_central_nervous_system_most_auc, 
-                          methotrexate_endometrium_most_auc, methotrexate_kidney_most_auc, 
-                          methotrexate_large_intestine_most_auc, methotrexate_liver_most_auc, 
-                          methotrexate_lung_most_auc, methotrexate_oesaphagus_most_auc, 
-                          methotrexate_ovary_most_auc, methotrexate_pancreas_most_auc, 
-                          methotrexate_pleura_most_auc, methotrexate_prostate_most_auc, 
-                          methotrexate_salivary_gland_most_auc, methotrexate_skin_most_auc, 
-                          methotrexate_soft_tissue_most_auc, methotrexate_stomach_most_auc, 
-                          methotrexate_thyroid_most_auc, methotrexate_upper_aerodigestive_tract_most_auc, 
-                          methotrexate_urinary_tract_most_auc)
-
-methotrexate_test_scaled_autonomic_ganglia <- methotrexate_rna_seq_test_scaled[methotrexate_autonomic_ganglia_lines, ]
-methotrexate_test_autonomic_ganglia <- methotrexate_test[which(methotrexate_test$Tissue == 'autonomic_ganglia'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_autonomic_ganglia), s = 'lambda.1se', interval = 'conf')
-methotrexate_autonomic_ganglia_least_auc <- auc(methotrexate_test_autonomic_ganglia$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_biliary_tract <- methotrexate_rna_seq_test_scaled[methotrexate_biliary_tract_lines, ]
-methotrexate_test_biliary_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'biliary_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_biliary_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_biliary_tract_least_auc <- auc(methotrexate_test_biliary_tract$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_bone <- methotrexate_rna_seq_test_scaled[methotrexate_bone_lines, ]
-methotrexate_test_bone <- methotrexate_test[which(methotrexate_test$Tissue == 'bone'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-methotrexate_bone_least_auc <- auc(methotrexate_test_bone$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_breast <- methotrexate_rna_seq_test_scaled[methotrexate_breast_lines, ]
-methotrexate_test_breast <- methotrexate_test[which(methotrexate_test$Tissue == 'breast'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-methotrexate_breast_least_auc <- auc(methotrexate_test_breast$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_central_nervous_system <- methotrexate_rna_seq_test_scaled[methotrexate_central_nervous_system_lines, ]
-methotrexate_test_central_nervous_system <- methotrexate_test[which(methotrexate_test$Tissue == 'central_nervous_system'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_central_nervous_system), s = 'lambda.1se', interval = 'conf')
-methotrexate_central_nervous_system_least_auc <- auc(methotrexate_test_central_nervous_system$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_endometrium <- methotrexate_rna_seq_test_scaled[methotrexate_endometrium_lines, ]
-methotrexate_test_endometrium <- methotrexate_test[which(methotrexate_test$Tissue == 'endometrium'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_endometrium), s = 'lambda.1se', interval = 'conf')
-methotrexate_endometrium_least_auc <- auc(methotrexate_test_endometrium$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_kidney <- methotrexate_rna_seq_test_scaled[methotrexate_kidney_lines, ]
-methotrexate_test_kidney <- methotrexate_test[which(methotrexate_test$Tissue == 'kidney'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-methotrexate_kidney_least_auc <- auc(methotrexate_test_kidney$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_large_intestine <- methotrexate_rna_seq_test_scaled[methotrexate_large_intestine_lines, ]
-methotrexate_test_large_intestine <- methotrexate_test[which(methotrexate_test$Tissue == 'large_intestine'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-methotrexate_large_intestine_least_auc <- auc(methotrexate_test_large_intestine$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_liver <- methotrexate_rna_seq_test_scaled[methotrexate_liver_lines, ]
-methotrexate_test_liver <- methotrexate_test[which(methotrexate_test$Tissue == 'liver'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_liver), s = 'lambda.1se', interval = 'conf')
-methotrexate_liver_least_auc <- auc(methotrexate_test_liver$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_lung <- methotrexate_rna_seq_test_scaled[methotrexate_lung_lines, ]
-methotrexate_test_lung <- methotrexate_test[which(methotrexate_test$Tissue == 'lung'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-methotrexate_lung_least_auc <- auc(methotrexate_test_lung$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_oesaphagus <- methotrexate_rna_seq_test_scaled[methotrexate_oesaphagus_lines, ]
-methotrexate_test_oesaphagus <- methotrexate_test[which(methotrexate_test$Tissue == 'oesaphagus'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_oesaphagus), s = 'lambda.1se', interval = 'conf')
-methotrexate_oesaphagus_least_auc <- auc(methotrexate_test_oesaphagus$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_ovary <- methotrexate_rna_seq_test_scaled[methotrexate_ovary_lines, ]
-methotrexate_test_ovary <- methotrexate_test[which(methotrexate_test$Tissue == 'ovary'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_ovary), s = 'lambda.1se', interval = 'conf')
-methotrexate_ovary_least_auc <- auc(methotrexate_test_ovary$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_pancreas <- methotrexate_rna_seq_test_scaled[methotrexate_pancreas_lines, ]
-methotrexate_test_pancreas <- methotrexate_test[which(methotrexate_test$Tissue == 'pancreas'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-methotrexate_pancreas_least_auc <- auc(methotrexate_test_pancreas$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_pleura <- methotrexate_rna_seq_test_scaled[methotrexate_pleura_lines, ]
-methotrexate_test_pleura <- methotrexate_test[which(methotrexate_test$Tissue == 'pleura'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pleura), s = 'lambda.1se', interval = 'conf')
-methotrexate_pleura_least_auc <- auc(methotrexate_test_pleura$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_prostate <- methotrexate_rna_seq_test_scaled[methotrexate_prostate_lines, ]
-methotrexate_test_prostate <- methotrexate_test[which(methotrexate_test$Tissue == 'prostate'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_prostate), s = 'lambda.1se', interval = 'conf')
-methotrexate_prostate_least_auc <- auc(methotrexate_test_prostate$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_salivary_gland <- methotrexate_rna_seq_test_scaled[methotrexate_salivary_gland_lines, ]
-methotrexate_test_salivary_gland <- methotrexate_test[which(methotrexate_test$Tissue == 'salivary_gland'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_salivary_gland), s = 'lambda.1se', interval = 'conf')
-methotrexate_salivary_gland_least_auc <- auc(methotrexate_test_salivary_gland$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_skin <- methotrexate_rna_seq_test_scaled[methotrexate_skin_lines, ]
-methotrexate_test_skin <- methotrexate_test[which(methotrexate_test$Tissue == 'skin'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-methotrexate_skin_least_auc <- auc(methotrexate_test_skin$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_soft_tissue <- methotrexate_rna_seq_test_scaled[methotrexate_soft_tissue_lines, ]
-methotrexate_test_soft_tissue <- methotrexate_test[which(methotrexate_test$Tissue == 'soft_tissue'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-methotrexate_soft_tissue_least_auc <- auc(methotrexate_test_soft_tissue$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_stomach <- methotrexate_rna_seq_test_scaled[methotrexate_stomach_lines, ]
-methotrexate_test_stomach <- methotrexate_test[which(methotrexate_test$Tissue == 'stomach'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_stomach), s = 'lambda.1se', interval = 'conf')
-methotrexate_stomach_least_auc <- auc(methotrexate_test_stomach$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_thyroid <- methotrexate_rna_seq_test_scaled[methotrexate_thyroid_lines, ]
-methotrexate_test_thyroid <- methotrexate_test[which(methotrexate_test$Tissue == 'thyroid'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-methotrexate_thyroid_least_auc <- auc(methotrexate_test_thyroid$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_upper_aerodigestive_tract <- methotrexate_rna_seq_test_scaled[methotrexate_upper_aerodigestive_tract_lines, ]
-methotrexate_test_upper_aerodigestive_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'upper_aerodigestive_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_upper_aerodigestive_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_upper_aerodigestive_tract_least_auc <- auc(methotrexate_test_upper_aerodigestive_tract$least_sensitive, new_ic50)
-
-methotrexate_test_scaled_urinary_tract <- methotrexate_rna_seq_test_scaled[methotrexate_urinary_tract_lines, ]
-methotrexate_test_urinary_tract <- methotrexate_test[which(methotrexate_test$Tissue == 'urinary_tract'), ]
-new_ic50 <- predict(methotrexate_ccle_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_urinary_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_urinary_tract_least_auc <- auc(methotrexate_test_urinary_tract$least_sensitive, new_ic50)
-
-methotrexate_least_auc <- c(methotrexate_autonomic_ganglia_least_auc, methotrexate_biliary_tract_least_auc, 
-                           methotrexate_bone_least_auc, methotrexate_breast_least_auc, methotrexate_central_nervous_system_least_auc, 
-                           methotrexate_endometrium_least_auc, methotrexate_kidney_least_auc, 
-                           methotrexate_large_intestine_least_auc, methotrexate_liver_least_auc, 
-                           methotrexate_lung_least_auc, methotrexate_oesaphagus_least_auc, 
-                           methotrexate_ovary_least_auc, methotrexate_pancreas_least_auc, 
-                           methotrexate_pleura_least_auc, methotrexate_prostate_least_auc, 
-                           methotrexate_salivary_gland_least_auc, methotrexate_skin_least_auc, 
-                           methotrexate_soft_tissue_least_auc, methotrexate_stomach_least_auc, 
-                           methotrexate_thyroid_least_auc, methotrexate_upper_aerodigestive_tract_least_auc, 
-                           methotrexate_urinary_tract_least_auc)
 
 all_ccle_auc_by_type <- data.frame(carboplatin_most_auc, carboplatin_least_auc, 
                                    cyclophosphamide_most_auc, cyclophosphamide_least_auc, 
                                    docetaxel_most_auc, docetaxel_least_auc, 
-                                   etoposide_most_auc, etoposide_least_auc, 
                                    fluorouracil_most_auc, fluorouracil_least_auc, 
-                                   gemcitabine_most_auc, gemcitabine_least_auc, 
-                                   methotrexate_most_auc, methotrexate_least_auc)
+                                   gemcitabine_most_auc, gemcitabine_least_auc)
 
-#all_ccle_auc_by_type <- data.frame(t(all_ccle_auc_by_type))
-all_ccle_auc_by_type <- rbind(all_ccle_auc_by_type, overall_auc)
-#all_ccle_auc_by_type <- all_ccle_auc_by_type[c(15, 1:14), ]
-colnames(all_ccle_auc_by_type) <- c('carboplatin_most', 'carboplatin_least', 
+all_ccle_auc_by_type <- data.frame(t(all_ccle_auc_by_type))
+all_ccle_auc_by_type <- cbind(all_ccle_auc_by_type, overall_auc)
+all_ccle_auc_by_type <- all_ccle_auc_by_type[, c(23, 1:22)]
+rownames(all_ccle_auc_by_type) <- c('carboplatin_most', 'carboplatin_least', 
                                     'cyclophosphamide_most', 'cyclophosphamide_least', 'docetaxel_most', 
-                                    'docetaxel_least', 'etoposide_most', 'etoposide_least', 
+                                    'docetaxel_least', 
                                     'fluorouracil_most', 'fluorouracil_least', 
-                                    'gemcitabine_most', 'gemcitabine_least', 'methotrexate_most', 
-                                    'methotrexate_least')
-rownames(all_ccle_auc_by_type) <- c('autonomic_ganglia', 'biliary_tract', 'bone', 'breast', 'central_nervous_system', 'endometrium', 'kidney', 
+                                    'gemcitabine_most', 'gemcitabine_least')
+colnames(all_ccle_auc_by_type) <- c('overall', 'autonomic_ganglia', 'biliary_tract', 'bone', 'breast', 'central_nervous_system', 'endometrium', 'kidney', 
                                     'large_intestine', 'liver', 'lung', 'oesaphagus', 'ovary', 
                                     'pancreas', 'pleura', 'prostate', 'salivary_gland', 'skin', 
-                                    'soft_tissue', 'stomach', 'thyroid', 'upper_aerodigestive_tract', 'urinary_tract', 'overall')
-for (i in 1:nrow(all_ccle_auc_by_type)) {
-  for (j in 1:ncol(all_ccle_auc_by_type)) {
-    if (all_ccle_auc_by_type[i,j] == 'NaN') {
-      all_ccle_auc_by_type[i,j] <- 0.50
-    }
-  }
-}
-for (i in 1:nrow(all_ccle_auc_by_type)) {
-  for (j in 1:ncol(all_ccle_auc_by_type)) {
-    if (all_ccle_auc_by_type[i,j] < 0.50) {
-      all_ccle_auc_by_type[i,j] <- 0.50
-    }
-  }
-}
+                                    'soft_tissue', 'stomach', 'thyroid', 'upper_aerodigestive_tract', 'urinary_tract')
+
 all_ccle_auc_by_type <- round(all_ccle_auc_by_type, digits = 2)
-all_ccle_auc_by_type <- data.frame(t(all_ccle_auc_by_type))
-all_ccle_auc_by_type <- all_ccle_auc_by_type[, c(23, 1:22)]
+#all_ccle_auc_by_type <- data.frame(t(all_ccle_auc_by_type))
+#all_ccle_auc_by_type <- all_ccle_auc_by_type[, c(23, 1:22)]
 colors <- colorRampPalette(c("dodgerblue", "white", "red"))(100)
 
-png(filename = 'Images/CCLE_AUC_heatmap.png')
-heatmap.2(as.matrix(all_ccle_auc_by_type), trace = 'none', Rowv = FALSE, Colv = FALSE, col = colors, density.info = 'none', key.xlab = 'AUC', key.title = '', cexRow = 0.9, cexCol = 0.8, cellnote = all_ccle_auc_by_type, notecol = 'black', colsep = 1, sepwidth = c(0.1,0.1), srtCol = 45, margins = c(8,8))
+png(filename = 'Images/CCLE_AUC_heatmap.png', width = 1100)
+heatmap.2(as.matrix(all_ccle_auc_by_type), trace = 'none', Rowv = FALSE, Colv = FALSE, col = colors, density.info = 'none', key.xlab = 'AUC', key.title = '', cexRow = 0.9, cexCol = 0.8, cellnote = all_ccle_auc_by_type, notecol = 'black', colsep = 1, sepwidth = c(0.1,0.1), srtCol = 45, margins = c(8,9))
 dev.off()
 
 
@@ -7403,11 +4664,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/blca_gemcitabine_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'BLCA treated with gemcitabine (CCLE)')
+plot(perf2, col = colors_i_need[7], lwd = 2, lty = 2, main = 'BLCA treated with gemcitabine (CCLE)')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[7], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.66)', 'least_sensitive (AUC = 0.62)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.62)', 'resistant model (AUC = 0.66)'), lwd = 2, lty = c(1,2), col = colors_i_need[7], cex = 0.8, bty = 'n')
 dev.off()
 
 # BRCA W CYCLOPHOSPHAMIDE (48)
@@ -7473,10 +4734,10 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/brca_cyclophosphamide_tcga_ccle_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
+#plot(perf, col = 'red')
 plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+#plot(perf3, col = 'blue', add = TRUE)
+#plot(perf4, col = 'blue', lty = 2, add = TRUE)
 abline(0,1, lty = 3)
 legend(x = 0.7, y = 0.4, legend = c('most_min (0.48)', 'most_1se (0.61)', 'least_min (0.50)', 'least_1se (0.50)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
 dev.off()
@@ -7757,11 +5018,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/brca_gemcitabine_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'BRCA treated with gemcitabine (CCLE)')
+plot(perf2, col = colors_i_need[7], lwd = 2, lty = 2, main = 'BRCA treated with gemcitabine (CCLE)')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[7], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 1.0)', 'least_sensitive (AUC = 1.0)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 1.0)', 'resistant model (AUC = 1.0)'), cex = 0.8, lty = c(1,2), lwd = 2, col = colors_i_need[7], bty = 'n')
 dev.off()
 
 # BRCA W METHOTREXATE (9)
@@ -8252,12 +5513,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/coad_fluorouracil_tcga_ccle_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+#plot(perf, col = 'red')
+plot(perf2, col = colors_i_need[6], lwd = 2, lty = 2, main = 'COAD treated with fluorouracil')
+#plot(perf3, col = 'blue', add = TRUE)
+plot(perf4, col = colors_i_need[6], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (0.83)', 'most_1se (0.83)', 'least_min (0.50)', 'least_1se (0.40)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.62)', 'resistant model (AUC = 0.62)'), cex = 0.8, lty = c(1,2), col = colors_i_need[6], lwd = 2, bty = 'n')
 dev.off()
 
 # COAD W OXALIPLATIN (34)
@@ -8535,11 +5796,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/esca_fluorouracil_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'ESCA treated with fluorouracil')
+plot(perf2, col = colors_i_need[6], lwd = 2, lty = 2, main = 'ESCA treated with fluorouracil')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[6], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.58)', 'least_sensitive (AUC = 0.92)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.92)', 'resistant model (AUC = 0.58)'), cex = 0.8, lwd = 2, lty = c(1,2), col = colors_i_need[6], bty = 'n')
 dev.off()
 
 # HNSC W CARBOPLATIN (30)
@@ -8817,12 +6078,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/lihc_gemcitabine_tcga_ccle_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+#plot(perf, col = 'red')
+plot(perf2, col = colors_i_need[7], lwd = 2, lty = 2, main = 'LIHC treated with gemcitabine')
+#plot(perf3, col = 'blue', add = TRUE)
+plot(perf4, col = colors_i_need[7], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (0.83)', 'most_1se (0.83)', 'least_min (0.50)', 'least_1se (0.40)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.35, legend = c('sensitive model (AUC = 0.58)', 'resistant model (AUC = 0.58)'), cex = 0.8, lty = c(1,2), lwd = 2, col = colors_i_need[7], bty = 'n')
 dev.off()
 
 # LUAD W CARBOPLATIN (26)
@@ -9240,11 +6501,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/lusc_carboplatin_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'LUSC treated with carboplatin')
+plot(perf2, col = colors_i_need[1], lwd = 2, lty = 2, main = 'LUSC treated with carboplatin')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[1], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.85)', 'least_sensitive (AUC = 0.50)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.50)', 'resistant model (AUC = 0.85)'), cex = 0.8, lwd = 2, lty = c(1,2), col = colors_i_need[1], bty = 'n')
 dev.off()
 
 # LUSC W DOCETAXEL (6)
@@ -9950,12 +7211,12 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 
 # change these to have the order make sense
 png(filename = 'Images/paad_gemcitabine_tcga_ccle_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
+#plot(perf, col = 'red')
+plot(perf2, col = colors_i_need[7], lwd = 2, lty = 2, main = 'PAAD treated with gemcitabine')
+#plot(perf3, col = 'blue', add = TRUE)
+plot(perf4, col = colors_i_need[7], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (0.83)', 'most_1se (0.83)', 'least_min (0.50)', 'least_1se (0.40)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.56)', 'resistant model (AUC = 0.61)'), cex = 0.8, lwd = 2, lty = c(1,2), col = colors_i_need[7], bty = 'n')
 dev.off()
 
 # PAAD W OXALAPLATIN (11)
@@ -10303,11 +7564,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/sarc_gemcitabine_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'SARC treated with gemcitabine (CCLE)')
+plot(perf2, col = colors_i_need[7], lwd = 2, lty = 2, main = 'SARC treated with gemcitabine (CCLE)')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[7], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.64)', 'least_sensitive (AUC = 1.0)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 1.0)', 'resistant model (AUC = 0.64)'), cex = 0.8, lwd = 2, lty = c(1,2), col = colors_i_need[7], bty = 'n')
 dev.off()
 
 # STAD W ETOPOSIDE (7)
@@ -10798,11 +8059,11 @@ perf4 <- performance(pred4, 'tpr', 'fpr')
 # change these to have the order make sense
 png(filename = 'Images/ucs_carboplatin_tcga_ccle_auc.png', height = 480, width = 800)
 #plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'UCS treated with carboplatin')
+plot(perf2, col = colors_i_need[1], lwd = 2, lty = 2, main = 'UCS treated with carboplatin')
 #plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
+plot(perf4, col = colors_i_need[1], lwd = 2, lty = 1, add = TRUE)
 abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.80)', 'least_sensitive (AUC = 0.59)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
+legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.59)', 'resistant model (AUC = 0.80)'), cex = 0.8, lwd = 2, lty = c(1,2), col = colors_i_need[1], bty = 'n')
 dev.off()
 
 # UCS W PACLITAXEL (10)
