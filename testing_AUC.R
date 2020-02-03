@@ -118,16 +118,10 @@ methotrexate_least_fit_elnet  <- readRDS('GLM_Models/methotrexate_least_model.rd
 ### get accuracy on testing data --------
 
 ## CISPLATIN
-new_cisplatin_most_sensitive_1se <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
+new_cisplatin_1se <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'response')
 
-cisplatin_most_test_gdsc_auc_1se <- auc(cisplatin_test$most_sensitive, new_cisplatin_most_sensitive_1se)
-cisplatin_most_test_gdsc_auc_1se <- round(cisplatin_most_test_gdsc_auc_1se, digits = 2)
-
-
-new_cisplatin_least_sensitive_min <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test_scaled), s = 'lambda.min', interval = 'confidence', probability = FALSE, type = 'response')
-
-cisplatin_least_test_gdsc_auc_min <- auc(cisplatin_test$least_sensitive, new_cisplatin_least_sensitive_min)
-cisplatin_least_test_gdsc_auc_min <- round(cisplatin_least_test_gdsc_auc_min, digits = 2)
+cisplatin_test_gdsc_auc_1se <- auc(cisplatin_test$res_sens, new_cisplatin_1se)
+cisplatin_test_gdsc_auc_1se <- round(cisplatin_test_gdsc_auc_1se, digits = 2)
 
 
 ## ETOPOSIDE
@@ -180,20 +174,20 @@ cisplatin_thyroid_lines                     <- cisplatin_test$Cell_line_tissue_t
 cisplatin_urogenital_system_lines           <- cisplatin_test$Cell_line_tissue_type == 'urogenital_system'
 
 #test pan-cancer models against individual cancer types
-cisplatin_test_scaled_aero_dig_tract <- cisplatin_rna_seq_test_scaled[cisplatin_aero_dig_tract_lines, ]
+cisplatin_test_aero_dig_tract_exp <- cisplatin_rna_seq_test[cisplatin_aero_dig_tract_lines, ]
 cisplatin_test_aero_dig_tract <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_aero_dig_tract), s = 'lambda.1se', interval = 'conf')
-cisplatin_aero_dig_tract_most_auc <- auc(cisplatin_test_aero_dig_tract$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_aero_dig_tract_most_auc <- auc(cisplatin_test_aero_dig_tract$res_sens, new_ic50)
 
-cisplatin_test_scaled_bone <- cisplatin_rna_seq_test_scaled[cisplatin_bone_lines, ]
+cisplatin_test_bone_exp <- cisplatin_rna_seq_test[cisplatin_bone_lines, ]
 cisplatin_test_bone <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-cisplatin_bone_most_auc <- auc(cisplatin_test_bone$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_bone_most_auc <- auc(cisplatin_test_bone$res_sens, new_ic50)
 
-cisplatin_test_scaled_breast <- cisplatin_rna_seq_test_scaled[cisplatin_breast_lines, ]
+cisplatin_test_breast_exp <- cisplatin_rna_seq_test[cisplatin_breast_lines, ]
 cisplatin_test_breast <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-cisplatin_breast_most_auc <- auc(cisplatin_test_breast$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_breast_most_auc <- auc(cisplatin_test_breast$res_sens, new_ic50)
 
 cisplatin_test_scaled_digestive_system <- cisplatin_rna_seq_test_scaled[cisplatin_digestive_system_lines, ]
 cisplatin_test_digestive_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'digestive_system'), ]

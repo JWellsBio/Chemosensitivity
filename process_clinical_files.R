@@ -13,15 +13,15 @@ read_gdsc_clinical <- function(sheet_number) {
   return(drug_data[, c(3:6, 12)])
 }
 
-# function to read in CCLE clinical data
-read_ccle_clinical <- function(sheet_number) {
-  drug_data <- read.xlsx(ccle_files, sheet_number)
-  drug_data <- drug_data[, c(4:6)]
-  drug_data_new <- drug_data %>% group_by(Cell.line.name) %>% summarise(AUC = mean(area_under_curve))
-  drug_data <- merge(drug_data, drug_data_new, by = 'Cell.line.name')
-  drug_data <- drug_data[, -3]
-  return(unique(drug_data))
-}
+# # function to read in CCLE clinical data
+# read_ccle_clinical <- function(sheet_number) {
+#   drug_data <- read.xlsx(ccle_files, sheet_number)
+#   drug_data <- drug_data[, c(4:6)]
+#   drug_data_new <- drug_data %>% group_by(Cell.line.name) %>% summarise(AUC = mean(area_under_curve))
+#   drug_data <- merge(drug_data, drug_data_new, by = 'Cell.line.name')
+#   drug_data <- drug_data[, -3]
+#   return(unique(drug_data))
+# }
 
 # function to read in TCGA clinical data
 read_tcga_clinical <- function(tcga_file_number) {
@@ -36,24 +36,27 @@ read_tcga_clinical <- function(tcga_file_number) {
 }
 
 # functions for dummy variables in GDSC data
-# most senistive
-most_sens_bin_gdsc <- function(drug_data) {
-  ifelse(drug_data$LN_IC50 < quantile(drug_data$LN_IC50, probs = 0.20, na.rm = TRUE), 1, 0)
+sens_res <- function(drug_data, ic50) {
+  ifelse(drug_data$LN_IC50 > log(ic50), 1, 0) # 1 is resistant, 0 sensitive
 }
-# least sensitive
-least_sens_bin_gdsc <- function(drug_data) {
-  ifelse(drug_data$LN_IC50 > quantile(drug_data$LN_IC50, probs = 0.80, na.rm = TRUE), 1, 0)
-}
+# # most senistive
+# most_sens_bin_gdsc <- function(drug_data) {
+#   ifelse(drug_data$LN_IC50 < quantile(drug_data$LN_IC50, probs = 0.20, na.rm = TRUE), 1, 0)
+# }
+# # least sensitive
+# least_sens_bin_gdsc <- function(drug_data) {
+#   ifelse(drug_data$LN_IC50 > quantile(drug_data$LN_IC50, probs = 0.80, na.rm = TRUE), 1, 0)
+# }
 
-# functions for dummy variables in CCLE data
-# most sensitive
-most_sens_bin_ccle <- function(drug_data) {
-  ifelse(drug_data$AUC < quantile(drug_data$AUC, probs = 0.20, na.rm = TRUE), 1, 0)
-}
-# least sensitive
-least_sens_bin_ccle <- function(drug_data) {
-  ifelse(drug_data$AUC > quantile(drug_data$AUC, probs = 0.80, na.rm = TRUE), 1, 0)
-}
+# # functions for dummy variables in CCLE data
+# # most sensitive
+# most_sens_bin_ccle <- function(drug_data) {
+#   ifelse(drug_data$AUC < quantile(drug_data$AUC, probs = 0.20, na.rm = TRUE), 1, 0)
+# }
+# # least sensitive
+# least_sens_bin_ccle <- function(drug_data) {
+#   ifelse(drug_data$AUC > quantile(drug_data$AUC, probs = 0.80, na.rm = TRUE), 1, 0)
+# }
 
 # functions for dummy variables in TCGA data
 # most sensitive
@@ -71,26 +74,42 @@ least_sens_bin_tcga <- function(drug_data) {
 gdsc_files <- 'Clinical_Files/v17_fitted_dose_response_noblood_breakdown_DNAdamageagents.xlsx'
 
 # bring in clinical data for drugs we're interested in
+bleomycin     <- read_gdsc_clinical(2)
+
+camptothecin  <- read_gdsc_clinical(3)
+
 cisplatin     <- read_gdsc_clinical(4)
+
+cytarabine    <- read_gdsc_clinical(5)
+
+doxorubicin   <- read_gdsc_clinical(6)
 
 etoposide     <- read_gdsc_clinical(7)
 
+gemcitabine   <- read_gdsc_clinical(8)
+
 methotrexate  <- read_gdsc_clinical(9)
 
+mitomycin     <- read_gdsc_clinical(10)
 
-#CCLE (AUC)
-ccle_files <- 'Clinical_Files/Drug sensitivity data - cytotoxics only - no heme.xlsx'
+sn38          <- read_gdsc_clinical(11)
 
-#bring in clinical data for drugs we're interested in
-carboplatin_ccle      <- read_ccle_clinical(3)
+temozolomide  <- read_gdsc_clinical(12)
 
-cyclophosphamide_ccle <- read_ccle_clinical(6)
 
-docetaxel_ccle        <- read_ccle_clinical(11)
-
-fluorouracil_ccle     <- read_ccle_clinical(14)
-
-gemcitabine_ccle      <- read_ccle_clinical(15)
+# #CCLE (AUC)
+# ccle_files <- 'Clinical_Files/Drug sensitivity data - cytotoxics only - no heme.xlsx'
+# 
+# #bring in clinical data for drugs we're interested in
+# carboplatin_ccle      <- read_ccle_clinical(3)
+# 
+# cyclophosphamide_ccle <- read_ccle_clinical(6)
+# 
+# docetaxel_ccle        <- read_ccle_clinical(11)
+# 
+# fluorouracil_ccle     <- read_ccle_clinical(14)
+# 
+# gemcitabine_ccle      <- read_ccle_clinical(15)
 
 
 #TCGA (RFS)
@@ -144,133 +163,165 @@ ucs_clinical  <- read_tcga_clinical(31)
 
 ### create dummy binary variables for most/least sensitive -------
 
-# GDSC
-cisplatin$most_sensitive        <- most_sens_bin_gdsc(cisplatin)
-cisplatin$least_sensitive       <- least_sens_bin_gdsc(cisplatin)
 
-etoposide$most_sensitive        <- most_sens_bin_gdsc(etoposide)
-etoposide$least_sensitive       <- least_sens_bin_gdsc(etoposide)
+bleomycin$res_sens <- sens_res(bleomycin, 5.40)
 
-methotrexate$most_sensitive     <- most_sens_bin_gdsc(methotrexate)
-methotrexate$least_sensitive    <- least_sens_bin_gdsc(methotrexate)
+camptothecin$res_sens <- sens_res(camptothecin, 0.107)
 
-## CCLE
-carboplatin_ccle$most_sensitive           <- most_sens_bin_ccle(carboplatin_ccle)
-carboplatin_ccle$least_sensitive          <- least_sens_bin_ccle(carboplatin_ccle)
+cisplatin$res_sens <- sens_res(cisplatin, 26.4)
 
-cyclophosphamide_ccle$most_sensitive      <- most_sens_bin_ccle(cyclophosphamide_ccle)
-cyclophosphamide_ccle$least_sensitive     <- least_sens_bin_ccle(cyclophosphamide_ccle)
+cytarabine$res_sens <- sens_res(cytarabine, 4.56)
 
-docetaxel_ccle$most_sensitive             <- most_sens_bin_ccle(docetaxel_ccle)
-docetaxel_ccle$least_sensitive            <- least_sens_bin_ccle(docetaxel_ccle)
+doxorubicin$res_sens <- sens_res(doxorubicin, 0.171)
 
-fluorouracil_ccle$most_sensitive          <- most_sens_bin_ccle(fluorouracil_ccle)
-fluorouracil_ccle$least_sensitive         <- least_sens_bin_ccle(fluorouracil_ccle)
+etoposide$res_sens <- sens_res(etoposide, 4.76)
 
-gemcitabine_ccle$most_sensitive           <- most_sens_bin_ccle(gemcitabine_ccle)
-gemcitabine_ccle$least_sensitive          <- least_sens_bin_ccle(gemcitabine_ccle)
+gemcitabine$res_sens <- sens_res(gemcitabine, 0.0960)
 
-## TCGA
-blca_clinical$most_sensitive        <- most_sens_bin_tcga(blca_clinical)
-blca_clinical$least_sensitive       <- least_sens_bin_tcga(blca_clinical)
+methotrexate$res_sens <- sens_res(methotrexate, 0.595)
 
-brca_clinical$most_sensitive        <- most_sens_bin_tcga(brca_clinical)
-brca_clinical$least_sensitive       <- least_sens_bin_tcga(brca_clinical)
+mitomycin$res_sens <- sens_res(mitomycin, 0.468)
 
-cesc_clinical$most_sensitive        <- most_sens_bin_tcga(cesc_clinical)
-cesc_clinical$least_sensitive       <- least_sens_bin_tcga(cesc_clinical)
+sn38$res_sens <- sens_res(sn38, 0.0156)
 
-chol_clinical$most_sensitive        <- most_sens_bin_tcga(chol_clinical)
-chol_clinical$least_sensitive       <- least_sens_bin_tcga(chol_clinical)
+temozolomide$res_sens <- sens_res(temozolomide, 375)
 
-coad_clinical$most_sensitive        <- most_sens_bin_tcga(coad_clinical)
-coad_clinical$least_sensitive       <- least_sens_bin_tcga(coad_clinical)
 
-dlbc_clinical$most_sensitive        <- most_sens_bin_tcga(dlbc_clinical)
-dlbc_clinical$least_sensitive       <- least_sens_bin_tcga(dlbc_clinical)
+# # GDSC
+# cisplatin$most_sensitive        <- most_sens_bin_gdsc(cisplatin)
+# cisplatin$least_sensitive       <- least_sens_bin_gdsc(cisplatin)
+# 
+# etoposide$most_sensitive        <- most_sens_bin_gdsc(etoposide)
+# etoposide$least_sensitive       <- least_sens_bin_gdsc(etoposide)
+# 
+# methotrexate$most_sensitive     <- most_sens_bin_gdsc(methotrexate)
+# methotrexate$least_sensitive    <- least_sens_bin_gdsc(methotrexate)
 
-esca_clinical$most_sensitive        <- most_sens_bin_tcga(esca_clinical)
-esca_clinical$least_sensitive       <- least_sens_bin_tcga(esca_clinical)
-
-hnsc_clinical$most_sensitive        <- most_sens_bin_tcga(hnsc_clinical)
-hnsc_clinical$least_sensitive       <- least_sens_bin_tcga(hnsc_clinical)
-
-kirc_clinical$most_sensitive        <- most_sens_bin_tcga(kirc_clinical)
-kirc_clinical$least_sensitive       <- least_sens_bin_tcga(kirc_clinical)
-
-lihc_clinical$most_sensitive        <- most_sens_bin_tcga(lihc_clinical)
-lihc_clinical$least_sensitive       <- least_sens_bin_tcga(lihc_clinical)
-
-luad_clinical$most_sensitive        <- most_sens_bin_tcga(luad_clinical)
-luad_clinical$least_sensitive       <- least_sens_bin_tcga(luad_clinical)
-
-lusc_clinical$most_sensitive        <- most_sens_bin_tcga(lusc_clinical)
-lusc_clinical$least_sensitive       <- least_sens_bin_tcga(lusc_clinical)
-
-meso_clinical$most_sensitive        <- most_sens_bin_tcga(meso_clinical)
-meso_clinical$least_sensitive       <- least_sens_bin_tcga(meso_clinical)
-
-ov_clinical$most_sensitive          <- most_sens_bin_tcga(ov_clinical)
-ov_clinical$least_sensitive         <- most_sens_bin_tcga(ov_clinical)
-
-paad_clinical$most_sensitive        <- most_sens_bin_tcga(paad_clinical)
-paad_clinical$least_sensitive       <- least_sens_bin_tcga(paad_clinical)
-
-read_clinical$most_sensitive        <- most_sens_bin_tcga(read_clinical)
-read_clinical$least_sensitive       <- least_sens_bin_tcga(read_clinical)
-
-sarc_clinical$most_sensitive        <- most_sens_bin_tcga(sarc_clinical)
-sarc_clinical$least_sensitive       <- least_sens_bin_tcga(sarc_clinical)
-
-skcm_clinical$most_sensitive        <- most_sens_bin_tcga(skcm_clinical)
-skcm_clinical$least_sensitive       <- least_sens_bin_tcga(skcm_clinical)
-
-stad_clinical$most_sensitive        <- most_sens_bin_tcga(stad_clinical)
-stad_clinical$least_sensitive       <- least_sens_bin_tcga(stad_clinical)
-
-tgct_clinical$most_sensitive        <- most_sens_bin_tcga(tgct_clinical)
-tgct_clinical$least_sensitive       <- least_sens_bin_tcga(tgct_clinical)
-
-ucec_clinical$most_sensitive        <- most_sens_bin_tcga(ucec_clinical)
-ucec_clinical$least_sensitive       <- least_sens_bin_tcga(ucec_clinical)
-
-ucs_clinical$most_sensitive         <- most_sens_bin_tcga(ucs_clinical)
-ucs_clinical$least_sensitive        <- least_sens_bin_tcga(ucs_clinical)
+# ## CCLE
+# carboplatin_ccle$most_sensitive           <- most_sens_bin_ccle(carboplatin_ccle)
+# carboplatin_ccle$least_sensitive          <- least_sens_bin_ccle(carboplatin_ccle)
+# 
+# cyclophosphamide_ccle$most_sensitive      <- most_sens_bin_ccle(cyclophosphamide_ccle)
+# cyclophosphamide_ccle$least_sensitive     <- least_sens_bin_ccle(cyclophosphamide_ccle)
+# 
+# docetaxel_ccle$most_sensitive             <- most_sens_bin_ccle(docetaxel_ccle)
+# docetaxel_ccle$least_sensitive            <- least_sens_bin_ccle(docetaxel_ccle)
+# 
+# fluorouracil_ccle$most_sensitive          <- most_sens_bin_ccle(fluorouracil_ccle)
+# fluorouracil_ccle$least_sensitive         <- least_sens_bin_ccle(fluorouracil_ccle)
+# 
+# gemcitabine_ccle$most_sensitive           <- most_sens_bin_ccle(gemcitabine_ccle)
+# gemcitabine_ccle$least_sensitive          <- least_sens_bin_ccle(gemcitabine_ccle)
+# 
+# ## TCGA
+# blca_clinical$most_sensitive        <- most_sens_bin_tcga(blca_clinical)
+# blca_clinical$least_sensitive       <- least_sens_bin_tcga(blca_clinical)
+# 
+# brca_clinical$most_sensitive        <- most_sens_bin_tcga(brca_clinical)
+# brca_clinical$least_sensitive       <- least_sens_bin_tcga(brca_clinical)
+# 
+# cesc_clinical$most_sensitive        <- most_sens_bin_tcga(cesc_clinical)
+# cesc_clinical$least_sensitive       <- least_sens_bin_tcga(cesc_clinical)
+# 
+# chol_clinical$most_sensitive        <- most_sens_bin_tcga(chol_clinical)
+# chol_clinical$least_sensitive       <- least_sens_bin_tcga(chol_clinical)
+# 
+# coad_clinical$most_sensitive        <- most_sens_bin_tcga(coad_clinical)
+# coad_clinical$least_sensitive       <- least_sens_bin_tcga(coad_clinical)
+# 
+# dlbc_clinical$most_sensitive        <- most_sens_bin_tcga(dlbc_clinical)
+# dlbc_clinical$least_sensitive       <- least_sens_bin_tcga(dlbc_clinical)
+# 
+# esca_clinical$most_sensitive        <- most_sens_bin_tcga(esca_clinical)
+# esca_clinical$least_sensitive       <- least_sens_bin_tcga(esca_clinical)
+# 
+# hnsc_clinical$most_sensitive        <- most_sens_bin_tcga(hnsc_clinical)
+# hnsc_clinical$least_sensitive       <- least_sens_bin_tcga(hnsc_clinical)
+# 
+# kirc_clinical$most_sensitive        <- most_sens_bin_tcga(kirc_clinical)
+# kirc_clinical$least_sensitive       <- least_sens_bin_tcga(kirc_clinical)
+# 
+# lihc_clinical$most_sensitive        <- most_sens_bin_tcga(lihc_clinical)
+# lihc_clinical$least_sensitive       <- least_sens_bin_tcga(lihc_clinical)
+# 
+# luad_clinical$most_sensitive        <- most_sens_bin_tcga(luad_clinical)
+# luad_clinical$least_sensitive       <- least_sens_bin_tcga(luad_clinical)
+# 
+# lusc_clinical$most_sensitive        <- most_sens_bin_tcga(lusc_clinical)
+# lusc_clinical$least_sensitive       <- least_sens_bin_tcga(lusc_clinical)
+# 
+# meso_clinical$most_sensitive        <- most_sens_bin_tcga(meso_clinical)
+# meso_clinical$least_sensitive       <- least_sens_bin_tcga(meso_clinical)
+# 
+# ov_clinical$most_sensitive          <- most_sens_bin_tcga(ov_clinical)
+# ov_clinical$least_sensitive         <- most_sens_bin_tcga(ov_clinical)
+# 
+# paad_clinical$most_sensitive        <- most_sens_bin_tcga(paad_clinical)
+# paad_clinical$least_sensitive       <- least_sens_bin_tcga(paad_clinical)
+# 
+# read_clinical$most_sensitive        <- most_sens_bin_tcga(read_clinical)
+# read_clinical$least_sensitive       <- least_sens_bin_tcga(read_clinical)
+# 
+# sarc_clinical$most_sensitive        <- most_sens_bin_tcga(sarc_clinical)
+# sarc_clinical$least_sensitive       <- least_sens_bin_tcga(sarc_clinical)
+# 
+# skcm_clinical$most_sensitive        <- most_sens_bin_tcga(skcm_clinical)
+# skcm_clinical$least_sensitive       <- least_sens_bin_tcga(skcm_clinical)
+# 
+# stad_clinical$most_sensitive        <- most_sens_bin_tcga(stad_clinical)
+# stad_clinical$least_sensitive       <- least_sens_bin_tcga(stad_clinical)
+# 
+# tgct_clinical$most_sensitive        <- most_sens_bin_tcga(tgct_clinical)
+# tgct_clinical$least_sensitive       <- least_sens_bin_tcga(tgct_clinical)
+# 
+# ucec_clinical$most_sensitive        <- most_sens_bin_tcga(ucec_clinical)
+# ucec_clinical$least_sensitive       <- least_sens_bin_tcga(ucec_clinical)
+# 
+# ucs_clinical$most_sensitive         <- most_sens_bin_tcga(ucs_clinical)
+# ucs_clinical$least_sensitive        <- least_sens_bin_tcga(ucs_clinical)
 
 
 ## write to files for later ----
 # GDSC
+write.csv(bleomycin, file = 'Processed_Clinical_Data/bleomycin_gdsc_clinical_processed.csv')
+write.csv(camptothecin, file = 'Processed_Clinical_Data/camptothecin_gdsc_clinical_processed.csv')
 write.csv(cisplatin, file = 'Processed_Clinical_Data/cisplatin_gdsc_clinical_processed.csv')
+write.csv(cytarabine, file = 'Processed_Clinical_Data/cytarabine_gdsc_clinical_processed.csv')
+write.csv(doxorubicin, file = 'Processed_Clinical_Data/doxorubicin_gdsc_clinical_processed.csv')
 write.csv(etoposide, file = 'Processed_Clinical_Data/etoposide_gdsc_clinical_processed.csv')
+write.csv(gemcitabine, file = 'Processed_Clinical_Data/gemcitabine_gdsc_clinical_processed.csv')
 write.csv(methotrexate, file = 'Processed_Clinical_Data/methotrexate_gdsc_clinical_processed.csv')
+write.csv(mitomycin, file = 'Processed_Clinical_Data/mitomycin_gdsc_clinical_processed.csv')
+write.csv(sn38, file = 'Processed_Clinical_Data/sn38_gdsc_clinical_processed.csv')
+write.csv(temozolomide, file = 'Processed_Clinical_Data/temozolomide_gdsc_clinical_processed.csv')
 
-# CCLE
-write.csv(carboplatin_ccle, file = 'Processed_Clinical_Data/carboplatin_ccle_clinical_processed.csv')
-write.csv(cyclophosphamide_ccle, file = 'Processed_Clinical_Data/cyclophosphamide_ccle_clinical_processed.csv')
-write.csv(docetaxel_ccle, file = 'Processed_Clinical_Data/docetaxel_ccle_clinical_processed.csv')
-write.csv(fluorouracil_ccle, file = 'Processed_Clinical_Data/fluorouracil_ccle_clinical_processed.csv')
-write.csv(gemcitabine_ccle, file = 'Processed_Clinical_Data/gemcitabine_ccle_clinical_processed.csv')
-
-# TCGA
-write.csv(blca_phenos_done, file = 'Processed_Clinical_Data/blca_tcga_clinical_processed.csv')
-write.csv(brca_phenos_done, file = 'Processed_Clinical_Data/brca_tcga_clinical_processed.csv')
-write.csv(cesc_phenos_done, file = 'Processed_Clinical_Data/cesc_tcga_clinical_processed.csv')
-write.csv(chol_phenos_done, file = 'Processed_Clinical_Data/chol_tcga_clinical_processed.csv')
-write.csv(coad_phenos_done, file = 'Processed_Clinical_Data/coad_tcga_clinical_processed.csv')
-write.csv(dlbc_phenos_done, file = 'Processed_Clinical_Data/dlbc_tcga_clinical_processed.csv')
-write.csv(esca_phenos_done, file = 'Processed_Clinical_Data/esca_tcga_clinical_processed.csv')
-write.csv(hnsc_phenos_done, file = 'Processed_Clinical_Data/hnsc_tcga_clinical_processed.csv')
-write.csv(kirc_phenos_done, file = 'Processed_Clinical_Data/kirc_tcga_clinical_processed.csv')
-write.csv(lihc_phenos_done, file = 'Processed_Clinical_Data/lihc_tcga_clinical_processed.csv')
-write.csv(luad_phenos_done, file = 'Processed_Clinical_Data/luad_tcga_clinical_processed.csv')
-write.csv(lusc_phenos_done, file = 'Processed_Clinical_Data/lusc_tcga_clinical_processed.csv')
-write.csv(meso_phenos_done, file = 'Processed_Clinical_Data/meso_tcga_clinical_processed.csv')
-write.csv(ov_phenos_done, file = 'Processed_Clinical_Data/ov_tcga_clinical_processed.csv')
-write.csv(paad_phenos_done, file = 'Processed_Clinical_Data/paad_tcga_clinical_processed.csv')
-write.csv(read_phenos_done, file = 'Processed_Clinical_Data/read_tcga_clinical_processed.csv')
-write.csv(sarc_phenos_done, file = 'Processed_Clinical_Data/sarc_tcga_clinical_processed.csv')
-write.csv(skcm_phenos_done, file = 'Processed_Clinical_Data/skcm_tcga_clinical_processed.csv')
-write.csv(stad_phenos_done, file = 'Processed_Clinical_Data/stad_tcga_clinical_processed.csv')
-write.csv(tgct_phenos_done, file = 'Processed_Clinical_Data/tgct_tcga_clinical_processed.csv')
-write.csv(ucec_phenos_done, file = 'Processed_Clinical_Data/ucec_tcga_clinical_processed.csv')
-write.csv(ucs_phenos_done, file = 'Processed_Clinical_Data/ucs_tcga_clinical_processed.csv')
+# # CCLE
+# write.csv(carboplatin_ccle, file = 'Processed_Clinical_Data/carboplatin_ccle_clinical_processed.csv')
+# write.csv(cyclophosphamide_ccle, file = 'Processed_Clinical_Data/cyclophosphamide_ccle_clinical_processed.csv')
+# write.csv(docetaxel_ccle, file = 'Processed_Clinical_Data/docetaxel_ccle_clinical_processed.csv')
+# write.csv(fluorouracil_ccle, file = 'Processed_Clinical_Data/fluorouracil_ccle_clinical_processed.csv')
+# write.csv(gemcitabine_ccle, file = 'Processed_Clinical_Data/gemcitabine_ccle_clinical_processed.csv')
+# 
+# # TCGA
+# write.csv(blca_phenos_done, file = 'Processed_Clinical_Data/blca_tcga_clinical_processed.csv')
+# write.csv(brca_phenos_done, file = 'Processed_Clinical_Data/brca_tcga_clinical_processed.csv')
+# write.csv(cesc_phenos_done, file = 'Processed_Clinical_Data/cesc_tcga_clinical_processed.csv')
+# write.csv(chol_phenos_done, file = 'Processed_Clinical_Data/chol_tcga_clinical_processed.csv')
+# write.csv(coad_phenos_done, file = 'Processed_Clinical_Data/coad_tcga_clinical_processed.csv')
+# write.csv(dlbc_phenos_done, file = 'Processed_Clinical_Data/dlbc_tcga_clinical_processed.csv')
+# write.csv(esca_phenos_done, file = 'Processed_Clinical_Data/esca_tcga_clinical_processed.csv')
+# write.csv(hnsc_phenos_done, file = 'Processed_Clinical_Data/hnsc_tcga_clinical_processed.csv')
+# write.csv(kirc_phenos_done, file = 'Processed_Clinical_Data/kirc_tcga_clinical_processed.csv')
+# write.csv(lihc_phenos_done, file = 'Processed_Clinical_Data/lihc_tcga_clinical_processed.csv')
+# write.csv(luad_phenos_done, file = 'Processed_Clinical_Data/luad_tcga_clinical_processed.csv')
+# write.csv(lusc_phenos_done, file = 'Processed_Clinical_Data/lusc_tcga_clinical_processed.csv')
+# write.csv(meso_phenos_done, file = 'Processed_Clinical_Data/meso_tcga_clinical_processed.csv')
+# write.csv(ov_phenos_done, file = 'Processed_Clinical_Data/ov_tcga_clinical_processed.csv')
+# write.csv(paad_phenos_done, file = 'Processed_Clinical_Data/paad_tcga_clinical_processed.csv')
+# write.csv(read_phenos_done, file = 'Processed_Clinical_Data/read_tcga_clinical_processed.csv')
+# write.csv(sarc_phenos_done, file = 'Processed_Clinical_Data/sarc_tcga_clinical_processed.csv')
+# write.csv(skcm_phenos_done, file = 'Processed_Clinical_Data/skcm_tcga_clinical_processed.csv')
+# write.csv(stad_phenos_done, file = 'Processed_Clinical_Data/stad_tcga_clinical_processed.csv')
+# write.csv(tgct_phenos_done, file = 'Processed_Clinical_Data/tgct_tcga_clinical_processed.csv')
+# write.csv(ucec_phenos_done, file = 'Processed_Clinical_Data/ucec_tcga_clinical_processed.csv')
+# write.csv(ucs_phenos_done, file = 'Processed_Clinical_Data/ucs_tcga_clinical_processed.csv')
