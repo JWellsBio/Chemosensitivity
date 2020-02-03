@@ -37,7 +37,7 @@ read_tcga_clinical <- function(tcga_file_number) {
 
 # functions for dummy variables in GDSC data
 sens_res <- function(drug_data, ic50) {
-  ifelse(drug_data$LN_IC50 > log(ic50), 1, 0) # 1 is resistant, 0 sensitive
+  ifelse(drug_data$LN_IC50 > ic50, 1, 0) # 1 is resistant, 0 sensitive
 }
 # # most senistive
 # most_sens_bin_gdsc <- function(drug_data) {
@@ -164,28 +164,38 @@ ucs_clinical  <- read_tcga_clinical(31)
 ### create dummy binary variables for most/least sensitive -------
 
 
-bleomycin$res_sens <- sens_res(bleomycin, 5.40)
+bleomycin$res_sens <- sens_res(bleomycin, -1.4805)
+table(bleomycin$res_sens) #31,175
 
-camptothecin$res_sens <- sens_res(camptothecin, 0.107)
+camptothecin$res_sens <- sens_res(camptothecin, -6.584)
+table(camptothecin$res_sens) #37,641
 
-cisplatin$res_sens <- sens_res(cisplatin, 26.4)
+cisplatin$res_sens <- sens_res(cisplatin, 1.3801)
+table(cisplatin$res_sens) #61,619
 
-cytarabine$res_sens <- sens_res(cytarabine, 4.56)
+cytarabine$res_sens <- sens_res(cytarabine, -1.9516)
+table(cytarabine$res_sens) #48,628
 
-doxorubicin$res_sens <- sens_res(doxorubicin, 0.171)
+doxorubicin$res_sens <- sens_res(doxorubicin, -3.9565)
+table(doxorubicin$res_sens) #53,658
 
-etoposide$res_sens <- sens_res(etoposide, 4.76)
+etoposide$res_sens <- sens_res(etoposide, -1.2198)
+table(etoposide$res_sens) #33,685
 
-gemcitabine$res_sens <- sens_res(gemcitabine, 0.0960)
+gemcitabine$res_sens <- sens_res(gemcitabine, -5.9903)
+table(gemcitabine$res_sens) #44,663
 
-methotrexate$res_sens <- sens_res(methotrexate, 0.595)
+methotrexate$res_sens <- sens_res(methotrexate, -2.4743)
+table(methotrexate$res_sens) #38,641
 
-mitomycin$res_sens <- sens_res(mitomycin, 0.468)
+mitomycin$res_sens <- sens_res(mitomycin, -2.9647)
+table(mitomycin$res_sens) #54,658
 
-sn38$res_sens <- sens_res(sn38, 0.0156)
+sn38$res_sens <- sens_res(sn38, -6.559)
+table(sn38$res_sens) #49,712
 
-temozolomide$res_sens <- sens_res(temozolomide, 375)
-
+temozolomide$res_sens <- sens_res(temozolomide, 4.6032)
+table(temozolomide$res_sens) #47,692
 
 # # GDSC
 # cisplatin$most_sensitive        <- most_sens_bin_gdsc(cisplatin)

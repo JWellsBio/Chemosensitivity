@@ -4,6 +4,9 @@
 if (!require ('glmnet')) install.packages('glmnet')
 library(glmnet) # for model building
 
+if(!require ('ROSE')) install.packages('ROSE')
+library(ROSE)
+
 ### functions needed ----
 # create function opposite of %in%
 '%ni%' <- Negate('%in%')
@@ -64,8 +67,10 @@ intersect(rownames(gdsc_train), rownames(gdsc_test)) #0
 
 # create training/testing sets for each drug
 bleomycin_rna_seq_train     <- gdsc_train[intersect(bleomycin_lines, rownames(gdsc_train)), ]
+bleomycin_rna_seq_train_df     <- as.data.frame(bleomycin_rna_seq_train)
 # 622 x 14209
 bleomycin_rna_seq_test      <- gdsc_test[intersect(bleomycin_lines, rownames(gdsc_test)), ]
+bleomycin_rna_seq_test      <- as.data.frame(bleomycin_rna_seq_test)
 # 144 x 14209
 camptothecin_rna_seq_train     <- gdsc_train[intersect(camptothecin_lines, rownames(gdsc_train)), ]
 # 549 x 14209
@@ -110,7 +115,13 @@ temozolomide_rna_seq_test      <- gdsc_test[intersect(temozolomide_lines, rownam
 
 # split clinical data
 bleomycin_train        <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_train)), ]
+bleomycin_rna_seq_train_df$res_sens <- bleomycin_train$res_sens
+bleo_rose <- ROSE(res_sens ~ ., data = bleomycin_rna_seq_train_df)$data
+bleo_rose_res_sens <- bleo_rose$res_sens
+bleo_rose <- bleo_rose[, -14210]
+
 bleomycin_test         <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_test)), ]
+bleomycin_rna_seq_test$res_sens <- bleomycin_test$res_sens
 
 camptothecin_train        <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_train)), ]
 camptothecin_test         <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_test)), ]
@@ -145,14 +156,16 @@ temozolomide_test         <- temozolomide[which(temozolomide$COSMIC_ID %in% rown
 
 ### fit models --------
 ## bleomycin
-bleomycin_fit_elnet <- cv.glmnet(x = as.matrix(bleomycin_rna_seq_train), y = bleomycin_train$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
+bleomycin_fit_elnet <- cv.glmnet(x = as.matrix(bleo_rose), y = bleo_rose_res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/bleomycin_auc.png')
 plot(bleomycin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/bleomycin_model.rds', bleomycin_fit_elnet)
-
+bleo_pred <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+bleo_preds <- auc(bleomycin_test$res_sens, bleo_pred)
+bleo_preds <- round(bleo_preds, digits = 2)
 ## camptothecin
 camptothecin_fit_elnet <- cv.glmnet(x = as.matrix(camptothecin_rna_seq_train), y = camptothecin_train$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
@@ -208,7 +221,7 @@ dev.off()
 saveRDS(file = 'GLM_Models/gemcitabine_model.rds', gemcitabine_fit_elnet)
 
 ## methotrexate
-methotrexate_fit_elnet <- cv.glmnet(x = as.matrix(methotrexate_rna_seq_train), y = methotrexate_train$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
+methotrexate_fit_elnet <- cv.glmnet(x = as.matrix(meth_df_rose$data), y = meth_df_rose$data$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/methotrexate_auc.png')
 plot(methotrexate_fit_elnet)
