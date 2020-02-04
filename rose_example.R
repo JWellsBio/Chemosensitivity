@@ -34,3 +34,15 @@ pred.rose <- predict(fit.rose, data=data.rose, type="response")
 roc.curve(data.rose$cls, pred.rose,
           main="ROC curve \n (Half circle depleted data balanced by ROSE)")
 par(mfrow=c(1,1))
+
+
+
+library(rms)
+rcorr.cens(new_ic50,bleomycin_test_breast$res_sens)[1]
+#C Index 
+0.8931711
+
+library(AUC)
+sensitivity(new_ic50, bleomycin_test_breast$res_sens)
+specificity(new_ic50, bleomycin_test_breast$res_sens)
+accuracy(new_ic50, bleomycin_test_breast$res_sens)

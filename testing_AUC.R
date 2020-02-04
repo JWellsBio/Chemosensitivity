@@ -31,6 +31,9 @@ library(webshot) # to support formattavle functions
 if (!require ('glmnet')) install.packages('glmnet')
 library(glmnet)
 
+library(survminer)
+library(survival)
+
 ### GDSC ------
 ## load clinical data ----
 cisplatin     <- read.csv('Processed_Clinical_Data/cisplatin_gdsc_clinical_processed.csv', row.names = 1)
@@ -150,12 +153,226 @@ methotrexate_least_test_gdsc_auc_1se <- auc(methotrexate_test$least_sensitive, n
 methotrexate_least_test_gdsc_auc_1se <- round(methotrexate_least_test_gdsc_auc_1se, digits = 2)
 
 #put them together
-overall_auc <- c(cisplatin_most_test_gdsc_auc_1se, cisplatin_least_test_gdsc_auc_min, 
-                 etoposide_most_test_gdsc_auc_min, etoposide_least_test_gdsc_auc_min, 
-                 gemcitabine_most_test_gdsc_auc_1se, gemcitabine_least_test_gdsc_auc_1se, 
-                 methotrexate_most_test_gdsc_auc_min, methotrexate_least_test_gdsc_auc_1se)
+overall_auc <- c(bleomycin_preds, camptothecin_preds, cisplatin_preds, cytarabine_preds, doxorubicin_preds, 
+                 etoposide_preds, gemcitabine_preds, methotrexate_preds, mitomycin_preds, 
+                 sn38_preds, temozolomide_preds)
 
 # subsetting lines by cancer type
+bleomycin_aero_dig_tract_lines              <- bleomycin_test$Cell_line_tissue_type == 'aero_dig_tract'
+bleomycin_bone_lines                        <- bleomycin_test$Cell_line_tissue_type == 'bone'
+bleomycin_breast_lines                      <- bleomycin_test$Cell_line_tissue_type == 'breast'
+bleomycin_digestive_system_lines            <- bleomycin_test$Cell_line_tissue_type == 'digestive_system'
+bleomycin_kidney_lines                      <- bleomycin_test$Cell_line_tissue_type == 'kidney'
+bleomycin_large_intestine_lines             <- bleomycin_test$Cell_line_tissue_type == 'large_intestine'
+bleomycin_lung_lines                        <- bleomycin_test$Cell_line_tissue_type == 'lung'
+bleomycin_lung_NSCLC_lines                  <- bleomycin_test$Cell_line_tissue_type == 'lung_NSCLC'
+bleomycin_lung_SCLC_lines                   <- bleomycin_test$Cell_line_tissue_type == 'lung_SCLC'
+bleomycin_nervous_system_lines              <- bleomycin_test$Cell_line_tissue_type == 'nervous_system'
+bleomycin_neuroblastoma_lines               <- bleomycin_test$Cell_line_tissue_type == 'neuroblastoma'
+bleomycin_pancreas_lines                    <- bleomycin_test$Cell_line_tissue_type == 'pancreas'
+bleomycin_skin_lines                        <- bleomycin_test$Cell_line_tissue_type == 'skin'
+bleomycin_soft_tissue_lines                 <- bleomycin_test$Cell_line_tissue_type == 'soft_tissue'
+bleomycin_thyroid_lines                     <- bleomycin_test$Cell_line_tissue_type == 'thyroid'
+bleomycin_urogenital_system_lines           <- bleomycin_test$Cell_line_tissue_type == 'urogenital_system'
+
+#test pan-cancer models against individual cancer types
+bleomycin_test_aero_dig_tract_exp <- bleomycin_rna_seq_test[bleomycin_aero_dig_tract_lines, ]
+bleomycin_test_aero_dig_tract <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_aero_dig_tract_auc <- sum(bleomycin_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_bone_exp <- bleomycin_rna_seq_test[bleomycin_bone_lines, ]
+bleomycin_test_bone <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_bone_auc <- sum(bleomycin_test_bone$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_breast_exp <- bleomycin_rna_seq_test[bleomycin_breast_lines, ]
+bleomycin_test_breast <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_breast_auc <- sum(bleomycin_test_breast$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_digestive_system_exp <- bleomycin_rna_seq_test[bleomycin_digestive_system_lines, ]
+bleomycin_test_digestive_system <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_digestive_system_auc <- sum(bleomycin_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_kidney_exp <- bleomycin_rna_seq_test[bleomycin_kidney_lines, ]
+bleomycin_test_kidney <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_kidney_auc <- sum(bleomycin_test_kidney$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_large_intestine_exp <- bleomycin_rna_seq_test[bleomycin_large_intestine_lines, ]
+bleomycin_test_large_intestine <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_large_intestine_auc <- sum(bleomycin_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_lung_exp <- bleomycin_rna_seq_test[bleomycin_lung_lines, ]
+bleomycin_test_lung <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_lung_auc <- sum(bleomycin_test_lung$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_lung_NSCLC_exp <- bleomycin_rna_seq_test[bleomycin_lung_NSCLC_lines, ]
+bleomycin_test_lung_NSCLC <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_lung_NSCLC_auc <- sum(bleomycin_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_lung_SCLC_exp <- bleomycin_rna_seq_test[bleomycin_lung_SCLC_lines, ]
+bleomycin_test_lung_SCLC <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_lung_SCLC_auc <- sum(bleomycin_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_nervous_system_exp <- bleomycin_rna_seq_test[bleomycin_nervous_system_lines, ]
+bleomycin_test_nervous_system <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_nervous_system_auc <- sum(bleomycin_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_neuroblastoma_exp <- bleomycin_rna_seq_test[bleomycin_neuroblastoma_lines, ]
+bleomycin_test_neuroblastoma <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_neuroblastoma_auc <- sum(bleomycin_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_pancreas_exp <- bleomycin_rna_seq_test[bleomycin_pancreas_lines, ]
+bleomycin_test_pancreas <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_pancreas_auc <- sum(bleomycin_test_pancreas$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_skin_exp <- bleomycin_rna_seq_test[bleomycin_skin_lines, ]
+bleomycin_test_skin <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_skin_auc <- sum(bleomycin_test_skin$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_soft_tissue_exp <- bleomycin_rna_seq_test[bleomycin_soft_tissue_lines, ]
+bleomycin_test_soft_tissue <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_soft_tissue_auc <- sum(bleomycin_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_thyroid_exp <- bleomycin_rna_seq_test[bleomycin_thyroid_lines, ]
+bleomycin_test_thyroid <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_thyroid_auc <- sum(bleomycin_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_test_urogenital_system_exp <- bleomycin_rna_seq_test[bleomycin_urogenital_system_lines, ]
+bleomycin_test_urogenital_system <- bleomycin_test[which(bleomycin_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+bleomycin_urogenital_system_auc <- sum(bleomycin_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+bleomycin_auc <- c(bleomycin_aero_dig_tract_auc, bleomycin_bone_auc, 
+                   bleomycin_breast_auc, bleomycin_digestive_system_auc, 
+                   bleomycin_kidney_auc, bleomycin_large_intestine_auc, 
+                   bleomycin_lung_auc, bleomycin_lung_NSCLC_auc, bleomycin_lung_SCLC_auc, 
+                   bleomycin_nervous_system_auc, bleomycin_neuroblastoma_auc, 
+                   bleomycin_pancreas_auc, bleomycin_skin_auc, 
+                   bleomycin_soft_tissue_auc, bleomycin_thyroid_auc, 
+                   bleomycin_urogenital_system_auc)
+
+camptothecin_aero_dig_tract_lines              <- camptothecin_test$Cell_line_tissue_type == 'aero_dig_tract'
+camptothecin_bone_lines                        <- camptothecin_test$Cell_line_tissue_type == 'bone'
+camptothecin_breast_lines                      <- camptothecin_test$Cell_line_tissue_type == 'breast'
+camptothecin_digestive_system_lines            <- camptothecin_test$Cell_line_tissue_type == 'digestive_system'
+camptothecin_kidney_lines                      <- camptothecin_test$Cell_line_tissue_type == 'kidney'
+camptothecin_large_intestine_lines             <- camptothecin_test$Cell_line_tissue_type == 'large_intestine'
+camptothecin_lung_lines                        <- camptothecin_test$Cell_line_tissue_type == 'lung'
+camptothecin_lung_NSCLC_lines                  <- camptothecin_test$Cell_line_tissue_type == 'lung_NSCLC'
+camptothecin_lung_SCLC_lines                   <- camptothecin_test$Cell_line_tissue_type == 'lung_SCLC'
+camptothecin_nervous_system_lines              <- camptothecin_test$Cell_line_tissue_type == 'nervous_system'
+camptothecin_neuroblastoma_lines               <- camptothecin_test$Cell_line_tissue_type == 'neuroblastoma'
+camptothecin_pancreas_lines                    <- camptothecin_test$Cell_line_tissue_type == 'pancreas'
+camptothecin_skin_lines                        <- camptothecin_test$Cell_line_tissue_type == 'skin'
+camptothecin_soft_tissue_lines                 <- camptothecin_test$Cell_line_tissue_type == 'soft_tissue'
+camptothecin_thyroid_lines                     <- camptothecin_test$Cell_line_tissue_type == 'thyroid'
+camptothecin_urogenital_system_lines           <- camptothecin_test$Cell_line_tissue_type == 'urogenital_system'
+
+#test pan-cancer models against individual cancer types
+camptothecin_test_aero_dig_tract_exp <- camptothecin_rna_seq_test[camptothecin_aero_dig_tract_lines, ]
+camptothecin_test_aero_dig_tract <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_aero_dig_tract_auc <- sum(camptothecin_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_bone_exp <- camptothecin_rna_seq_test[camptothecin_bone_lines, ]
+camptothecin_test_bone <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_bone_auc <- sum(camptothecin_test_bone$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_breast_exp <- camptothecin_rna_seq_test[camptothecin_breast_lines, ]
+camptothecin_test_breast <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_breast_auc <- sum(camptothecin_test_breast$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_digestive_system_exp <- camptothecin_rna_seq_test[camptothecin_digestive_system_lines, ]
+camptothecin_test_digestive_system <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_digestive_system_auc <- sum(camptothecin_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_kidney_exp <- camptothecin_rna_seq_test[camptothecin_kidney_lines, ]
+camptothecin_test_kidney <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_kidney_auc <- sum(camptothecin_test_kidney$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_large_intestine_exp <- camptothecin_rna_seq_test[camptothecin_large_intestine_lines, ]
+camptothecin_test_large_intestine <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_large_intestine_auc <- sum(camptothecin_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_lung_exp <- camptothecin_rna_seq_test[camptothecin_lung_lines, ]
+camptothecin_test_lung <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_lung_auc <- sum(camptothecin_test_lung$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_lung_NSCLC_exp <- camptothecin_rna_seq_test[camptothecin_lung_NSCLC_lines, ]
+camptothecin_test_lung_NSCLC <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_lung_NSCLC_auc <- sum(camptothecin_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_lung_SCLC_exp <- camptothecin_rna_seq_test[camptothecin_lung_SCLC_lines, ]
+camptothecin_test_lung_SCLC <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_lung_SCLC_auc <- sum(camptothecin_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_nervous_system_exp <- camptothecin_rna_seq_test[camptothecin_nervous_system_lines, ]
+camptothecin_test_nervous_system <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_nervous_system_auc <- sum(camptothecin_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_neuroblastoma_exp <- camptothecin_rna_seq_test[camptothecin_neuroblastoma_lines, ]
+camptothecin_test_neuroblastoma <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_neuroblastoma_auc <- sum(camptothecin_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_pancreas_exp <- camptothecin_rna_seq_test[camptothecin_pancreas_lines, ]
+camptothecin_test_pancreas <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_pancreas_auc <- sum(camptothecin_test_pancreas$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_skin_exp <- camptothecin_rna_seq_test[camptothecin_skin_lines, ]
+camptothecin_test_skin <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_skin_auc <- sum(camptothecin_test_skin$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_soft_tissue_exp <- camptothecin_rna_seq_test[camptothecin_soft_tissue_lines, ]
+camptothecin_test_soft_tissue <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_soft_tissue_auc <- sum(camptothecin_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_thyroid_exp <- camptothecin_rna_seq_test[camptothecin_thyroid_lines, ]
+camptothecin_test_thyroid <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_thyroid_auc <- sum(camptothecin_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_test_urogenital_system_exp <- camptothecin_rna_seq_test[camptothecin_urogenital_system_lines, ]
+camptothecin_test_urogenital_system <- camptothecin_test[which(camptothecin_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+camptothecin_urogenital_system_auc <- sum(camptothecin_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+camptothecin_auc <- c(camptothecin_aero_dig_tract_auc, camptothecin_bone_auc, 
+                   camptothecin_breast_auc, camptothecin_digestive_system_auc, 
+                   camptothecin_kidney_auc, camptothecin_large_intestine_auc, 
+                   camptothecin_lung_auc, camptothecin_lung_NSCLC_auc, camptothecin_lung_SCLC_auc, 
+                   camptothecin_nervous_system_auc, camptothecin_neuroblastoma_auc, 
+                   camptothecin_pancreas_auc, camptothecin_skin_auc, 
+                   camptothecin_soft_tissue_auc, camptothecin_thyroid_auc, 
+                   camptothecin_urogenital_system_auc)
+
+
 cisplatin_aero_dig_tract_lines              <- cisplatin_test$Cell_line_tissue_type == 'aero_dig_tract'
 cisplatin_bone_lines                        <- cisplatin_test$Cell_line_tissue_type == 'bone'
 cisplatin_breast_lines                      <- cisplatin_test$Cell_line_tissue_type == 'breast'
@@ -177,180 +394,309 @@ cisplatin_urogenital_system_lines           <- cisplatin_test$Cell_line_tissue_t
 cisplatin_test_aero_dig_tract_exp <- cisplatin_rna_seq_test[cisplatin_aero_dig_tract_lines, ]
 cisplatin_test_aero_dig_tract <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
 new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
-cisplatin_aero_dig_tract_most_auc <- auc(cisplatin_test_aero_dig_tract$res_sens, new_ic50)
+cisplatin_aero_dig_tract_auc <- sum(cisplatin_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
 cisplatin_test_bone_exp <- cisplatin_rna_seq_test[cisplatin_bone_lines, ]
 cisplatin_test_bone <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'bone'), ]
 new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
-cisplatin_bone_most_auc <- auc(cisplatin_test_bone$res_sens, new_ic50)
+cisplatin_bone_auc <- sum(cisplatin_test_bone$res_sens == new_ic50)/length(new_ic50)
 
 cisplatin_test_breast_exp <- cisplatin_rna_seq_test[cisplatin_breast_lines, ]
 cisplatin_test_breast <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'breast'), ]
 new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
-cisplatin_breast_most_auc <- auc(cisplatin_test_breast$res_sens, new_ic50)
+cisplatin_breast_auc <- sum(cisplatin_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_digestive_system <- cisplatin_rna_seq_test_scaled[cisplatin_digestive_system_lines, ]
+cisplatin_test_digestive_system_exp <- cisplatin_rna_seq_test[cisplatin_digestive_system_lines, ]
 cisplatin_test_digestive_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_digestive_system), s = 'lambda.1se', interval = 'conf')
-cisplatin_digestive_system_most_auc <- auc(cisplatin_test_digestive_system$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_digestive_system_auc <- sum(cisplatin_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_kidney <- cisplatin_rna_seq_test_scaled[cisplatin_kidney_lines, ]
+cisplatin_test_kidney_exp <- cisplatin_rna_seq_test[cisplatin_kidney_lines, ]
 cisplatin_test_kidney <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-cisplatin_kidney_most_auc <- auc(cisplatin_test_kidney$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_kidney_auc <- sum(cisplatin_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_large_intestine <- cisplatin_rna_seq_test_scaled[cisplatin_large_intestine_lines, ]
+cisplatin_test_large_intestine_exp <- cisplatin_rna_seq_test[cisplatin_large_intestine_lines, ]
 cisplatin_test_large_intestine <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-cisplatin_large_intestine_most_auc <- auc(cisplatin_test_large_intestine$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_large_intestine_auc <- sum(cisplatin_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung <- cisplatin_rna_seq_test_scaled[cisplatin_lung_lines, ]
+cisplatin_test_lung_exp <- cisplatin_rna_seq_test[cisplatin_lung_lines, ]
 cisplatin_test_lung <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-cisplatin_lung_most_auc <- auc(cisplatin_test_lung$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_lung_auc <- sum(cisplatin_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung_NSCLC <- cisplatin_rna_seq_test_scaled[cisplatin_lung_NSCLC_lines, ]
+cisplatin_test_lung_NSCLC_exp <- cisplatin_rna_seq_test[cisplatin_lung_NSCLC_lines, ]
 cisplatin_test_lung_NSCLC <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung_NSCLC), s = 'lambda.1se', interval = 'conf')
-cisplatin_lung_NSCLC_most_auc <- auc(cisplatin_test_lung_NSCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_lung_NSCLC_auc <- sum(cisplatin_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung_SCLC <- cisplatin_rna_seq_test_scaled[cisplatin_lung_SCLC_lines, ]
+cisplatin_test_lung_SCLC_exp <- cisplatin_rna_seq_test[cisplatin_lung_SCLC_lines, ]
 cisplatin_test_lung_SCLC <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung_SCLC), s = 'lambda.1se', interval = 'conf')
-cisplatin_lung_SCLC_most_auc <- auc(cisplatin_test_lung_SCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_lung_SCLC_auc <- sum(cisplatin_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_nervous_system <- cisplatin_rna_seq_test_scaled[cisplatin_nervous_system_lines, ]
+cisplatin_test_nervous_system_exp <- cisplatin_rna_seq_test[cisplatin_nervous_system_lines, ]
 cisplatin_test_nervous_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_nervous_system), s = 'lambda.1se', interval = 'conf')
-cisplatin_nervous_system_most_auc <- auc(cisplatin_test_nervous_system$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_nervous_system_auc <- sum(cisplatin_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_neuroblastoma <- cisplatin_rna_seq_test_scaled[cisplatin_neuroblastoma_lines, ]
+cisplatin_test_neuroblastoma_exp <- cisplatin_rna_seq_test[cisplatin_neuroblastoma_lines, ]
 cisplatin_test_neuroblastoma <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_neuroblastoma), s = 'lambda.1se', interval = 'conf')
-cisplatin_neuroblastoma_most_auc <- auc(cisplatin_test_neuroblastoma$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_neuroblastoma_auc <- sum(cisplatin_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_pancreas <- cisplatin_rna_seq_test_scaled[cisplatin_pancreas_lines, ]
+cisplatin_test_pancreas_exp <- cisplatin_rna_seq_test[cisplatin_pancreas_lines, ]
 cisplatin_test_pancreas <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-cisplatin_pancreas_most_auc <- auc(cisplatin_test_pancreas$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_pancreas_auc <- sum(cisplatin_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_skin <- cisplatin_rna_seq_test_scaled[cisplatin_skin_lines, ]
+cisplatin_test_skin_exp <- cisplatin_rna_seq_test[cisplatin_skin_lines, ]
 cisplatin_test_skin <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-cisplatin_skin_most_auc <- auc(cisplatin_test_skin$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_skin_auc <- sum(cisplatin_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_soft_tissue <- cisplatin_rna_seq_test_scaled[cisplatin_soft_tissue_lines, ]
+cisplatin_test_soft_tissue_exp <- cisplatin_rna_seq_test[cisplatin_soft_tissue_lines, ]
 cisplatin_test_soft_tissue <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-cisplatin_soft_tissue_most_auc <- auc(cisplatin_test_soft_tissue$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_soft_tissue_auc <- sum(cisplatin_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_thyroid <- cisplatin_rna_seq_test_scaled[cisplatin_thyroid_lines, ]
+cisplatin_test_thyroid_exp <- cisplatin_rna_seq_test[cisplatin_thyroid_lines, ]
 cisplatin_test_thyroid <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-cisplatin_thyroid_most_auc <- auc(cisplatin_test_thyroid$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_thyroid_auc <- sum(cisplatin_test_thyroid$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_urogenital_system <- cisplatin_rna_seq_test_scaled[cisplatin_urogenital_system_lines, ]
+cisplatin_test_urogenital_system_exp <- cisplatin_rna_seq_test[cisplatin_urogenital_system_lines, ]
 cisplatin_test_urogenital_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(cisplatin_most_fit_elnet, newx = as.matrix(cisplatin_test_scaled_urogenital_system), s = 'lambda.1se', interval = 'conf')
-cisplatin_urogenital_system_most_auc <- auc(cisplatin_test_urogenital_system$most_sensitive, new_ic50)
+new_ic50 <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cisplatin_urogenital_system_auc <- sum(cisplatin_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_most_auc <- c(cisplatin_aero_dig_tract_most_auc, cisplatin_bone_most_auc, 
-                        cisplatin_breast_most_auc, cisplatin_digestive_system_most_auc, 
-                        cisplatin_kidney_most_auc, cisplatin_large_intestine_most_auc, 
-                        cisplatin_lung_most_auc, cisplatin_lung_NSCLC_most_auc, cisplatin_lung_SCLC_most_auc, 
-                        cisplatin_nervous_system_most_auc, cisplatin_neuroblastoma_most_auc, 
-                        cisplatin_pancreas_most_auc, cisplatin_skin_most_auc, 
-                        cisplatin_soft_tissue_most_auc, cisplatin_thyroid_most_auc, 
-                        cisplatin_urogenital_system_most_auc)
+cisplatin_auc <- c(cisplatin_aero_dig_tract_auc, cisplatin_bone_auc, 
+                   cisplatin_breast_auc, cisplatin_digestive_system_auc, 
+                   cisplatin_kidney_auc, cisplatin_large_intestine_auc, 
+                   cisplatin_lung_auc, cisplatin_lung_NSCLC_auc, cisplatin_lung_SCLC_auc, 
+                   cisplatin_nervous_system_auc, cisplatin_neuroblastoma_auc, 
+                   cisplatin_pancreas_auc, cisplatin_skin_auc, 
+                   cisplatin_soft_tissue_auc, cisplatin_thyroid_auc, 
+                   cisplatin_urogenital_system_auc)
 
-cisplatin_test_scaled_aero_dig_tract <- cisplatin_rna_seq_test_scaled[cisplatin_aero_dig_tract_lines, ]
-cisplatin_test_aero_dig_tract <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_aero_dig_tract), s = 'lambda.min', interval = 'conf')
-cisplatin_aero_dig_tract_least_auc <- auc(cisplatin_test_aero_dig_tract$least_sensitive, new_ic50)
 
-cisplatin_test_scaled_bone <- cisplatin_rna_seq_test_scaled[cisplatin_bone_lines, ]
-cisplatin_test_bone <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_bone), s = 'lambda.min', interval = 'conf')
-cisplatin_bone_least_auc <- auc(cisplatin_test_bone$least_sensitive, new_ic50)
 
-cisplatin_test_scaled_breast <- cisplatin_rna_seq_test_scaled[cisplatin_breast_lines, ]
-cisplatin_test_breast <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_breast), s = 'lambda.min', interval = 'conf')
-cisplatin_breast_least_auc <- auc(cisplatin_test_breast$least_sensitive, new_ic50)
+cytarabine_aero_dig_tract_lines              <- cytarabine_test$Cell_line_tissue_type == 'aero_dig_tract'
+cytarabine_bone_lines                        <- cytarabine_test$Cell_line_tissue_type == 'bone'
+cytarabine_breast_lines                      <- cytarabine_test$Cell_line_tissue_type == 'breast'
+cytarabine_digestive_system_lines            <- cytarabine_test$Cell_line_tissue_type == 'digestive_system'
+cytarabine_kidney_lines                      <- cytarabine_test$Cell_line_tissue_type == 'kidney'
+cytarabine_large_intestine_lines             <- cytarabine_test$Cell_line_tissue_type == 'large_intestine'
+cytarabine_lung_lines                        <- cytarabine_test$Cell_line_tissue_type == 'lung'
+cytarabine_lung_NSCLC_lines                  <- cytarabine_test$Cell_line_tissue_type == 'lung_NSCLC'
+cytarabine_lung_SCLC_lines                   <- cytarabine_test$Cell_line_tissue_type == 'lung_SCLC'
+cytarabine_nervous_system_lines              <- cytarabine_test$Cell_line_tissue_type == 'nervous_system'
+cytarabine_neuroblastoma_lines               <- cytarabine_test$Cell_line_tissue_type == 'neuroblastoma'
+cytarabine_pancreas_lines                    <- cytarabine_test$Cell_line_tissue_type == 'pancreas'
+cytarabine_skin_lines                        <- cytarabine_test$Cell_line_tissue_type == 'skin'
+cytarabine_soft_tissue_lines                 <- cytarabine_test$Cell_line_tissue_type == 'soft_tissue'
+cytarabine_thyroid_lines                     <- cytarabine_test$Cell_line_tissue_type == 'thyroid'
+cytarabine_urogenital_system_lines           <- cytarabine_test$Cell_line_tissue_type == 'urogenital_system'
 
-cisplatin_test_scaled_digestive_system <- cisplatin_rna_seq_test_scaled[cisplatin_digestive_system_lines, ]
-cisplatin_test_digestive_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_digestive_system), s = 'lambda.min', interval = 'conf')
-cisplatin_digestive_system_least_auc <- auc(cisplatin_test_digestive_system$least_sensitive, new_ic50)
+#test pan-cancer models against individual cancer types
+cytarabine_test_aero_dig_tract_exp <- cytarabine_rna_seq_test[cytarabine_aero_dig_tract_lines, ]
+cytarabine_test_aero_dig_tract <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_aero_dig_tract_auc <- sum(cytarabine_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_kidney <- cisplatin_rna_seq_test_scaled[cisplatin_kidney_lines, ]
-cisplatin_test_kidney <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_kidney), s = 'lambda.min', interval = 'conf')
-cisplatin_kidney_least_auc <- auc(cisplatin_test_kidney$least_sensitive, new_ic50)
+cytarabine_test_bone_exp <- cytarabine_rna_seq_test[cytarabine_bone_lines, ]
+cytarabine_test_bone <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_bone_auc <- sum(cytarabine_test_bone$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_large_intestine <- cisplatin_rna_seq_test_scaled[cisplatin_large_intestine_lines, ]
-cisplatin_test_large_intestine <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_large_intestine), s = 'lambda.min', interval = 'conf')
-cisplatin_large_intestine_least_auc <- auc(cisplatin_test_large_intestine$least_sensitive, new_ic50)
+cytarabine_test_breast_exp <- cytarabine_rna_seq_test[cytarabine_breast_lines, ]
+cytarabine_test_breast <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_breast_auc <- sum(cytarabine_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung <- cisplatin_rna_seq_test_scaled[cisplatin_lung_lines, ]
-cisplatin_test_lung <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung), s = 'lambda.min', interval = 'conf')
-cisplatin_lung_least_auc <- auc(cisplatin_test_lung$least_sensitive, new_ic50)
+cytarabine_test_digestive_system_exp <- cytarabine_rna_seq_test[cytarabine_digestive_system_lines, ]
+cytarabine_test_digestive_system <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_digestive_system_auc <- sum(cytarabine_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung_NSCLC <- cisplatin_rna_seq_test_scaled[cisplatin_lung_NSCLC_lines, ]
-cisplatin_test_lung_NSCLC <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung_NSCLC), s = 'lambda.min', interval = 'conf')
-cisplatin_lung_NSCLC_least_auc <- auc(cisplatin_test_lung_NSCLC$least_sensitive, new_ic50)
+cytarabine_test_kidney_exp <- cytarabine_rna_seq_test[cytarabine_kidney_lines, ]
+cytarabine_test_kidney <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_kidney_auc <- sum(cytarabine_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_lung_SCLC <- cisplatin_rna_seq_test_scaled[cisplatin_lung_SCLC_lines, ]
-cisplatin_test_lung_SCLC <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_lung_SCLC), s = 'lambda.min', interval = 'conf')
-cisplatin_lung_SCLC_least_auc <- auc(cisplatin_test_lung_SCLC$least_sensitive, new_ic50)
+cytarabine_test_large_intestine_exp <- cytarabine_rna_seq_test[cytarabine_large_intestine_lines, ]
+cytarabine_test_large_intestine <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_large_intestine_auc <- sum(cytarabine_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_nervous_system <- cisplatin_rna_seq_test_scaled[cisplatin_nervous_system_lines, ]
-cisplatin_test_nervous_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_nervous_system), s = 'lambda.min', interval = 'conf')
-cisplatin_nervous_system_least_auc <- auc(cisplatin_test_nervous_system$least_sensitive, new_ic50)
+cytarabine_test_lung_exp <- cytarabine_rna_seq_test[cytarabine_lung_lines, ]
+cytarabine_test_lung <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_lung_auc <- sum(cytarabine_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_neuroblastoma <- cisplatin_rna_seq_test_scaled[cisplatin_neuroblastoma_lines, ]
-cisplatin_test_neuroblastoma <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_neuroblastoma), s = 'lambda.min', interval = 'conf')
-cisplatin_neuroblastoma_least_auc <- auc(cisplatin_test_neuroblastoma$least_sensitive, new_ic50)
+cytarabine_test_lung_NSCLC_exp <- cytarabine_rna_seq_test[cytarabine_lung_NSCLC_lines, ]
+cytarabine_test_lung_NSCLC <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_lung_NSCLC_auc <- sum(cytarabine_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_pancreas <- cisplatin_rna_seq_test_scaled[cisplatin_pancreas_lines, ]
-cisplatin_test_pancreas <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_pancreas), s = 'lambda.min', interval = 'conf')
-cisplatin_pancreas_least_auc <- auc(cisplatin_test_pancreas$least_sensitive, new_ic50)
+cytarabine_test_lung_SCLC_exp <- cytarabine_rna_seq_test[cytarabine_lung_SCLC_lines, ]
+cytarabine_test_lung_SCLC <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_lung_SCLC_auc <- sum(cytarabine_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_skin <- cisplatin_rna_seq_test_scaled[cisplatin_skin_lines, ]
-cisplatin_test_skin <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_skin), s = 'lambda.min', interval = 'conf')
-cisplatin_skin_least_auc <- auc(cisplatin_test_skin$least_sensitive, new_ic50)
+cytarabine_test_nervous_system_exp <- cytarabine_rna_seq_test[cytarabine_nervous_system_lines, ]
+cytarabine_test_nervous_system <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_nervous_system_auc <- sum(cytarabine_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_soft_tissue <- cisplatin_rna_seq_test_scaled[cisplatin_soft_tissue_lines, ]
-cisplatin_test_soft_tissue <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_soft_tissue), s = 'lambda.min', interval = 'conf')
-cisplatin_soft_tissue_least_auc <- auc(cisplatin_test_soft_tissue$least_sensitive, new_ic50)
+cytarabine_test_neuroblastoma_exp <- cytarabine_rna_seq_test[cytarabine_neuroblastoma_lines, ]
+cytarabine_test_neuroblastoma <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_neuroblastoma_auc <- sum(cytarabine_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_thyroid <- cisplatin_rna_seq_test_scaled[cisplatin_thyroid_lines, ]
-cisplatin_test_thyroid <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_thyroid), s = 'lambda.min', interval = 'conf')
-cisplatin_thyroid_least_auc <- auc(cisplatin_test_thyroid$least_sensitive, new_ic50)
+cytarabine_test_pancreas_exp <- cytarabine_rna_seq_test[cytarabine_pancreas_lines, ]
+cytarabine_test_pancreas <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_pancreas_auc <- sum(cytarabine_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_test_scaled_urogenital_system <- cisplatin_rna_seq_test_scaled[cisplatin_urogenital_system_lines, ]
-cisplatin_test_urogenital_system <- cisplatin_test[which(cisplatin_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(cisplatin_least_fit_elnet, newx = as.matrix(cisplatin_test_scaled_urogenital_system), s = 'lambda.min', interval = 'conf')
-cisplatin_urogenital_system_least_auc <- auc(cisplatin_test_urogenital_system$least_sensitive, new_ic50)
+cytarabine_test_skin_exp <- cytarabine_rna_seq_test[cytarabine_skin_lines, ]
+cytarabine_test_skin <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_skin_auc <- sum(cytarabine_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-cisplatin_least_auc <- c(cisplatin_aero_dig_tract_least_auc, cisplatin_bone_least_auc, 
-                        cisplatin_breast_least_auc, cisplatin_digestive_system_least_auc, 
-                        cisplatin_kidney_least_auc, cisplatin_large_intestine_least_auc, 
-                        cisplatin_lung_least_auc, cisplatin_lung_NSCLC_least_auc, cisplatin_lung_SCLC_least_auc, 
-                        cisplatin_nervous_system_least_auc, cisplatin_neuroblastoma_least_auc, 
-                        cisplatin_pancreas_least_auc, cisplatin_skin_least_auc, 
-                        cisplatin_soft_tissue_least_auc, cisplatin_thyroid_least_auc, 
-                        cisplatin_urogenital_system_least_auc)
+cytarabine_test_soft_tissue_exp <- cytarabine_rna_seq_test[cytarabine_soft_tissue_lines, ]
+cytarabine_test_soft_tissue <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_soft_tissue_auc <- sum(cytarabine_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+cytarabine_test_thyroid_exp <- cytarabine_rna_seq_test[cytarabine_thyroid_lines, ]
+cytarabine_test_thyroid <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_thyroid_auc <- sum(cytarabine_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+cytarabine_test_urogenital_system_exp <- cytarabine_rna_seq_test[cytarabine_urogenital_system_lines, ]
+cytarabine_test_urogenital_system <- cytarabine_test[which(cytarabine_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+cytarabine_urogenital_system_auc <- sum(cytarabine_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+cytarabine_auc <- c(cytarabine_aero_dig_tract_auc, cytarabine_bone_auc, 
+                   cytarabine_breast_auc, cytarabine_digestive_system_auc, 
+                   cytarabine_kidney_auc, cytarabine_large_intestine_auc, 
+                   cytarabine_lung_auc, cytarabine_lung_NSCLC_auc, cytarabine_lung_SCLC_auc, 
+                   cytarabine_nervous_system_auc, cytarabine_neuroblastoma_auc, 
+                   cytarabine_pancreas_auc, cytarabine_skin_auc, 
+                   cytarabine_soft_tissue_auc, cytarabine_thyroid_auc, 
+                   cytarabine_urogenital_system_auc)
+
+
+doxorubicin_aero_dig_tract_lines              <- doxorubicin_test$Cell_line_tissue_type == 'aero_dig_tract'
+doxorubicin_bone_lines                        <- doxorubicin_test$Cell_line_tissue_type == 'bone'
+doxorubicin_breast_lines                      <- doxorubicin_test$Cell_line_tissue_type == 'breast'
+doxorubicin_digestive_system_lines            <- doxorubicin_test$Cell_line_tissue_type == 'digestive_system'
+doxorubicin_kidney_lines                      <- doxorubicin_test$Cell_line_tissue_type == 'kidney'
+doxorubicin_large_intestine_lines             <- doxorubicin_test$Cell_line_tissue_type == 'large_intestine'
+doxorubicin_lung_lines                        <- doxorubicin_test$Cell_line_tissue_type == 'lung'
+doxorubicin_lung_NSCLC_lines                  <- doxorubicin_test$Cell_line_tissue_type == 'lung_NSCLC'
+doxorubicin_lung_SCLC_lines                   <- doxorubicin_test$Cell_line_tissue_type == 'lung_SCLC'
+doxorubicin_nervous_system_lines              <- doxorubicin_test$Cell_line_tissue_type == 'nervous_system'
+doxorubicin_neuroblastoma_lines               <- doxorubicin_test$Cell_line_tissue_type == 'neuroblastoma'
+doxorubicin_pancreas_lines                    <- doxorubicin_test$Cell_line_tissue_type == 'pancreas'
+doxorubicin_skin_lines                        <- doxorubicin_test$Cell_line_tissue_type == 'skin'
+doxorubicin_soft_tissue_lines                 <- doxorubicin_test$Cell_line_tissue_type == 'soft_tissue'
+doxorubicin_thyroid_lines                     <- doxorubicin_test$Cell_line_tissue_type == 'thyroid'
+doxorubicin_urogenital_system_lines           <- doxorubicin_test$Cell_line_tissue_type == 'urogenital_system'
+
+#test pan-cancer models against individual cancer types
+doxorubicin_test_aero_dig_tract_exp <- doxorubicin_rna_seq_test[doxorubicin_aero_dig_tract_lines, ]
+doxorubicin_test_aero_dig_tract <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_aero_dig_tract_auc <- sum(doxorubicin_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_bone_exp <- doxorubicin_rna_seq_test[doxorubicin_bone_lines, ]
+doxorubicin_test_bone <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_bone_auc <- sum(doxorubicin_test_bone$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_breast_exp <- doxorubicin_rna_seq_test[doxorubicin_breast_lines, ]
+doxorubicin_test_breast <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_breast_auc <- sum(doxorubicin_test_breast$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_digestive_system_exp <- doxorubicin_rna_seq_test[doxorubicin_digestive_system_lines, ]
+doxorubicin_test_digestive_system <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_digestive_system_auc <- sum(doxorubicin_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_kidney_exp <- doxorubicin_rna_seq_test[doxorubicin_kidney_lines, ]
+doxorubicin_test_kidney <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_kidney_auc <- sum(doxorubicin_test_kidney$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_large_intestine_exp <- doxorubicin_rna_seq_test[doxorubicin_large_intestine_lines, ]
+doxorubicin_test_large_intestine <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_large_intestine_auc <- sum(doxorubicin_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_lung_exp <- doxorubicin_rna_seq_test[doxorubicin_lung_lines, ]
+doxorubicin_test_lung <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_lung_auc <- sum(doxorubicin_test_lung$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_lung_NSCLC_exp <- doxorubicin_rna_seq_test[doxorubicin_lung_NSCLC_lines, ]
+doxorubicin_test_lung_NSCLC <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_lung_NSCLC_auc <- sum(doxorubicin_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_lung_SCLC_exp <- doxorubicin_rna_seq_test[doxorubicin_lung_SCLC_lines, ]
+doxorubicin_test_lung_SCLC <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_lung_SCLC_auc <- sum(doxorubicin_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_nervous_system_exp <- doxorubicin_rna_seq_test[doxorubicin_nervous_system_lines, ]
+doxorubicin_test_nervous_system <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_nervous_system_auc <- sum(doxorubicin_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_neuroblastoma_exp <- doxorubicin_rna_seq_test[doxorubicin_neuroblastoma_lines, ]
+doxorubicin_test_neuroblastoma <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_neuroblastoma_auc <- sum(doxorubicin_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_pancreas_exp <- doxorubicin_rna_seq_test[doxorubicin_pancreas_lines, ]
+doxorubicin_test_pancreas <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_pancreas_auc <- sum(doxorubicin_test_pancreas$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_skin_exp <- doxorubicin_rna_seq_test[doxorubicin_skin_lines, ]
+doxorubicin_test_skin <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_skin_auc <- sum(doxorubicin_test_skin$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_soft_tissue_exp <- doxorubicin_rna_seq_test[doxorubicin_soft_tissue_lines, ]
+doxorubicin_test_soft_tissue <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_soft_tissue_auc <- sum(doxorubicin_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_thyroid_exp <- doxorubicin_rna_seq_test[doxorubicin_thyroid_lines, ]
+doxorubicin_test_thyroid <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_thyroid_auc <- sum(doxorubicin_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_test_urogenital_system_exp <- doxorubicin_rna_seq_test[doxorubicin_urogenital_system_lines, ]
+doxorubicin_test_urogenital_system <- doxorubicin_test[which(doxorubicin_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+doxorubicin_urogenital_system_auc <- sum(doxorubicin_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+doxorubicin_auc <- c(doxorubicin_aero_dig_tract_auc, doxorubicin_bone_auc, 
+                   doxorubicin_breast_auc, doxorubicin_digestive_system_auc, 
+                   doxorubicin_kidney_auc, doxorubicin_large_intestine_auc, 
+                   doxorubicin_lung_auc, doxorubicin_lung_NSCLC_auc, doxorubicin_lung_SCLC_auc, 
+                   doxorubicin_nervous_system_auc, doxorubicin_neuroblastoma_auc, 
+                   doxorubicin_pancreas_auc, doxorubicin_skin_auc, 
+                   doxorubicin_soft_tissue_auc, doxorubicin_thyroid_auc, 
+                   doxorubicin_urogenital_system_auc)
+
 
 etoposide_aero_dig_tract_lines              <- etoposide_test$Cell_line_tissue_type == 'aero_dig_tract'
 etoposide_bone_lines                        <- etoposide_test$Cell_line_tissue_type == 'bone'
@@ -369,183 +715,206 @@ etoposide_soft_tissue_lines                 <- etoposide_test$Cell_line_tissue_t
 etoposide_thyroid_lines                     <- etoposide_test$Cell_line_tissue_type == 'thyroid'
 etoposide_urogenital_system_lines           <- etoposide_test$Cell_line_tissue_type == 'urogenital_system'
 
-etoposide_test_scaled_aero_dig_tract <- etoposide_rna_seq_test_scaled[etoposide_aero_dig_tract_lines, ]
+#test pan-cancer models against individual cancer types
+etoposide_test_aero_dig_tract_exp <- etoposide_rna_seq_test[etoposide_aero_dig_tract_lines, ]
 etoposide_test_aero_dig_tract <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_aero_dig_tract), s = 'lambda.min', interval = 'conf')
-etoposide_aero_dig_tract_most_auc <- auc(etoposide_test_aero_dig_tract$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_aero_dig_tract_auc <- sum(etoposide_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_bone <- etoposide_rna_seq_test_scaled[etoposide_bone_lines, ]
+etoposide_test_bone_exp <- etoposide_rna_seq_test[etoposide_bone_lines, ]
 etoposide_test_bone <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_bone), s = 'lambda.min', interval = 'conf')
-etoposide_bone_most_auc <- auc(etoposide_test_bone$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_bone_auc <- sum(etoposide_test_bone$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_breast <- etoposide_rna_seq_test_scaled[etoposide_breast_lines, ]
+etoposide_test_breast_exp <- etoposide_rna_seq_test[etoposide_breast_lines, ]
 etoposide_test_breast <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_breast), s = 'lambda.min', interval = 'conf')
-etoposide_breast_most_auc <- auc(etoposide_test_breast$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_breast_auc <- sum(etoposide_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_digestive_system <- etoposide_rna_seq_test_scaled[etoposide_digestive_system_lines, ]
+etoposide_test_digestive_system_exp <- etoposide_rna_seq_test[etoposide_digestive_system_lines, ]
 etoposide_test_digestive_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_digestive_system), s = 'lambda.min', interval = 'conf')
-etoposide_digestive_system_most_auc <- auc(etoposide_test_digestive_system$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_digestive_system_auc <- sum(etoposide_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_kidney <- etoposide_rna_seq_test_scaled[etoposide_kidney_lines, ]
+etoposide_test_kidney_exp <- etoposide_rna_seq_test[etoposide_kidney_lines, ]
 etoposide_test_kidney <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_kidney), s = 'lambda.min', interval = 'conf')
-etoposide_kidney_most_auc <- auc(etoposide_test_kidney$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_kidney_auc <- sum(etoposide_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_large_intestine <- etoposide_rna_seq_test_scaled[etoposide_large_intestine_lines, ]
+etoposide_test_large_intestine_exp <- etoposide_rna_seq_test[etoposide_large_intestine_lines, ]
 etoposide_test_large_intestine <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_large_intestine), s = 'lambda.min', interval = 'conf')
-etoposide_large_intestine_most_auc <- auc(etoposide_test_large_intestine$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_large_intestine_auc <- sum(etoposide_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung <- etoposide_rna_seq_test_scaled[etoposide_lung_lines, ]
+etoposide_test_lung_exp <- etoposide_rna_seq_test[etoposide_lung_lines, ]
 etoposide_test_lung <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung), s = 'lambda.min', interval = 'conf')
-etoposide_lung_most_auc <- auc(etoposide_test_lung$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_lung_auc <- sum(etoposide_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung_NSCLC <- etoposide_rna_seq_test_scaled[etoposide_lung_NSCLC_lines, ]
+etoposide_test_lung_NSCLC_exp <- etoposide_rna_seq_test[etoposide_lung_NSCLC_lines, ]
 etoposide_test_lung_NSCLC <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung_NSCLC), s = 'lambda.min', interval = 'conf')
-etoposide_lung_NSCLC_most_auc <- auc(etoposide_test_lung_NSCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_lung_NSCLC_auc <- sum(etoposide_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung_SCLC <- etoposide_rna_seq_test_scaled[etoposide_lung_SCLC_lines, ]
+etoposide_test_lung_SCLC_exp <- etoposide_rna_seq_test[etoposide_lung_SCLC_lines, ]
 etoposide_test_lung_SCLC <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung_SCLC), s = 'lambda.min', interval = 'conf')
-etoposide_lung_SCLC_most_auc <- auc(etoposide_test_lung_SCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_lung_SCLC_auc <- sum(etoposide_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_nervous_system <- etoposide_rna_seq_test_scaled[etoposide_nervous_system_lines, ]
+etoposide_test_nervous_system_exp <- etoposide_rna_seq_test[etoposide_nervous_system_lines, ]
 etoposide_test_nervous_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_nervous_system), s = 'lambda.min', interval = 'conf')
-etoposide_nervous_system_most_auc <- auc(etoposide_test_nervous_system$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_nervous_system_auc <- sum(etoposide_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_neuroblastoma <- etoposide_rna_seq_test_scaled[etoposide_neuroblastoma_lines, ]
+etoposide_test_neuroblastoma_exp <- etoposide_rna_seq_test[etoposide_neuroblastoma_lines, ]
 etoposide_test_neuroblastoma <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_neuroblastoma), s = 'lambda.min', interval = 'conf')
-etoposide_neuroblastoma_most_auc <- auc(etoposide_test_neuroblastoma$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_neuroblastoma_auc <- sum(etoposide_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_pancreas <- etoposide_rna_seq_test_scaled[etoposide_pancreas_lines, ]
+etoposide_test_pancreas_exp <- etoposide_rna_seq_test[etoposide_pancreas_lines, ]
 etoposide_test_pancreas <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_pancreas), s = 'lambda.min', interval = 'conf')
-etoposide_pancreas_most_auc <- auc(etoposide_test_pancreas$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_pancreas_auc <- sum(etoposide_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_skin <- etoposide_rna_seq_test_scaled[etoposide_skin_lines, ]
+etoposide_test_skin_exp <- etoposide_rna_seq_test[etoposide_skin_lines, ]
 etoposide_test_skin <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_skin), s = 'lambda.min', interval = 'conf')
-etoposide_skin_most_auc <- auc(etoposide_test_skin$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_skin_auc <- sum(etoposide_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_soft_tissue <- etoposide_rna_seq_test_scaled[etoposide_soft_tissue_lines, ]
+etoposide_test_soft_tissue_exp <- etoposide_rna_seq_test[etoposide_soft_tissue_lines, ]
 etoposide_test_soft_tissue <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_soft_tissue), s = 'lambda.min', interval = 'conf')
-etoposide_soft_tissue_most_auc <- auc(etoposide_test_soft_tissue$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_soft_tissue_auc <- sum(etoposide_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_thyroid <- etoposide_rna_seq_test_scaled[etoposide_thyroid_lines, ]
+etoposide_test_thyroid_exp <- etoposide_rna_seq_test[etoposide_thyroid_lines, ]
 etoposide_test_thyroid <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_thyroid), s = 'lambda.min', interval = 'conf')
-etoposide_thyroid_most_auc <- auc(etoposide_test_thyroid$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_thyroid_auc <- sum(etoposide_test_thyroid$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_urogenital_system <- etoposide_rna_seq_test_scaled[etoposide_urogenital_system_lines, ]
+etoposide_test_urogenital_system_exp <- etoposide_rna_seq_test[etoposide_urogenital_system_lines, ]
 etoposide_test_urogenital_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(etoposide_most_fit_elnet, newx = as.matrix(etoposide_test_scaled_urogenital_system), s = 'lambda.min', interval = 'conf')
-etoposide_urogenital_system_most_auc <- auc(etoposide_test_urogenital_system$most_sensitive, new_ic50)
+new_ic50 <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+etoposide_urogenital_system_auc <- sum(etoposide_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_most_auc <- c(etoposide_aero_dig_tract_most_auc, etoposide_bone_most_auc, 
-                        etoposide_breast_most_auc, etoposide_digestive_system_most_auc, 
-                        etoposide_kidney_most_auc, etoposide_large_intestine_most_auc, 
-                        etoposide_lung_most_auc, etoposide_lung_NSCLC_most_auc, etoposide_lung_SCLC_most_auc, 
-                        etoposide_nervous_system_most_auc, etoposide_neuroblastoma_most_auc, 
-                        etoposide_pancreas_most_auc, etoposide_skin_most_auc, 
-                        etoposide_soft_tissue_most_auc, etoposide_thyroid_most_auc, 
-                        etoposide_urogenital_system_most_auc)
+etoposide_auc <- c(etoposide_aero_dig_tract_auc, etoposide_bone_auc, 
+                   etoposide_breast_auc, etoposide_digestive_system_auc, 
+                   etoposide_kidney_auc, etoposide_large_intestine_auc, 
+                   etoposide_lung_auc, etoposide_lung_NSCLC_auc, etoposide_lung_SCLC_auc, 
+                   etoposide_nervous_system_auc, etoposide_neuroblastoma_auc, 
+                   etoposide_pancreas_auc, etoposide_skin_auc, 
+                   etoposide_soft_tissue_auc, etoposide_thyroid_auc, 
+                   etoposide_urogenital_system_auc)
 
-etoposide_test_scaled_aero_dig_tract <- etoposide_rna_seq_test_scaled[etoposide_aero_dig_tract_lines, ]
-etoposide_test_aero_dig_tract <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_aero_dig_tract), s = 'lambda.min', interval = 'conf')
-etoposide_aero_dig_tract_least_auc <- auc(etoposide_test_aero_dig_tract$least_sensitive, new_ic50)
 
-etoposide_test_scaled_bone <- etoposide_rna_seq_test_scaled[etoposide_bone_lines, ]
-etoposide_test_bone <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_bone), s = 'lambda.min', interval = 'conf')
-etoposide_bone_least_auc <- auc(etoposide_test_bone$least_sensitive, new_ic50)
 
-etoposide_test_scaled_breast <- etoposide_rna_seq_test_scaled[etoposide_breast_lines, ]
-etoposide_test_breast <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_breast), s = 'lambda.min', interval = 'conf')
-etoposide_breast_least_auc <- auc(etoposide_test_breast$least_sensitive, new_ic50)
+gemcitabine_aero_dig_tract_lines              <- gemcitabine_test$Cell_line_tissue_type == 'aero_dig_tract'
+gemcitabine_bone_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'bone'
+gemcitabine_breast_lines                      <- gemcitabine_test$Cell_line_tissue_type == 'breast'
+gemcitabine_digestive_system_lines            <- gemcitabine_test$Cell_line_tissue_type == 'digestive_system'
+gemcitabine_kidney_lines                      <- gemcitabine_test$Cell_line_tissue_type == 'kidney'
+gemcitabine_large_intestine_lines             <- gemcitabine_test$Cell_line_tissue_type == 'large_intestine'
+gemcitabine_lung_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'lung'
+gemcitabine_lung_NSCLC_lines                  <- gemcitabine_test$Cell_line_tissue_type == 'lung_NSCLC'
+gemcitabine_lung_SCLC_lines                   <- gemcitabine_test$Cell_line_tissue_type == 'lung_SCLC'
+gemcitabine_nervous_system_lines              <- gemcitabine_test$Cell_line_tissue_type == 'nervous_system'
+gemcitabine_neuroblastoma_lines               <- gemcitabine_test$Cell_line_tissue_type == 'neuroblastoma'
+gemcitabine_pancreas_lines                    <- gemcitabine_test$Cell_line_tissue_type == 'pancreas'
+gemcitabine_skin_lines                        <- gemcitabine_test$Cell_line_tissue_type == 'skin'
+gemcitabine_soft_tissue_lines                 <- gemcitabine_test$Cell_line_tissue_type == 'soft_tissue'
+gemcitabine_thyroid_lines                     <- gemcitabine_test$Cell_line_tissue_type == 'thyroid'
+gemcitabine_urogenital_system_lines           <- gemcitabine_test$Cell_line_tissue_type == 'urogenital_system'
 
-etoposide_test_scaled_digestive_system <- etoposide_rna_seq_test_scaled[etoposide_digestive_system_lines, ]
-etoposide_test_digestive_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_digestive_system), s = 'lambda.min', interval = 'conf')
-etoposide_digestive_system_least_auc <- auc(etoposide_test_digestive_system$least_sensitive, new_ic50)
+#test pan-cancer models against individual cancer types
+gemcitabine_test_aero_dig_tract_exp <- gemcitabine_rna_seq_test[gemcitabine_aero_dig_tract_lines, ]
+gemcitabine_test_aero_dig_tract <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_aero_dig_tract_auc <- sum(gemcitabine_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_kidney <- etoposide_rna_seq_test_scaled[etoposide_kidney_lines, ]
-etoposide_test_kidney <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_kidney), s = 'lambda.min', interval = 'conf')
-etoposide_kidney_least_auc <- auc(etoposide_test_kidney$least_sensitive, new_ic50)
+gemcitabine_test_bone_exp <- gemcitabine_rna_seq_test[gemcitabine_bone_lines, ]
+gemcitabine_test_bone <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_bone_auc <- sum(gemcitabine_test_bone$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_large_intestine <- etoposide_rna_seq_test_scaled[etoposide_large_intestine_lines, ]
-etoposide_test_large_intestine <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_large_intestine), s = 'lambda.min', interval = 'conf')
-etoposide_large_intestine_least_auc <- auc(etoposide_test_large_intestine$least_sensitive, new_ic50)
+gemcitabine_test_breast_exp <- gemcitabine_rna_seq_test[gemcitabine_breast_lines, ]
+gemcitabine_test_breast <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_breast_auc <- sum(gemcitabine_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung <- etoposide_rna_seq_test_scaled[etoposide_lung_lines, ]
-etoposide_test_lung <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung), s = 'lambda.min', interval = 'conf')
-etoposide_lung_least_auc <- auc(etoposide_test_lung$least_sensitive, new_ic50)
+gemcitabine_test_digestive_system_exp <- gemcitabine_rna_seq_test[gemcitabine_digestive_system_lines, ]
+gemcitabine_test_digestive_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_digestive_system_auc <- sum(gemcitabine_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung_NSCLC <- etoposide_rna_seq_test_scaled[etoposide_lung_NSCLC_lines, ]
-etoposide_test_lung_NSCLC <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung_NSCLC), s = 'lambda.min', interval = 'conf')
-etoposide_lung_NSCLC_least_auc <- auc(etoposide_test_lung_NSCLC$least_sensitive, new_ic50)
+gemcitabine_test_kidney_exp <- gemcitabine_rna_seq_test[gemcitabine_kidney_lines, ]
+gemcitabine_test_kidney <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_kidney_auc <- sum(gemcitabine_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_lung_SCLC <- etoposide_rna_seq_test_scaled[etoposide_lung_SCLC_lines, ]
-etoposide_test_lung_SCLC <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_lung_SCLC), s = 'lambda.min', interval = 'conf')
-etoposide_lung_SCLC_least_auc <- auc(etoposide_test_lung_SCLC$least_sensitive, new_ic50)
+gemcitabine_test_large_intestine_exp <- gemcitabine_rna_seq_test[gemcitabine_large_intestine_lines, ]
+gemcitabine_test_large_intestine <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_large_intestine_auc <- sum(gemcitabine_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_nervous_system <- etoposide_rna_seq_test_scaled[etoposide_nervous_system_lines, ]
-etoposide_test_nervous_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_nervous_system), s = 'lambda.min', interval = 'conf')
-etoposide_nervous_system_least_auc <- auc(etoposide_test_nervous_system$least_sensitive, new_ic50)
+gemcitabine_test_lung_exp <- gemcitabine_rna_seq_test[gemcitabine_lung_lines, ]
+gemcitabine_test_lung <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_lung_auc <- sum(gemcitabine_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_neuroblastoma <- etoposide_rna_seq_test_scaled[etoposide_neuroblastoma_lines, ]
-etoposide_test_neuroblastoma <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_neuroblastoma), s = 'lambda.min', interval = 'conf')
-etoposide_neuroblastoma_least_auc <- auc(etoposide_test_neuroblastoma$least_sensitive, new_ic50)
+gemcitabine_test_lung_NSCLC_exp <- gemcitabine_rna_seq_test[gemcitabine_lung_NSCLC_lines, ]
+gemcitabine_test_lung_NSCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_lung_NSCLC_auc <- sum(gemcitabine_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_pancreas <- etoposide_rna_seq_test_scaled[etoposide_pancreas_lines, ]
-etoposide_test_pancreas <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_pancreas), s = 'lambda.min', interval = 'conf')
-etoposide_pancreas_least_auc <- auc(etoposide_test_pancreas$least_sensitive, new_ic50)
+gemcitabine_test_lung_SCLC_exp <- gemcitabine_rna_seq_test[gemcitabine_lung_SCLC_lines, ]
+gemcitabine_test_lung_SCLC <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_lung_SCLC_auc <- sum(gemcitabine_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_skin <- etoposide_rna_seq_test_scaled[etoposide_skin_lines, ]
-etoposide_test_skin <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_skin), s = 'lambda.min', interval = 'conf')
-etoposide_skin_least_auc <- auc(etoposide_test_skin$least_sensitive, new_ic50)
+gemcitabine_test_nervous_system_exp <- gemcitabine_rna_seq_test[gemcitabine_nervous_system_lines, ]
+gemcitabine_test_nervous_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_nervous_system_auc <- sum(gemcitabine_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_soft_tissue <- etoposide_rna_seq_test_scaled[etoposide_soft_tissue_lines, ]
-etoposide_test_soft_tissue <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_soft_tissue), s = 'lambda.min', interval = 'conf')
-etoposide_soft_tissue_least_auc <- auc(etoposide_test_soft_tissue$least_sensitive, new_ic50)
+gemcitabine_test_neuroblastoma_exp <- gemcitabine_rna_seq_test[gemcitabine_neuroblastoma_lines, ]
+gemcitabine_test_neuroblastoma <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_neuroblastoma_auc <- sum(gemcitabine_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_thyroid <- etoposide_rna_seq_test_scaled[etoposide_thyroid_lines, ]
-etoposide_test_thyroid <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_thyroid), s = 'lambda.min', interval = 'conf')
-etoposide_thyroid_least_auc <- auc(etoposide_test_thyroid$least_sensitive, new_ic50)
+gemcitabine_test_pancreas_exp <- gemcitabine_rna_seq_test[gemcitabine_pancreas_lines, ]
+gemcitabine_test_pancreas <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_pancreas_auc <- sum(gemcitabine_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_test_scaled_urogenital_system <- etoposide_rna_seq_test_scaled[etoposide_urogenital_system_lines, ]
-etoposide_test_urogenital_system <- etoposide_test[which(etoposide_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(etoposide_least_fit_elnet, newx = as.matrix(etoposide_test_scaled_urogenital_system), s = 'lambda.min', interval = 'conf')
-etoposide_urogenital_system_least_auc <- auc(etoposide_test_urogenital_system$least_sensitive, new_ic50)
+gemcitabine_test_skin_exp <- gemcitabine_rna_seq_test[gemcitabine_skin_lines, ]
+gemcitabine_test_skin <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_skin_auc <- sum(gemcitabine_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-etoposide_least_auc <- c(etoposide_aero_dig_tract_least_auc, etoposide_bone_least_auc, 
-                         etoposide_breast_least_auc, etoposide_digestive_system_least_auc, 
-                         etoposide_kidney_least_auc, etoposide_large_intestine_least_auc, 
-                         etoposide_lung_least_auc, etoposide_lung_NSCLC_least_auc, etoposide_lung_SCLC_least_auc, 
-                         etoposide_nervous_system_least_auc, etoposide_neuroblastoma_least_auc, 
-                         etoposide_pancreas_least_auc, etoposide_skin_least_auc, 
-                         etoposide_soft_tissue_least_auc, etoposide_thyroid_least_auc, 
-                         etoposide_urogenital_system_least_auc)
+gemcitabine_test_soft_tissue_exp <- gemcitabine_rna_seq_test[gemcitabine_soft_tissue_lines, ]
+gemcitabine_test_soft_tissue <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_soft_tissue_auc <- sum(gemcitabine_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+gemcitabine_test_thyroid_exp <- gemcitabine_rna_seq_test[gemcitabine_thyroid_lines, ]
+gemcitabine_test_thyroid <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_thyroid_auc <- sum(gemcitabine_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+gemcitabine_test_urogenital_system_exp <- gemcitabine_rna_seq_test[gemcitabine_urogenital_system_lines, ]
+gemcitabine_test_urogenital_system <- gemcitabine_test[which(gemcitabine_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+gemcitabine_urogenital_system_auc <- sum(gemcitabine_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+gemcitabine_auc <- c(gemcitabine_aero_dig_tract_auc, gemcitabine_bone_auc, 
+                   gemcitabine_breast_auc, gemcitabine_digestive_system_auc, 
+                   gemcitabine_kidney_auc, gemcitabine_large_intestine_auc, 
+                   gemcitabine_lung_auc, gemcitabine_lung_NSCLC_auc, gemcitabine_lung_SCLC_auc, 
+                   gemcitabine_nervous_system_auc, gemcitabine_neuroblastoma_auc, 
+                   gemcitabine_pancreas_auc, gemcitabine_skin_auc, 
+                   gemcitabine_soft_tissue_auc, gemcitabine_thyroid_auc, 
+                   gemcitabine_urogenital_system_auc)
+
+
 
 methotrexate_aero_dig_tract_lines              <- methotrexate_test$Cell_line_tissue_type == 'aero_dig_tract'
 methotrexate_bone_lines                        <- methotrexate_test$Cell_line_tissue_type == 'bone'
@@ -564,196 +933,437 @@ methotrexate_soft_tissue_lines                 <- methotrexate_test$Cell_line_ti
 methotrexate_thyroid_lines                     <- methotrexate_test$Cell_line_tissue_type == 'thyroid'
 methotrexate_urogenital_system_lines           <- methotrexate_test$Cell_line_tissue_type == 'urogenital_system'
 
-methotrexate_test_scaled_aero_dig_tract <- methotrexate_rna_seq_test_scaled[methotrexate_aero_dig_tract_lines, ]
+#test pan-cancer models against individual cancer types
+methotrexate_test_aero_dig_tract_exp <- methotrexate_rna_seq_test[methotrexate_aero_dig_tract_lines, ]
 methotrexate_test_aero_dig_tract <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_aero_dig_tract), s = 'lambda.min', interval = 'conf')
-methotrexate_aero_dig_tract_most_auc <- auc(methotrexate_test_aero_dig_tract$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_aero_dig_tract_auc <- sum(methotrexate_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_bone <- methotrexate_rna_seq_test_scaled[methotrexate_bone_lines, ]
+methotrexate_test_bone_exp <- methotrexate_rna_seq_test[methotrexate_bone_lines, ]
 methotrexate_test_bone <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_bone), s = 'lambda.min', interval = 'conf')
-methotrexate_bone_most_auc <- auc(methotrexate_test_bone$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_bone_auc <- sum(methotrexate_test_bone$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_breast <- methotrexate_rna_seq_test_scaled[methotrexate_breast_lines, ]
+methotrexate_test_breast_exp <- methotrexate_rna_seq_test[methotrexate_breast_lines, ]
 methotrexate_test_breast <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_breast), s = 'lambda.min', interval = 'conf')
-methotrexate_breast_most_auc <- auc(methotrexate_test_breast$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_breast_auc <- sum(methotrexate_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_digestive_system <- methotrexate_rna_seq_test_scaled[methotrexate_digestive_system_lines, ]
+methotrexate_test_digestive_system_exp <- methotrexate_rna_seq_test[methotrexate_digestive_system_lines, ]
 methotrexate_test_digestive_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_digestive_system), s = 'lambda.min', interval = 'conf')
-methotrexate_digestive_system_most_auc <- auc(methotrexate_test_digestive_system$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_digestive_system_auc <- sum(methotrexate_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_kidney <- methotrexate_rna_seq_test_scaled[methotrexate_kidney_lines, ]
+methotrexate_test_kidney_exp <- methotrexate_rna_seq_test[methotrexate_kidney_lines, ]
 methotrexate_test_kidney <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_kidney), s = 'lambda.min', interval = 'conf')
-methotrexate_kidney_most_auc <- auc(methotrexate_test_kidney$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_kidney_auc <- sum(methotrexate_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_large_intestine <- methotrexate_rna_seq_test_scaled[methotrexate_large_intestine_lines, ]
+methotrexate_test_large_intestine_exp <- methotrexate_rna_seq_test[methotrexate_large_intestine_lines, ]
 methotrexate_test_large_intestine <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_large_intestine), s = 'lambda.min', interval = 'conf')
-methotrexate_large_intestine_most_auc <- auc(methotrexate_test_large_intestine$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_large_intestine_auc <- sum(methotrexate_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung <- methotrexate_rna_seq_test_scaled[methotrexate_lung_lines, ]
+methotrexate_test_lung_exp <- methotrexate_rna_seq_test[methotrexate_lung_lines, ]
 methotrexate_test_lung <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung), s = 'lambda.min', interval = 'conf')
-methotrexate_lung_most_auc <- auc(methotrexate_test_lung$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_lung_auc <- sum(methotrexate_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung_NSCLC <- methotrexate_rna_seq_test_scaled[methotrexate_lung_NSCLC_lines, ]
+methotrexate_test_lung_NSCLC_exp <- methotrexate_rna_seq_test[methotrexate_lung_NSCLC_lines, ]
 methotrexate_test_lung_NSCLC <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung_NSCLC), s = 'lambda.min', interval = 'conf')
-methotrexate_lung_NSCLC_most_auc <- auc(methotrexate_test_lung_NSCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_lung_NSCLC_auc <- sum(methotrexate_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung_SCLC <- methotrexate_rna_seq_test_scaled[methotrexate_lung_SCLC_lines, ]
+methotrexate_test_lung_SCLC_exp <- methotrexate_rna_seq_test[methotrexate_lung_SCLC_lines, ]
 methotrexate_test_lung_SCLC <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung_SCLC), s = 'lambda.min', interval = 'conf')
-methotrexate_lung_SCLC_most_auc <- auc(methotrexate_test_lung_SCLC$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_lung_SCLC_auc <- sum(methotrexate_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_nervous_system <- methotrexate_rna_seq_test_scaled[methotrexate_nervous_system_lines, ]
+methotrexate_test_nervous_system_exp <- methotrexate_rna_seq_test[methotrexate_nervous_system_lines, ]
 methotrexate_test_nervous_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_nervous_system), s = 'lambda.min', interval = 'conf')
-methotrexate_nervous_system_most_auc <- auc(methotrexate_test_nervous_system$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_nervous_system_auc <- sum(methotrexate_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_neuroblastoma <- methotrexate_rna_seq_test_scaled[methotrexate_neuroblastoma_lines, ]
+methotrexate_test_neuroblastoma_exp <- methotrexate_rna_seq_test[methotrexate_neuroblastoma_lines, ]
 methotrexate_test_neuroblastoma <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_neuroblastoma), s = 'lambda.min', interval = 'conf')
-methotrexate_neuroblastoma_most_auc <- auc(methotrexate_test_neuroblastoma$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_neuroblastoma_auc <- sum(methotrexate_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_pancreas <- methotrexate_rna_seq_test_scaled[methotrexate_pancreas_lines, ]
+methotrexate_test_pancreas_exp <- methotrexate_rna_seq_test[methotrexate_pancreas_lines, ]
 methotrexate_test_pancreas <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pancreas), s = 'lambda.min', interval = 'conf')
-methotrexate_pancreas_most_auc <- auc(methotrexate_test_pancreas$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_pancreas_auc <- sum(methotrexate_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_skin <- methotrexate_rna_seq_test_scaled[methotrexate_skin_lines, ]
+methotrexate_test_skin_exp <- methotrexate_rna_seq_test[methotrexate_skin_lines, ]
 methotrexate_test_skin <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_skin), s = 'lambda.min', interval = 'conf')
-methotrexate_skin_most_auc <- auc(methotrexate_test_skin$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_skin_auc <- sum(methotrexate_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_soft_tissue <- methotrexate_rna_seq_test_scaled[methotrexate_soft_tissue_lines, ]
+methotrexate_test_soft_tissue_exp <- methotrexate_rna_seq_test[methotrexate_soft_tissue_lines, ]
 methotrexate_test_soft_tissue <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_soft_tissue), s = 'lambda.min', interval = 'conf')
-methotrexate_soft_tissue_most_auc <- auc(methotrexate_test_soft_tissue$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_soft_tissue_auc <- sum(methotrexate_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_thyroid <- methotrexate_rna_seq_test_scaled[methotrexate_thyroid_lines, ]
+methotrexate_test_thyroid_exp <- methotrexate_rna_seq_test[methotrexate_thyroid_lines, ]
 methotrexate_test_thyroid <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_thyroid), s = 'lambda.min', interval = 'conf')
-methotrexate_thyroid_most_auc <- auc(methotrexate_test_thyroid$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_thyroid_auc <- sum(methotrexate_test_thyroid$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_urogenital_system <- methotrexate_rna_seq_test_scaled[methotrexate_urogenital_system_lines, ]
+methotrexate_test_urogenital_system_exp <- methotrexate_rna_seq_test[methotrexate_urogenital_system_lines, ]
 methotrexate_test_urogenital_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(methotrexate_most_fit_elnet, newx = as.matrix(methotrexate_test_scaled_urogenital_system), s = 'lambda.min', interval = 'conf')
-methotrexate_urogenital_system_most_auc <- auc(methotrexate_test_urogenital_system$most_sensitive, new_ic50)
+new_ic50 <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+methotrexate_urogenital_system_auc <- sum(methotrexate_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_most_auc <- c(methotrexate_aero_dig_tract_most_auc, methotrexate_bone_most_auc, 
-                        methotrexate_breast_most_auc, methotrexate_digestive_system_most_auc, 
-                        methotrexate_kidney_most_auc, methotrexate_large_intestine_most_auc, 
-                        methotrexate_lung_most_auc, methotrexate_lung_NSCLC_most_auc, methotrexate_lung_SCLC_most_auc, 
-                        methotrexate_nervous_system_most_auc, methotrexate_neuroblastoma_most_auc, 
-                        methotrexate_pancreas_most_auc, methotrexate_skin_most_auc, 
-                        methotrexate_soft_tissue_most_auc, methotrexate_thyroid_most_auc, 
-                        methotrexate_urogenital_system_most_auc)
+methotrexate_auc <- c(methotrexate_aero_dig_tract_auc, methotrexate_bone_auc, 
+                   methotrexate_breast_auc, methotrexate_digestive_system_auc, 
+                   methotrexate_kidney_auc, methotrexate_large_intestine_auc, 
+                   methotrexate_lung_auc, methotrexate_lung_NSCLC_auc, methotrexate_lung_SCLC_auc, 
+                   methotrexate_nervous_system_auc, methotrexate_neuroblastoma_auc, 
+                   methotrexate_pancreas_auc, methotrexate_skin_auc, 
+                   methotrexate_soft_tissue_auc, methotrexate_thyroid_auc, 
+                   methotrexate_urogenital_system_auc)
 
-methotrexate_test_scaled_aero_dig_tract <- methotrexate_rna_seq_test_scaled[methotrexate_aero_dig_tract_lines, ]
-methotrexate_test_aero_dig_tract <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_aero_dig_tract), s = 'lambda.1se', interval = 'conf')
-methotrexate_aero_dig_tract_least_auc <- auc(methotrexate_test_aero_dig_tract$least_sensitive, new_ic50)
 
-methotrexate_test_scaled_bone <- methotrexate_rna_seq_test_scaled[methotrexate_bone_lines, ]
-methotrexate_test_bone <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'bone'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_bone), s = 'lambda.1se', interval = 'conf')
-methotrexate_bone_least_auc <- auc(methotrexate_test_bone$least_sensitive, new_ic50)
 
-methotrexate_test_scaled_breast <- methotrexate_rna_seq_test_scaled[methotrexate_breast_lines, ]
-methotrexate_test_breast <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'breast'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_breast), s = 'lambda.1se', interval = 'conf')
-methotrexate_breast_least_auc <- auc(methotrexate_test_breast$least_sensitive, new_ic50)
+mitomycin_aero_dig_tract_lines              <- mitomycin_test$Cell_line_tissue_type == 'aero_dig_tract'
+mitomycin_bone_lines                        <- mitomycin_test$Cell_line_tissue_type == 'bone'
+mitomycin_breast_lines                      <- mitomycin_test$Cell_line_tissue_type == 'breast'
+mitomycin_digestive_system_lines            <- mitomycin_test$Cell_line_tissue_type == 'digestive_system'
+mitomycin_kidney_lines                      <- mitomycin_test$Cell_line_tissue_type == 'kidney'
+mitomycin_large_intestine_lines             <- mitomycin_test$Cell_line_tissue_type == 'large_intestine'
+mitomycin_lung_lines                        <- mitomycin_test$Cell_line_tissue_type == 'lung'
+mitomycin_lung_NSCLC_lines                  <- mitomycin_test$Cell_line_tissue_type == 'lung_NSCLC'
+mitomycin_lung_SCLC_lines                   <- mitomycin_test$Cell_line_tissue_type == 'lung_SCLC'
+mitomycin_nervous_system_lines              <- mitomycin_test$Cell_line_tissue_type == 'nervous_system'
+mitomycin_neuroblastoma_lines               <- mitomycin_test$Cell_line_tissue_type == 'neuroblastoma'
+mitomycin_pancreas_lines                    <- mitomycin_test$Cell_line_tissue_type == 'pancreas'
+mitomycin_skin_lines                        <- mitomycin_test$Cell_line_tissue_type == 'skin'
+mitomycin_soft_tissue_lines                 <- mitomycin_test$Cell_line_tissue_type == 'soft_tissue'
+mitomycin_thyroid_lines                     <- mitomycin_test$Cell_line_tissue_type == 'thyroid'
+mitomycin_urogenital_system_lines           <- mitomycin_test$Cell_line_tissue_type == 'urogenital_system'
 
-methotrexate_test_scaled_digestive_system <- methotrexate_rna_seq_test_scaled[methotrexate_digestive_system_lines, ]
-methotrexate_test_digestive_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'digestive_system'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_digestive_system), s = 'lambda.1se', interval = 'conf')
-methotrexate_digestive_system_least_auc <- auc(methotrexate_test_digestive_system$least_sensitive, new_ic50)
+#test pan-cancer models against individual cancer types
+mitomycin_test_aero_dig_tract_exp <- mitomycin_rna_seq_test[mitomycin_aero_dig_tract_lines, ]
+mitomycin_test_aero_dig_tract <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_aero_dig_tract_auc <- sum(mitomycin_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_kidney <- methotrexate_rna_seq_test_scaled[methotrexate_kidney_lines, ]
-methotrexate_test_kidney <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'kidney'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_kidney), s = 'lambda.1se', interval = 'conf')
-methotrexate_kidney_least_auc <- auc(methotrexate_test_kidney$least_sensitive, new_ic50)
+mitomycin_test_bone_exp <- mitomycin_rna_seq_test[mitomycin_bone_lines, ]
+mitomycin_test_bone <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_bone_auc <- sum(mitomycin_test_bone$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_large_intestine <- methotrexate_rna_seq_test_scaled[methotrexate_large_intestine_lines, ]
-methotrexate_test_large_intestine <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'large_intestine'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_large_intestine), s = 'lambda.1se', interval = 'conf')
-methotrexate_large_intestine_least_auc <- auc(methotrexate_test_large_intestine$least_sensitive, new_ic50)
+mitomycin_test_breast_exp <- mitomycin_rna_seq_test[mitomycin_breast_lines, ]
+mitomycin_test_breast <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_breast_auc <- sum(mitomycin_test_breast$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung <- methotrexate_rna_seq_test_scaled[methotrexate_lung_lines, ]
-methotrexate_test_lung <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung), s = 'lambda.1se', interval = 'conf')
-methotrexate_lung_least_auc <- auc(methotrexate_test_lung$least_sensitive, new_ic50)
+mitomycin_test_digestive_system_exp <- mitomycin_rna_seq_test[mitomycin_digestive_system_lines, ]
+mitomycin_test_digestive_system <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_digestive_system_auc <- sum(mitomycin_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung_NSCLC <- methotrexate_rna_seq_test_scaled[methotrexate_lung_NSCLC_lines, ]
-methotrexate_test_lung_NSCLC <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung_NSCLC), s = 'lambda.1se', interval = 'conf')
-methotrexate_lung_NSCLC_least_auc <- auc(methotrexate_test_lung_NSCLC$least_sensitive, new_ic50)
+mitomycin_test_kidney_exp <- mitomycin_rna_seq_test[mitomycin_kidney_lines, ]
+mitomycin_test_kidney <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_kidney_auc <- sum(mitomycin_test_kidney$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_lung_SCLC <- methotrexate_rna_seq_test_scaled[methotrexate_lung_SCLC_lines, ]
-methotrexate_test_lung_SCLC <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'lung_SCLC'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_lung_SCLC), s = 'lambda.1se', interval = 'conf')
-methotrexate_lung_SCLC_least_auc <- auc(methotrexate_test_lung_SCLC$least_sensitive, new_ic50)
+mitomycin_test_large_intestine_exp <- mitomycin_rna_seq_test[mitomycin_large_intestine_lines, ]
+mitomycin_test_large_intestine <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_large_intestine_auc <- sum(mitomycin_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_nervous_system <- methotrexate_rna_seq_test_scaled[methotrexate_nervous_system_lines, ]
-methotrexate_test_nervous_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'nervous_system'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_nervous_system), s = 'lambda.1se', interval = 'conf')
-methotrexate_nervous_system_least_auc <- auc(methotrexate_test_nervous_system$least_sensitive, new_ic50)
+mitomycin_test_lung_exp <- mitomycin_rna_seq_test[mitomycin_lung_lines, ]
+mitomycin_test_lung <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_lung_auc <- sum(mitomycin_test_lung$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_neuroblastoma <- methotrexate_rna_seq_test_scaled[methotrexate_neuroblastoma_lines, ]
-methotrexate_test_neuroblastoma <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'neuroblastoma'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_neuroblastoma), s = 'lambda.1se', interval = 'conf')
-methotrexate_neuroblastoma_least_auc <- auc(methotrexate_test_neuroblastoma$least_sensitive, new_ic50)
+mitomycin_test_lung_NSCLC_exp <- mitomycin_rna_seq_test[mitomycin_lung_NSCLC_lines, ]
+mitomycin_test_lung_NSCLC <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_lung_NSCLC_auc <- sum(mitomycin_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_pancreas <- methotrexate_rna_seq_test_scaled[methotrexate_pancreas_lines, ]
-methotrexate_test_pancreas <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'pancreas'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_pancreas), s = 'lambda.1se', interval = 'conf')
-methotrexate_pancreas_least_auc <- auc(methotrexate_test_pancreas$least_sensitive, new_ic50)
+mitomycin_test_lung_SCLC_exp <- mitomycin_rna_seq_test[mitomycin_lung_SCLC_lines, ]
+mitomycin_test_lung_SCLC <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_lung_SCLC_auc <- sum(mitomycin_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_skin <- methotrexate_rna_seq_test_scaled[methotrexate_skin_lines, ]
-methotrexate_test_skin <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'skin'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_skin), s = 'lambda.1se', interval = 'conf')
-methotrexate_skin_least_auc <- auc(methotrexate_test_skin$least_sensitive, new_ic50)
+mitomycin_test_nervous_system_exp <- mitomycin_rna_seq_test[mitomycin_nervous_system_lines, ]
+mitomycin_test_nervous_system <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_nervous_system_auc <- sum(mitomycin_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_soft_tissue <- methotrexate_rna_seq_test_scaled[methotrexate_soft_tissue_lines, ]
-methotrexate_test_soft_tissue <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'soft_tissue'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_soft_tissue), s = 'lambda.1se', interval = 'conf')
-methotrexate_soft_tissue_least_auc <- auc(methotrexate_test_soft_tissue$least_sensitive, new_ic50)
+mitomycin_test_neuroblastoma_exp <- mitomycin_rna_seq_test[mitomycin_neuroblastoma_lines, ]
+mitomycin_test_neuroblastoma <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_neuroblastoma_auc <- sum(mitomycin_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_thyroid <- methotrexate_rna_seq_test_scaled[methotrexate_thyroid_lines, ]
-methotrexate_test_thyroid <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'thyroid'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_thyroid), s = 'lambda.1se', interval = 'conf')
-methotrexate_thyroid_least_auc <- auc(methotrexate_test_thyroid$least_sensitive, new_ic50)
+mitomycin_test_pancreas_exp <- mitomycin_rna_seq_test[mitomycin_pancreas_lines, ]
+mitomycin_test_pancreas <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_pancreas_auc <- sum(mitomycin_test_pancreas$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_test_scaled_urogenital_system <- methotrexate_rna_seq_test_scaled[methotrexate_urogenital_system_lines, ]
-methotrexate_test_urogenital_system <- methotrexate_test[which(methotrexate_test$Cell_line_tissue_type == 'urogenital_system'), ]
-new_ic50 <- predict(methotrexate_least_fit_elnet, newx = as.matrix(methotrexate_test_scaled_urogenital_system), s = 'lambda.1se', interval = 'conf')
-methotrexate_urogenital_system_least_auc <- auc(methotrexate_test_urogenital_system$least_sensitive, new_ic50)
+mitomycin_test_skin_exp <- mitomycin_rna_seq_test[mitomycin_skin_lines, ]
+mitomycin_test_skin <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_skin_auc <- sum(mitomycin_test_skin$res_sens == new_ic50)/length(new_ic50)
 
-methotrexate_least_auc <- c(methotrexate_aero_dig_tract_least_auc, methotrexate_bone_least_auc, 
-                         methotrexate_breast_least_auc, methotrexate_digestive_system_least_auc, 
-                         methotrexate_kidney_least_auc, methotrexate_large_intestine_least_auc, 
-                         methotrexate_lung_least_auc, methotrexate_lung_NSCLC_least_auc, methotrexate_lung_SCLC_least_auc, 
-                         methotrexate_nervous_system_least_auc, methotrexate_neuroblastoma_least_auc, 
-                         methotrexate_pancreas_least_auc, methotrexate_skin_least_auc, 
-                         methotrexate_soft_tissue_least_auc, methotrexate_thyroid_least_auc, 
-                         methotrexate_urogenital_system_least_auc)
+mitomycin_test_soft_tissue_exp <- mitomycin_rna_seq_test[mitomycin_soft_tissue_lines, ]
+mitomycin_test_soft_tissue <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_soft_tissue_auc <- sum(mitomycin_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+mitomycin_test_thyroid_exp <- mitomycin_rna_seq_test[mitomycin_thyroid_lines, ]
+mitomycin_test_thyroid <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_thyroid_auc <- sum(mitomycin_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+mitomycin_test_urogenital_system_exp <- mitomycin_rna_seq_test[mitomycin_urogenital_system_lines, ]
+mitomycin_test_urogenital_system <- mitomycin_test[which(mitomycin_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+mitomycin_urogenital_system_auc <- sum(mitomycin_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+mitomycin_auc <- c(mitomycin_aero_dig_tract_auc, mitomycin_bone_auc, 
+                   mitomycin_breast_auc, mitomycin_digestive_system_auc, 
+                   mitomycin_kidney_auc, mitomycin_large_intestine_auc, 
+                   mitomycin_lung_auc, mitomycin_lung_NSCLC_auc, mitomycin_lung_SCLC_auc, 
+                   mitomycin_nervous_system_auc, mitomycin_neuroblastoma_auc, 
+                   mitomycin_pancreas_auc, mitomycin_skin_auc, 
+                   mitomycin_soft_tissue_auc, mitomycin_thyroid_auc, 
+                   mitomycin_urogenital_system_auc)
+
+
+
+sn38_aero_dig_tract_lines              <- sn38_test$Cell_line_tissue_type == 'aero_dig_tract'
+sn38_bone_lines                        <- sn38_test$Cell_line_tissue_type == 'bone'
+sn38_breast_lines                      <- sn38_test$Cell_line_tissue_type == 'breast'
+sn38_digestive_system_lines            <- sn38_test$Cell_line_tissue_type == 'digestive_system'
+sn38_kidney_lines                      <- sn38_test$Cell_line_tissue_type == 'kidney'
+sn38_large_intestine_lines             <- sn38_test$Cell_line_tissue_type == 'large_intestine'
+sn38_lung_lines                        <- sn38_test$Cell_line_tissue_type == 'lung'
+sn38_lung_NSCLC_lines                  <- sn38_test$Cell_line_tissue_type == 'lung_NSCLC'
+sn38_lung_SCLC_lines                   <- sn38_test$Cell_line_tissue_type == 'lung_SCLC'
+sn38_nervous_system_lines              <- sn38_test$Cell_line_tissue_type == 'nervous_system'
+sn38_neuroblastoma_lines               <- sn38_test$Cell_line_tissue_type == 'neuroblastoma'
+sn38_pancreas_lines                    <- sn38_test$Cell_line_tissue_type == 'pancreas'
+sn38_skin_lines                        <- sn38_test$Cell_line_tissue_type == 'skin'
+sn38_soft_tissue_lines                 <- sn38_test$Cell_line_tissue_type == 'soft_tissue'
+sn38_thyroid_lines                     <- sn38_test$Cell_line_tissue_type == 'thyroid'
+sn38_urogenital_system_lines           <- sn38_test$Cell_line_tissue_type == 'urogenital_system'
+
+#test pan-cancer models against individual cancer types
+sn38_test_aero_dig_tract_exp <- sn38_rna_seq_test[sn38_aero_dig_tract_lines, ]
+sn38_test_aero_dig_tract <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_aero_dig_tract_auc <- sum(sn38_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_bone_exp <- sn38_rna_seq_test[sn38_bone_lines, ]
+sn38_test_bone <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_bone_auc <- sum(sn38_test_bone$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_breast_exp <- sn38_rna_seq_test[sn38_breast_lines, ]
+sn38_test_breast <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_breast_auc <- sum(sn38_test_breast$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_digestive_system_exp <- sn38_rna_seq_test[sn38_digestive_system_lines, ]
+sn38_test_digestive_system <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_digestive_system_auc <- sum(sn38_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_kidney_exp <- sn38_rna_seq_test[sn38_kidney_lines, ]
+sn38_test_kidney <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_kidney_auc <- sum(sn38_test_kidney$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_large_intestine_exp <- sn38_rna_seq_test[sn38_large_intestine_lines, ]
+sn38_test_large_intestine <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_large_intestine_auc <- sum(sn38_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_lung_exp <- sn38_rna_seq_test[sn38_lung_lines, ]
+sn38_test_lung <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_lung_auc <- sum(sn38_test_lung$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_lung_NSCLC_exp <- sn38_rna_seq_test[sn38_lung_NSCLC_lines, ]
+sn38_test_lung_NSCLC <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_lung_NSCLC_auc <- sum(sn38_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_lung_SCLC_exp <- sn38_rna_seq_test[sn38_lung_SCLC_lines, ]
+sn38_test_lung_SCLC <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_lung_SCLC_auc <- sum(sn38_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_nervous_system_exp <- sn38_rna_seq_test[sn38_nervous_system_lines, ]
+sn38_test_nervous_system <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_nervous_system_auc <- sum(sn38_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_neuroblastoma_exp <- sn38_rna_seq_test[sn38_neuroblastoma_lines, ]
+sn38_test_neuroblastoma <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_neuroblastoma_auc <- sum(sn38_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_pancreas_exp <- sn38_rna_seq_test[sn38_pancreas_lines, ]
+sn38_test_pancreas <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_pancreas_auc <- sum(sn38_test_pancreas$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_skin_exp <- sn38_rna_seq_test[sn38_skin_lines, ]
+sn38_test_skin <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_skin_auc <- sum(sn38_test_skin$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_soft_tissue_exp <- sn38_rna_seq_test[sn38_soft_tissue_lines, ]
+sn38_test_soft_tissue <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_soft_tissue_auc <- sum(sn38_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_thyroid_exp <- sn38_rna_seq_test[sn38_thyroid_lines, ]
+sn38_test_thyroid <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_thyroid_auc <- sum(sn38_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+sn38_test_urogenital_system_exp <- sn38_rna_seq_test[sn38_urogenital_system_lines, ]
+sn38_test_urogenital_system <- sn38_test[which(sn38_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(sn38_fit_elnet, newx = as.matrix(sn38_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+sn38_urogenital_system_auc <- sum(sn38_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+sn38_auc <- c(sn38_aero_dig_tract_auc, sn38_bone_auc, 
+                   sn38_breast_auc, sn38_digestive_system_auc, 
+                   sn38_kidney_auc, sn38_large_intestine_auc, 
+                   sn38_lung_auc, sn38_lung_NSCLC_auc, sn38_lung_SCLC_auc, 
+                   sn38_nervous_system_auc, sn38_neuroblastoma_auc, 
+                   sn38_pancreas_auc, sn38_skin_auc, 
+                   sn38_soft_tissue_auc, sn38_thyroid_auc, 
+                   sn38_urogenital_system_auc)
+
+
+
+temozolomide_aero_dig_tract_lines              <- temozolomide_test$Cell_line_tissue_type == 'aero_dig_tract'
+temozolomide_bone_lines                        <- temozolomide_test$Cell_line_tissue_type == 'bone'
+temozolomide_breast_lines                      <- temozolomide_test$Cell_line_tissue_type == 'breast'
+temozolomide_digestive_system_lines            <- temozolomide_test$Cell_line_tissue_type == 'digestive_system'
+temozolomide_kidney_lines                      <- temozolomide_test$Cell_line_tissue_type == 'kidney'
+temozolomide_large_intestine_lines             <- temozolomide_test$Cell_line_tissue_type == 'large_intestine'
+temozolomide_lung_lines                        <- temozolomide_test$Cell_line_tissue_type == 'lung'
+temozolomide_lung_NSCLC_lines                  <- temozolomide_test$Cell_line_tissue_type == 'lung_NSCLC'
+temozolomide_lung_SCLC_lines                   <- temozolomide_test$Cell_line_tissue_type == 'lung_SCLC'
+temozolomide_nervous_system_lines              <- temozolomide_test$Cell_line_tissue_type == 'nervous_system'
+temozolomide_neuroblastoma_lines               <- temozolomide_test$Cell_line_tissue_type == 'neuroblastoma'
+temozolomide_pancreas_lines                    <- temozolomide_test$Cell_line_tissue_type == 'pancreas'
+temozolomide_skin_lines                        <- temozolomide_test$Cell_line_tissue_type == 'skin'
+temozolomide_soft_tissue_lines                 <- temozolomide_test$Cell_line_tissue_type == 'soft_tissue'
+temozolomide_thyroid_lines                     <- temozolomide_test$Cell_line_tissue_type == 'thyroid'
+temozolomide_urogenital_system_lines           <- temozolomide_test$Cell_line_tissue_type == 'urogenital_system'
+
+#test pan-cancer models against individual cancer types
+temozolomide_test_aero_dig_tract_exp <- temozolomide_rna_seq_test[temozolomide_aero_dig_tract_lines, ]
+temozolomide_test_aero_dig_tract <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'aero_dig_tract'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_aero_dig_tract_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_aero_dig_tract_auc <- sum(temozolomide_test_aero_dig_tract$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_bone_exp <- temozolomide_rna_seq_test[temozolomide_bone_lines, ]
+temozolomide_test_bone <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'bone'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_bone_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_bone_auc <- sum(temozolomide_test_bone$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_breast_exp <- temozolomide_rna_seq_test[temozolomide_breast_lines, ]
+temozolomide_test_breast <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'breast'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_breast_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_breast_auc <- sum(temozolomide_test_breast$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_digestive_system_exp <- temozolomide_rna_seq_test[temozolomide_digestive_system_lines, ]
+temozolomide_test_digestive_system <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'digestive_system'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_digestive_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_digestive_system_auc <- sum(temozolomide_test_digestive_system$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_kidney_exp <- temozolomide_rna_seq_test[temozolomide_kidney_lines, ]
+temozolomide_test_kidney <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'kidney'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_kidney_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_kidney_auc <- sum(temozolomide_test_kidney$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_large_intestine_exp <- temozolomide_rna_seq_test[temozolomide_large_intestine_lines, ]
+temozolomide_test_large_intestine <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'large_intestine'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_large_intestine_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_large_intestine_auc <- sum(temozolomide_test_large_intestine$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_lung_exp <- temozolomide_rna_seq_test[temozolomide_lung_lines, ]
+temozolomide_test_lung <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'lung'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_lung_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_lung_auc <- sum(temozolomide_test_lung$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_lung_NSCLC_exp <- temozolomide_rna_seq_test[temozolomide_lung_NSCLC_lines, ]
+temozolomide_test_lung_NSCLC <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'lung_NSCLC'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_lung_NSCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_lung_NSCLC_auc <- sum(temozolomide_test_lung_NSCLC$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_lung_SCLC_exp <- temozolomide_rna_seq_test[temozolomide_lung_SCLC_lines, ]
+temozolomide_test_lung_SCLC <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'lung_SCLC'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_lung_SCLC_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_lung_SCLC_auc <- sum(temozolomide_test_lung_SCLC$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_nervous_system_exp <- temozolomide_rna_seq_test[temozolomide_nervous_system_lines, ]
+temozolomide_test_nervous_system <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'nervous_system'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_nervous_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_nervous_system_auc <- sum(temozolomide_test_nervous_system$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_neuroblastoma_exp <- temozolomide_rna_seq_test[temozolomide_neuroblastoma_lines, ]
+temozolomide_test_neuroblastoma <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'neuroblastoma'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_neuroblastoma_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_neuroblastoma_auc <- sum(temozolomide_test_neuroblastoma$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_pancreas_exp <- temozolomide_rna_seq_test[temozolomide_pancreas_lines, ]
+temozolomide_test_pancreas <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'pancreas'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_pancreas_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_pancreas_auc <- sum(temozolomide_test_pancreas$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_skin_exp <- temozolomide_rna_seq_test[temozolomide_skin_lines, ]
+temozolomide_test_skin <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'skin'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_skin_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_skin_auc <- sum(temozolomide_test_skin$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_soft_tissue_exp <- temozolomide_rna_seq_test[temozolomide_soft_tissue_lines, ]
+temozolomide_test_soft_tissue <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'soft_tissue'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_soft_tissue_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_soft_tissue_auc <- sum(temozolomide_test_soft_tissue$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_thyroid_exp <- temozolomide_rna_seq_test[temozolomide_thyroid_lines, ]
+temozolomide_test_thyroid <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'thyroid'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_thyroid_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_thyroid_auc <- sum(temozolomide_test_thyroid$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_test_urogenital_system_exp <- temozolomide_rna_seq_test[temozolomide_urogenital_system_lines, ]
+temozolomide_test_urogenital_system <- temozolomide_test[which(temozolomide_test$Cell_line_tissue_type == 'urogenital_system'), ]
+new_ic50 <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_test_urogenital_system_exp), s = 'lambda.1se', interval = 'conf', type = 'class')
+temozolomide_urogenital_system_auc <- sum(temozolomide_test_urogenital_system$res_sens == new_ic50)/length(new_ic50)
+
+temozolomide_auc <- c(temozolomide_aero_dig_tract_auc, temozolomide_bone_auc, 
+                   temozolomide_breast_auc, temozolomide_digestive_system_auc, 
+                   temozolomide_kidney_auc, temozolomide_large_intestine_auc, 
+                   temozolomide_lung_auc, temozolomide_lung_NSCLC_auc, temozolomide_lung_SCLC_auc, 
+                   temozolomide_nervous_system_auc, temozolomide_neuroblastoma_auc, 
+                   temozolomide_pancreas_auc, temozolomide_skin_auc, 
+                   temozolomide_soft_tissue_auc, temozolomide_thyroid_auc, 
+                   temozolomide_urogenital_system_auc)
+
+
+
 
 #put everything together
-all_gdsc_auc_by_type <- data.frame(cisplatin_most_auc, cisplatin_least_auc, 
-                                   etoposide_most_auc, etoposide_least_auc, 
-                                   gemcitabine_most_auc, gemcitabine_least_auc, 
-                                   methotrexate_most_auc, methotrexate_least_auc)
+all_gdsc_auc_by_type <- data.frame(bleomycin_auc, camptothecin_auc, cisplatin_auc, cytarabine_auc, doxorubicin_auc, 
+                                   etoposide_auc, gemcitabine_auc, methotrexate_auc, mitomycin_auc, 
+                                   sn38_auc, temozolomide_auc)
 
 #all_gdsc_auc_by_type <- data.frame(t(all_gdsc_auc_by_type))
 all_gdsc_auc_by_type <- rbind(all_gdsc_auc_by_type, overall_auc)
 #all_gdsc_auc_by_type <- all_gdsc_auc_by_type[c(9, 1:8), ]
-colnames(all_gdsc_auc_by_type) <- c('cisplatin_most', 'cisplatin_least', 
-                                    'etoposide_most', 'etoposide_least', 'gemcitabine_most', 
-                                    'gemcitabine_least', 'methotrexate_most', 'methotrexate_least')
+colnames(all_gdsc_auc_by_type) <- c('bleomycin', 'camptothecin', 'cisplatin', 'doxorubicin', 
+                                    'etoposide', 'gemcitabine', 'methotrexate', 
+                                    'mitomycin', 'sn38', 'temozolomide')
 rownames(all_gdsc_auc_by_type) <- c('aero_dig_tract', 'bone', 'breast', 'digestive_system', 'kidney', 
                                     'large_intestine', 'lung', 'lung_NSCLC', 'lung_SCLC', 
                                     'nervous_system', 'neuroblastoma', 'pancreas', 'skin', 
@@ -778,9 +1388,6 @@ table(blca_clinical$drug_name)
 blca_clinical_cisplatin <- blca_clinical[which(blca_clinical$drug_name == 'cisplatin' | blca_clinical$drug_name == 'Cisplatin' | 
                                                  blca_clinical$drug_name == 'Cisplatnin'), ]
 
-blca_clinical_cisplatin$most_sensitive  <- ifelse(blca_clinical_cisplatin$PFS < quantile(blca_clinical_cisplatin$PFS, probs = .20), 1, 0)
-blca_clinical_cisplatin$least_sensitive <- ifelse(blca_clinical_cisplatin$PFS > quantile(blca_clinical_cisplatin$PFS, probs = .80), 1, 0)
-
 blca_gene <- read.csv('Processed_Gene_Expression/blca_tcga_rna_seq_processed.csv', row.names = 1)
 colnames(blca_gene) <- gsub('\\.', '-', colnames(blca_gene))
 blca_matching_idx <- blca_clinical_cisplatin$submitter_id.samples %in% colnames(blca_gene)
@@ -790,56 +1397,22 @@ blca_gene_short <- blca_gene[, blca_matching_idx]
 blca_gene_short <- t(blca_gene_short)
 blca_gene_short_scaled <- apply(blca_gene_short, 2, scale)
 
-rm(blca_tcga_most_min_auc)
-rm(blca_tcga_most_1se_auc)
-rm(blca_tcga_least_min_auc)
-rm(blca_tcga_least_1se_auc)
+new_blca_tcga_cisplatin <- predict(cisplatin_fit_elnet, newx = as.matrix(blca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class', na.action = 'na.pass')
 
-new_blca_tcga_cisplatin_most_sensitive_min <- predict(cisplatin_most_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-blca_tcga_most_min_auc <- auc(blca_clinical_cisplatin_short$most_sensitive, new_blca_tcga_cisplatin_most_sensitive_min)
-blca_tcga_most_min_auc <- round(blca_tcga_most_min_auc, digits = 2)
+blca_surv_times <- blca_clinical_cisplatin_short$PFS
+blca_status <- ifelse(blca_clinical_cisplatin_short$PFS == blca_clinical_cisplatin_short$OS, 0, 1)
 
-new_blca_tcga_cisplatin_most_sensitive_1se <- predict(cisplatin_most_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-blca_tcga_most_1se_auc <- auc(blca_clinical_cisplatin_short$most_sensitive, new_blca_tcga_cisplatin_most_sensitive_1se)
-blca_tcga_most_1se_auc <- round(blca_tcga_most_1se_auc, digits = 2)
+blca_surv_df <- data.frame(blca_surv_times, blca_status, new_blca_tcga_cisplatin)
+fit <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_cisplatin,
+               data = blca_surv_df)
+fit2 <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_cisplatin,
+                data = blca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
-new_blca_tcga_cisplatin_least_sensitive_min <- predict(cisplatin_least_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-blca_tcga_least_min_auc <- auc(blca_clinical_cisplatin_short$least_sensitive, new_blca_tcga_cisplatin_least_sensitive_min)
-blca_tcga_least_min_auc <- round(blca_tcga_least_min_auc, digits = 2)
 
-new_blca_tcga_cisplatin_least_sensitive_1se <- predict(cisplatin_least_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-blca_tcga_least_1se_auc <- auc(blca_clinical_cisplatin_short$least_sensitive, new_blca_tcga_cisplatin_least_sensitive_1se)
-blca_tcga_least_1se_auc <- round(blca_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_blca_tcga_cisplatin_most_sensitive_min, blca_clinical_cisplatin_short$most_sensitive)
-pred2 <- prediction(new_blca_tcga_cisplatin_most_sensitive_1se, blca_clinical_cisplatin_short$most_sensitive)
-pred3 <- prediction(new_blca_tcga_cisplatin_least_sensitive_min, blca_clinical_cisplatin_short$least_sensitive)
-pred4 <- prediction(new_blca_tcga_cisplatin_least_sensitive_1se, blca_clinical_cisplatin_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/blca_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
-#plot(perf, col = 'red')
-plot(perf2, col = colors_i_need[2], lwd = 2, lty = 2, main = 'BLCA treated with cisplatin')
-plot(perf3, col = colors_i_need[2], add = TRUE, lwd = 2)
-#plot(perf4, col = 'blue', lty = 2, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.6, y = 0.4, legend = c('sensitive model (AUC = 0.69)', 'resistant model (AUC = 0.55)'), cex = 0.8, lty = c(1,2), lwd = 2, col = colors_i_need[2], bty = 'n')
-dev.off()
 
 # BLCA W GEMCITABINE (30)
 blca_clinical <- read.csv('Processed_Clinical_Data/blca_tcga_clinical_processed.csv', row.names = 1)
@@ -848,9 +1421,6 @@ blca_clinical <- blca_clinical[!na_idx, ]
 table(blca_clinical$drug_name)
 blca_clinical_gemcitabine <- blca_clinical[which(blca_clinical$drug_name == 'gemcitabine' | blca_clinical$drug_name == 'Gemcitabine' | 
                                                  blca_clinical$drug_name == 'Gemzar'), ]
-
-blca_clinical_gemcitabine$most_sensitive  <- ifelse(blca_clinical_gemcitabine$PFS < quantile(blca_clinical_gemcitabine$PFS, probs = .20), 1, 0)
-blca_clinical_gemcitabine$least_sensitive <- ifelse(blca_clinical_gemcitabine$PFS > quantile(blca_clinical_gemcitabine$PFS, probs = .80), 1, 0)
 
 blca_gene <- read.csv('Processed_Gene_Expression/blca_tcga_rna_seq_processed.csv', row.names = 1)
 colnames(blca_gene) <- gsub('\\.', '-', colnames(blca_gene))
@@ -861,67 +1431,29 @@ blca_gene_short <- blca_gene[, blca_matching_idx]
 blca_gene_short <- t(blca_gene_short)
 blca_gene_short_scaled <- apply(blca_gene_short, 2, scale)
 
-rm(blca_tcga_most_min_auc)
-rm(blca_tcga_most_1se_auc)
-rm(blca_tcga_least_min_auc)
-rm(blca_tcga_least_1se_auc)
+new_blca_tcga_gemcitabine <- predict(gemcitabine_fit_elnet, newx = as.matrix(blca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
 
-new_blca_tcga_gemcitabine_most_sensitive_min <- predict(gemcitabine_most_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-blca_tcga_most_min_auc <- auc(blca_clinical_gemcitabine_short$most_sensitive, new_blca_tcga_gemcitabine_most_sensitive_min)
-blca_tcga_most_min_auc <- round(blca_tcga_most_min_auc, digits = 2)
+blca_surv_times <- blca_clinical_gemcitabine_short$PFS
+blca_status <- ifelse(blca_clinical_gemcitabine_short$PFS == blca_clinical_gemcitabine_short$OS, 0, 1)
 
-new_blca_tcga_gemcitabine_most_sensitive_1se <- predict(gemcitabine_most_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-blca_tcga_most_1se_auc <- auc(blca_clinical_gemcitabine_short$most_sensitive, new_blca_tcga_gemcitabine_most_sensitive_1se)
-blca_tcga_most_1se_auc <- round(blca_tcga_most_1se_auc, digits = 2)
+blca_surv_df <- data.frame(blca_surv_times, blca_status, new_blca_tcga_gemcitabine)
+fit <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_gemcitabine,
+               data = blca_surv_df)
+fit2 <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_gemcitabine,
+                data = blca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
-new_blca_tcga_gemcitabine_least_sensitive_min <- predict(gemcitabine_least_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-blca_tcga_least_min_auc <- auc(blca_clinical_gemcitabine_short$least_sensitive, new_blca_tcga_gemcitabine_least_sensitive_min)
-blca_tcga_least_min_auc <- round(blca_tcga_least_min_auc, digits = 2)
-
-new_blca_tcga_gemcitabine_least_sensitive_1se <- predict(gemcitabine_least_fit_elnet, newx = blca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-blca_tcga_least_1se_auc <- auc(blca_clinical_gemcitabine_short$least_sensitive, new_blca_tcga_gemcitabine_least_sensitive_1se)
-blca_tcga_least_1se_auc <- round(blca_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_blca_tcga_gemcitabine_most_sensitive_min, blca_clinical_gemcitabine_short$most_sensitive)
-pred2 <- prediction(new_blca_tcga_gemcitabine_most_sensitive_1se, blca_clinical_gemcitabine_short$most_sensitive)
-pred3 <- prediction(new_blca_tcga_gemcitabine_least_sensitive_min, blca_clinical_gemcitabine_short$least_sensitive)
-pred4 <- prediction(new_blca_tcga_gemcitabine_least_sensitive_1se, blca_clinical_gemcitabine_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/blca_gemcitabine_tcga_gdsc_auc.png', height = 480, width = 800)
-#plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'BLCA treated with gemcitabine (GDSC)')
-#plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 0.72)', 'least_sensitive (AUC = 0.56)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
-dev.off()
 
 # BRCA W DOXORUBICIN (47)
 brca_clinical <- read.csv('Processed_Clinical_Data/brca_tcga_clinical_processed.csv', row.names = 1)
 na_idx <- is.na(brca_clinical$most_sensitive)
 brca_clinical <- brca_clinical[!na_idx, ]
 table(brca_clinical$drug_name)
-brca_clinical_doxorubicin <- brca_clinical[which(brca_clinical$drug_name == 'doxorubicin' | brca_clinical$drug_name == 'Doxorubicin' | 
+brca_clinical_doxorubicin <- brca_clinical[which(brca_clinical$drug_name == 'doxorubicin' | brca_clinical$drug_name == 'Doxorubicin' |
                                                  brca_clinical$drug_name == 'DOXORUBICIN'), ]
-
-brca_clinical_doxorubicin$most_sensitive  <- ifelse(brca_clinical_doxorubicin$PFS < quantile(brca_clinical_doxorubicin$PFS, probs = .20), 1, 0)
-brca_clinical_doxorubicin$least_sensitive <- ifelse(brca_clinical_doxorubicin$PFS > quantile(brca_clinical_doxorubicin$PFS, probs = .80), 1, 0)
 
 brca_gene <- read.csv('Processed_Gene_Expression/brca_tcga_rna_seq_processed.csv', row.names = 1)
 colnames(brca_gene) <- gsub('\\.', '-', colnames(brca_gene))
@@ -932,56 +1464,20 @@ brca_gene_short <- brca_gene[, brca_matching_idx]
 brca_gene_short <- t(brca_gene_short)
 brca_gene_short_scaled <- apply(brca_gene_short, 2, scale)
 
-rm(brca_tcga_most_min_auc)
-rm(brca_tcga_most_1se_auc)
-rm(brca_tcga_least_min_auc)
-rm(brca_tcga_least_1se_auc)
+new_brca_tcga_doxorubicin <- predict(doxorubicin_fit_elnet, newx = as.matrix(brca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class', na.action = 'na.pass')
 
-new_brca_tcga_doxorubicin_most_sensitive_min <- predict(dox_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_most_min_auc <- auc(brca_clinical_doxorubicin_short$most_sensitive, new_brca_tcga_doxorubicin_most_sensitive_min)
-brca_tcga_most_min_auc <- round(brca_tcga_most_min_auc, digits = 2)
+brca_surv_times <- brca_clinical_doxorubicin_short$PFS
+brca_status <- ifelse(brca_clinical_doxorubicin_short$PFS == brca_clinical_doxorubicin_short$OS, 0, 1)
 
-new_brca_tcga_doxorubicin_most_sensitive_1se <- predict(dox_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_most_1se_auc <- auc(brca_clinical_doxorubicin_short$most_sensitive, new_brca_tcga_doxorubicin_most_sensitive_1se)
-brca_tcga_most_1se_auc <- round(brca_tcga_most_1se_auc, digits = 2)
-
-new_brca_tcga_doxorubicin_least_sensitive_min <- predict(dox_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_least_min_auc <- auc(brca_clinical_doxorubicin_short$least_sensitive, new_brca_tcga_doxorubicin_least_sensitive_min)
-brca_tcga_least_min_auc <- round(brca_tcga_least_min_auc, digits = 2)
-
-new_brca_tcga_doxorubicin_least_sensitive_1se <- predict(dox_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_least_1se_auc <- auc(brca_clinical_doxorubicin_short$least_sensitive, new_brca_tcga_doxorubicin_least_sensitive_1se)
-brca_tcga_least_1se_auc <- round(brca_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_brca_tcga_doxorubicin_most_sensitive_min, brca_clinical_doxorubicin_short$most_sensitive)
-pred2 <- prediction(new_brca_tcga_doxorubicin_most_sensitive_1se, brca_clinical_doxorubicin_short$most_sensitive)
-pred3 <- prediction(new_brca_tcga_doxorubicin_least_sensitive_min, brca_clinical_doxorubicin_short$least_sensitive)
-pred4 <- prediction(new_brca_tcga_doxorubicin_least_sensitive_1se, brca_clinical_doxorubicin_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/brca_doxorubicin_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (NA)', 'most_1se (1.0)', 'least_min (0.00)', 'least_1se (0.00)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
-dev.off()
+brca_surv_df <- data.frame(brca_surv_times, brca_status, new_brca_tcga_doxorubicin)
+fit <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_doxorubicin,
+               data = brca_surv_df)
+fit2 <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_doxorubicin,
+                data = brca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
 # BRCA W GEMCITABINE (4)
 brca_clinical <- read.csv('Processed_Clinical_Data/brca_tcga_clinical_processed.csv', row.names = 1)
@@ -989,9 +1485,6 @@ na_idx <- is.na(brca_clinical$most_sensitive)
 brca_clinical <- brca_clinical[!na_idx, ]
 table(brca_clinical$drug_name)
 brca_clinical_gemcitabine <- brca_clinical[which(brca_clinical$drug_name == 'Gemcitabine' | brca_clinical$drug_name == 'GEMZAR'), ]
-
-brca_clinical_gemcitabine$most_sensitive  <- ifelse(brca_clinical_gemcitabine$PFS < quantile(brca_clinical_gemcitabine$PFS, probs = .20), 1, 0)
-brca_clinical_gemcitabine$least_sensitive <- ifelse(brca_clinical_gemcitabine$PFS > quantile(brca_clinical_gemcitabine$PFS, probs = .80), 1, 0)
 
 brca_gene <- read.csv('Processed_Gene_Expression/brca_tcga_rna_seq_processed.csv', row.names = 1)
 colnames(brca_gene) <- gsub('\\.', '-', colnames(brca_gene))
@@ -1001,57 +1494,23 @@ brca_matching_idx <- colnames(brca_gene) %in% brca_clinical_gemcitabine_short$su
 brca_gene_short <- brca_gene[, brca_matching_idx]
 brca_gene_short <- t(brca_gene_short)
 brca_gene_short_scaled <- apply(brca_gene_short, 2, scale)
+new_blca_tcga_gemcitabine <- predict(gemcitabine_fit_elnet, newx = as.matrix(blca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
 
-rm(brca_tcga_most_min_auc)
-rm(brca_tcga_most_1se_auc)
-rm(brca_tcga_least_min_auc)
-rm(brca_tcga_least_1se_auc)
+new_brca_tcga_gemcitabine <- predict(gemcitabine_fit_elnet, newx = as.matrix(brca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
 
-new_brca_tcga_gemcitabine_most_sensitive_min <- predict(gemcitabine_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_most_min_auc <- auc(brca_clinical_gemcitabine_short$most_sensitive, new_brca_tcga_gemcitabine_most_sensitive_min)
-brca_tcga_most_min_auc <- round(brca_tcga_most_min_auc, digits = 2)
+brca_surv_times <- brca_clinical_gemcitabine_short$PFS
+brca_status <- ifelse(brca_clinical_gemcitabine_short$PFS == brca_clinical_gemcitabine_short$OS, 0, 1)
 
-new_brca_tcga_gemcitabine_most_sensitive_1se <- predict(gemcitabine_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_most_1se_auc <- auc(brca_clinical_gemcitabine_short$most_sensitive, new_brca_tcga_gemcitabine_most_sensitive_1se)
-brca_tcga_most_1se_auc <- round(brca_tcga_most_1se_auc, digits = 2)
+brca_surv_df <- data.frame(brca_surv_times, brca_status, new_brca_tcga_gemcitabine)
+fit <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_gemcitabine,
+               data = brca_surv_df)
+fit2 <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_gemcitabine,
+                data = brca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
-new_brca_tcga_gemcitabine_least_sensitive_min <- predict(gemcitabine_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_least_min_auc <- auc(brca_clinical_gemcitabine_short$least_sensitive, new_brca_tcga_gemcitabine_least_sensitive_min)
-brca_tcga_least_min_auc <- round(brca_tcga_least_min_auc, digits = 2)
-
-new_brca_tcga_gemcitabine_least_sensitive_1se <- predict(gemcitabine_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_least_1se_auc <- auc(brca_clinical_gemcitabine_short$least_sensitive, new_brca_tcga_gemcitabine_least_sensitive_1se)
-brca_tcga_least_1se_auc <- round(brca_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_brca_tcga_gemcitabine_most_sensitive_min, brca_clinical_gemcitabine_short$most_sensitive)
-pred2 <- prediction(new_brca_tcga_gemcitabine_most_sensitive_1se, brca_clinical_gemcitabine_short$most_sensitive)
-pred3 <- prediction(new_brca_tcga_gemcitabine_least_sensitive_min, brca_clinical_gemcitabine_short$least_sensitive)
-pred4 <- prediction(new_brca_tcga_gemcitabine_least_sensitive_1se, brca_clinical_gemcitabine_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/brca_gemcitabine_tcga_gdsc_auc.png', height = 480, width = 800)
-#plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 1, main = 'BRCA treated with gemcitabine (GDSC)')
-#plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 1, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_sensitive (AUC = 1.0)', 'least_sensitive (AUC = 1.0)'), lty = c(1,1), col = c('red', 'blue'), bty = 'n')
-dev.off()
 
 # BRCA W METHOTREXATE (9)
 brca_clinical <- read.csv('Processed_Clinical_Data/brca_tcga_clinical_processed.csv', row.names = 1)
@@ -1072,56 +1531,22 @@ brca_gene_short <- brca_gene[, brca_matching_idx]
 brca_gene_short <- t(brca_gene_short)
 brca_gene_short_scaled <- apply(brca_gene_short, 2, scale)
 
-rm(brca_tcga_most_min_auc)
-rm(brca_tcga_most_1se_auc)
-rm(brca_tcga_least_min_auc)
-rm(brca_tcga_least_1se_auc)
+new_brca_tcga_methotrexate <- predict(methotrexate_fit_elnet, newx = as.matrix(brca_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
 
-new_brca_tcga_methotrexate_most_sensitive_min <- predict(methotrexate_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_most_min_auc <- auc(brca_clinical_methotrexate_short$most_sensitive, new_brca_tcga_methotrexate_most_sensitive_min)
-brca_tcga_most_min_auc <- round(brca_tcga_most_min_auc, digits = 2)
+brca_surv_times <- brca_clinical_methotrexate_short$PFS
+brca_status <- ifelse(brca_clinical_methotrexate_short$PFS == brca_clinical_methotrexate_short$OS, 0, 1)
 
-new_brca_tcga_methotrexate_most_sensitive_1se <- predict(methotrexate_most_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_most_1se_auc <- auc(brca_clinical_methotrexate_short$most_sensitive, new_brca_tcga_methotrexate_most_sensitive_1se)
-brca_tcga_most_1se_auc <- round(brca_tcga_most_1se_auc, digits = 2)
+brca_surv_df <- data.frame(brca_surv_times, brca_status, new_brca_tcga_methotrexate)
+fit <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_methotrexate,
+               data = brca_surv_df)
+fit2 <- survfit(Surv(brca_surv_times, brca_status) ~ new_brca_tcga_methotrexate,
+                data = brca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
-new_brca_tcga_methotrexate_least_sensitive_min <- predict(methotrexate_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-brca_tcga_least_min_auc <- auc(brca_clinical_methotrexate_short$least_sensitive, new_brca_tcga_methotrexate_least_sensitive_min)
-brca_tcga_least_min_auc <- round(brca_tcga_least_min_auc, digits = 2)
 
-new_brca_tcga_methotrexate_least_sensitive_1se <- predict(methotrexate_least_fit_elnet, newx = brca_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-brca_tcga_least_1se_auc <- auc(brca_clinical_methotrexate_short$least_sensitive, new_brca_tcga_methotrexate_least_sensitive_1se)
-brca_tcga_least_1se_auc <- round(brca_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_brca_tcga_methotrexate_most_sensitive_min, brca_clinical_methotrexate_short$most_sensitive)
-pred2 <- prediction(new_brca_tcga_methotrexate_most_sensitive_1se, brca_clinical_methotrexate_short$most_sensitive)
-pred3 <- prediction(new_brca_tcga_methotrexate_least_sensitive_min, brca_clinical_methotrexate_short$least_sensitive)
-pred4 <- prediction(new_brca_tcga_methotrexate_least_sensitive_1se, brca_clinical_methotrexate_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/brca_methotrexate_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = colors_i_need[8], lty = 2, lwd =1, main = 'BRCA treated with methotrexate (GDSC)')
-#plot(perf2, col = 'red', lty = 2)
-#plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = colors_i_need[8], lty = 1, lwd = 2, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.55, y = 0.4, legend = c('sensitive model (AUC = 0.64)', 'resistant model (AUC = 1.0)'), lwd = 2, lty = c(1,2), col = colors_i_need[8], cex = 0.8, bty = 'n')
-dev.off()
 
 # CESC W CISPLATIN (104)
 cesc_clinical <- read.csv('Processed_Clinical_Data/cesc_tcga_clinical_processed.csv', row.names = 1)
@@ -1143,56 +1568,20 @@ cesc_gene_short <- cesc_gene[, cesc_matching_idx]
 cesc_gene_short <- t(cesc_gene_short)
 cesc_gene_short_scaled <- apply(cesc_gene_short, 2, scale)
 
-rm(cesc_tcga_most_min_auc)
-rm(cesc_tcga_most_1se_auc)
-rm(cesc_tcga_least_min_auc)
-rm(cesc_tcga_least_1se_auc)
+new_cesc_tcga_cisplatin <- predict(cisplatin_fit_elnet, newx = as.matrix(cesc_gene_short_scaled), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
 
-new_cesc_tcga_cisplatin_most_sensitive_min <- predict(cisplatin_most_fit_elnet, newx = cesc_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-cesc_tcga_most_min_auc <- auc(cesc_clinical_cisplatin_short$most_sensitive, new_cesc_tcga_cisplatin_most_sensitive_min)
-cesc_tcga_most_min_auc <- round(cesc_tcga_most_min_auc, digits = 2)
+cesc_surv_times <- cesc_clinical_cisplatin_short$PFS
+cesc_status <- ifelse(cesc_clinical_cisplatin_short$PFS == cesc_clinical_cisplatin_short$OS, 0, 1)
 
-new_cesc_tcga_cisplatin_most_sensitive_1se <- predict(cisplatin_most_fit_elnet, newx = cesc_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-cesc_tcga_most_1se_auc <- auc(cesc_clinical_cisplatin_short$most_sensitive, new_cesc_tcga_cisplatin_most_sensitive_1se)
-cesc_tcga_most_1se_auc <- round(cesc_tcga_most_1se_auc, digits = 2)
-
-new_cesc_tcga_cisplatin_least_sensitive_min <- predict(cisplatin_least_fit_elnet, newx = cesc_gene_short_scaled, s = 'lambda.min', type = 'response', na.action = 'na.pass')
-cesc_tcga_least_min_auc <- auc(cesc_clinical_cisplatin_short$least_sensitive, new_cesc_tcga_cisplatin_least_sensitive_min)
-cesc_tcga_least_min_auc <- round(cesc_tcga_least_min_auc, digits = 2)
-
-new_cesc_tcga_cisplatin_least_sensitive_1se <- predict(cisplatin_least_fit_elnet, newx = cesc_gene_short_scaled, s = 'lambda.1se', type = 'response', na.action = 'na.pass')
-cesc_tcga_least_1se_auc <- auc(cesc_clinical_cisplatin_short$least_sensitive, new_cesc_tcga_cisplatin_least_sensitive_1se)
-cesc_tcga_least_1se_auc <- round(cesc_tcga_least_1se_auc, digits = 2)
-
-rm(pred)
-rm(pred2)
-rm(pred3)
-rm(pred4)
-
-pred <- prediction(new_cesc_tcga_cisplatin_most_sensitive_min, cesc_clinical_cisplatin_short$most_sensitive)
-pred2 <- prediction(new_cesc_tcga_cisplatin_most_sensitive_1se, cesc_clinical_cisplatin_short$most_sensitive)
-pred3 <- prediction(new_cesc_tcga_cisplatin_least_sensitive_min, cesc_clinical_cisplatin_short$least_sensitive)
-pred4 <- prediction(new_cesc_tcga_cisplatin_least_sensitive_1se, cesc_clinical_cisplatin_short$least_sensitive)
-
-rm(perf)
-rm(perf2)
-rm(perf3)
-rm(perf4)
-
-perf <- performance(pred, 'tpr', 'fpr')
-perf2 <- performance(pred2, 'tpr', 'fpr')
-perf3 <- performance(pred3, 'tpr', 'fpr')
-perf4 <- performance(pred4, 'tpr', 'fpr')
-
-# change these to have the order make sense
-png(filename = 'Images/cesc_cisplatin_tcga_gdsc_auc.png', height = 480, width = 800)
-plot(perf, col = 'red')
-plot(perf2, col = 'red', lty = 2)
-plot(perf3, col = 'blue', add = TRUE)
-plot(perf4, col = 'blue', lty = 2, add = TRUE)
-abline(0,1, lty = 3)
-legend(x = 0.7, y = 0.4, legend = c('most_min (NA)', 'most_1se (1.0)', 'least_min (0.00)', 'least_1se (0.00)'), lty = c(1,2,1,2), col = c('red', 'red', 'blue', 'blue'), bty = 'n')
-dev.off()
+cesc_surv_df <- data.frame(cesc_surv_times, cesc_status, new_cesc_tcga_cisplatin)
+fit <- survfit(Surv(cesc_surv_times, cesc_status) ~ new_cesc_tcga_cisplatin,
+               data = cesc_surv_df)
+fit2 <- survfit(Surv(cesc_surv_times, cesc_status) ~ new_cesc_tcga_cisplatin,
+                data = cesc_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted resistant', 'predicted sensitive'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
 
 # CHOL W GEMCITABINE (8)
 chol_clinical <- read.csv('Processed_Clinical_Data/chol_tcga_clinical_processed.csv', row.names = 1)
