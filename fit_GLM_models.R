@@ -4,8 +4,11 @@
 if (!require ('glmnet')) install.packages('glmnet')
 library(glmnet) # for model building
 
-if(!require ('ROSE')) install.packages('ROSE')
+if (!require ('ROSE')) install.packages('ROSE')
 library(ROSE)
+
+if (!require ('caret')) install.packages('caret')
+library(caret)
 
 ### functions needed ----
 # create function opposite of %in%
@@ -52,175 +55,374 @@ gdsc <- apply(gdsc, 2, scale)
 rownames(gdsc) <- gdsc_names
 # dim: 962 x 14209 
 
-# split GDSC randomly
+# get split indices
 set.seed(5)
-# get random numbers to use for split
-random_sample <- sample(x = rownames(gdsc), size = nrow(gdsc)/5)
+bleomycin_train_index <- createDataPartition(bleomycin$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
 
-# get training and testing sets
-gdsc_train         <- gdsc[which(rownames(gdsc) %ni% random_sample), ] #770 x 14209
+camptothecin_train_index <- createDataPartition(camptothecin$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
 
-gdsc_test          <- gdsc[random_sample, ] #192 x 14209
+cisplatin_train_index <- createDataPartition(cisplatin$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
 
-# make sure zero overlap
-intersect(rownames(gdsc_train), rownames(gdsc_test)) #0
+cytarabine_train_index <- createDataPartition(cytarabine$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
 
-# create training/testing sets for each drug
-bleomycin_rna_seq_train     <- gdsc_train[intersect(bleomycin_lines, rownames(gdsc_train)), ]
-bleomycin_rna_seq_train_df     <- as.data.frame(bleomycin_rna_seq_train)
-# 622 x 14209
-bleomycin_rna_seq_test      <- gdsc_test[intersect(bleomycin_lines, rownames(gdsc_test)), ]
-bleomycin_rna_seq_test      <- as.data.frame(bleomycin_rna_seq_test)
-# 144 x 14209
-camptothecin_rna_seq_train     <- gdsc_train[intersect(camptothecin_lines, rownames(gdsc_train)), ]
-camptothecin_rna_seq_train_df <- as.data.frame(camptothecin_rna_seq_train)
-# 549 x 14209
-camptothecin_rna_seq_test      <- gdsc_test[intersect(camptothecin_lines, rownames(gdsc_test)), ]
-camptothecin_rna_seq_test <- as.data.frame(camptothecin_rna_seq_test)
-# 129 x 14209
-cisplatin_rna_seq_train     <- gdsc_train[intersect(cisplatin_lines, rownames(gdsc_train)), ]
-cisplatin_rna_seq_train_df <- as.data.frame(cisplatin_rna_seq_train)
-# 551 x 14209
-cisplatin_rna_seq_test      <- gdsc_test[intersect(cisplatin_lines, rownames(gdsc_test)), ]
-cisplatin_rna_seq_test <- as.data.frame(cisplatin_rna_seq_test)
-# 129 x 14209
-cytarabine_rna_seq_train     <- gdsc_train[intersect(cytarabine_lines, rownames(gdsc_train)), ]
-cytarabine_rna_seq_train_df <- as.data.frame(cytarabine_rna_seq_train)
-# 547 x 14209
-cytarabine_rna_seq_test      <- gdsc_test[intersect(cytarabine_lines, rownames(gdsc_test)), ]
-cytarabine_rna_seq_test <- as.data.frame(cytarabine_rna_seq_test)
-# 129 x 14209
-doxorubicin_rna_seq_train     <- gdsc_train[intersect(doxorubicin_lines, rownames(gdsc_train)), ]
-doxorubicin_rna_seq_train_df <- as.data.frame(doxorubicin_rna_seq_train)
-# 581 x 14209
-doxorubicin_rna_seq_test      <- gdsc_test[intersect(doxorubicin_lines, rownames(gdsc_test)), ]
-doxorubicin_rna_seq_test <- as.data.frame(doxorubicin_rna_seq_test)
-# 130 x 14209
-etoposide_rna_seq_train     <- gdsc_train[intersect(etoposide_lines, rownames(gdsc_train)), ]
-etoposide_rna_seq_train_df <- as.data.frame(etoposide_rna_seq_train)
-# 584 x 14209
-etoposide_rna_seq_test      <- gdsc_test[intersect(etoposide_lines, rownames(gdsc_test)), ]
-etoposide_rna_seq_test <- as.data.frame(etoposide_rna_seq_test)
-# 134 x 14209
-gemcitabine_rna_seq_train     <- gdsc_train[intersect(gemcitabine_lines, rownames(gdsc_train)), ]
-gemcitabine_rna_seq_train_df <- as.data.frame(gemcitabine_rna_seq_train)
-# 577 x 14209
-gemcitabine_rna_seq_test      <- gdsc_test[intersect(gemcitabine_lines, rownames(gdsc_test)), ]
-gemcitabine_rna_seq_test <- as.data.frame(gemcitabine_rna_seq_test)
-# 130 x 14209
-methotrexate_rna_seq_train  <- gdsc_train[intersect(methotrexate_lines, rownames(gdsc_train)), ]
-methotrexate_rna_seq_train_df <- as.data.frame(methotrexate_rna_seq_train)
-# 550 x 14209
-methotrexate_rna_seq_test   <- gdsc_test[intersect(methotrexate_lines, rownames(gdsc_test)), ]
-methotrexate_rna_seq_test <- as.data.frame(methotrexate_rna_seq_test)
-# 129 x 14209
-mitomycin_rna_seq_train     <- gdsc_train[intersect(mitomycin_lines, rownames(gdsc_train)), ]
-mitomycin_rna_seq_train_df <- as.data.frame(mitomycin_rna_seq_train)
-# 581 x 14209
-mitomycin_rna_seq_test      <- gdsc_test[intersect(mitomycin_lines, rownames(gdsc_test)), ]
-mitomycin_rna_seq_test <- as.data.frame(mitomycin_rna_seq_test)
-# 131 x 14209
-sn38_rna_seq_train     <- gdsc_train[intersect(sn38_lines, rownames(gdsc_train)), ]
-sn38_rna_seq_train_df <- as.data.frame(sn38_rna_seq_train)
-# 619 x 14209
-sn38_rna_seq_test      <- gdsc_test[intersect(sn38_lines, rownames(gdsc_test)), ]
-sn38_rna_seq_test <- as.data.frame(sn38_rna_seq_test)
-# 142 x 14209
-temozolomide_rna_seq_train     <- gdsc_train[intersect(temozolomide_lines, rownames(gdsc_train)), ]
-temozolomide_rna_seq_train_df <- as.data.frame(temozolomide_rna_seq_train)
-# 601 x 14209
-temozolomide_rna_seq_test      <- gdsc_test[intersect(temozolomide_lines, rownames(gdsc_test)), ]
-temozolomide_rna_seq_test <- as.data.frame(temozolomide_rna_seq_test)
-# 138 x 14209
+doxorubicin_train_index <- createDataPartition(doxorubicin$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+etoposide_train_index <- createDataPartition(etoposide$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+gemcitabine_train_index <- createDataPartition(gemcitabine$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+methotrexate_train_index <- createDataPartition(methotrexate$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+mitomycin_train_index <- createDataPartition(mitomycin$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+sn38_train_index <- createDataPartition(sn38$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+temozolomide_train_index <- createDataPartition(temozolomide$Cell_line_tissue_type, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
 
 # split clinical data
-bleomycin_train        <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_train)), ]
+bleomycin_train <- bleomycin[bleomycin_train_index, ]
+bleomycin_test <- bleomycin[-bleomycin_train_index, ]
+
+camptothecin_train <- camptothecin[camptothecin_train_index, ]
+camptothecin_test <- camptothecin[-camptothecin_train_index, ]
+
+cisplatin_train <- cisplatin[cisplatin_train_index, ]
+cisplatin_test <- cisplatin[-cisplatin_train_index, ]
+
+cytarabine_train <- cytarabine[cytarabine_train_index, ]
+cytarabine_test <- cytarabine[-cytarabine_train_index,]
+
+doxorubicin_train <- doxorubicin[doxorubicin_train_index, ]
+doxorubicin_test <- doxorubicin[-doxorubicin_train_index, ]
+
+etoposide_train <- etoposide[etoposide_train_index, ]
+etoposide_test <- etoposide[-etoposide_train_index, ]
+
+gemcitabine_train <- gemcitabine[gemcitabine_train_index, ]
+gemcitabine_test <- gemcitabine[-gemcitabine_train_index, ]
+
+methotrexate_train <- methotrexate[methotrexate_train_index, ]
+methotrexate_test <- methotrexate[-methotrexate_train_index, ]
+
+mitomycin_train <- mitomycin[mitomycin_train_index, ]
+mitomycin_test <- mitomycin[-mitomycin_train_index, ]
+
+sn38_train <- sn38[sn38_train_index, ]
+sn38_test <- sn38[-sn38_train_index, ]
+
+temozolomide_train <- temozolomide[temozolomide_train_index, ]
+temozolomide_test <- temozolomide[temozolomide_train_index, ]
+
+
+# split expression data to match
+bleomycin_rna_seq_train <- gdsc[rownames(gdsc) %in% bleomycin_train$COSMIC_ID, ]
+bleomycin_rna_seq_train_df <- as.data.frame(bleomycin_rna_seq_train)
+bleomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% bleomycin_test$COSMIC_ID, ]
+bleomycin_rna_seq_test <- as.data.frame(bleomycin_rna_seq_test)
+
 bleomycin_rna_seq_train_df$res_sens <- bleomycin_train$res_sens
 bleomycin_rose <- ROSE(res_sens ~ ., data = bleomycin_rna_seq_train_df)$data
 bleomycin_rose_res_sens <- bleomycin_rose$res_sens
 bleomycin_rose <- bleomycin_rose[, -14210]
 
-bleomycin_test         <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_test)), ]
+camptothecin_rna_seq_train <- gdsc[rownames(gdsc) %in% camptothecin_train$COSMIC_ID, ]
+camptothecin_rna_seq_train_df <- as.data.frame(camptothecin_rna_seq_train)
+camptothecin_rna_seq_test <- gdsc[rownames(gdsc) %in% camptothecin_test$COSMIC_ID, ]
+camptothecin_rna_seq_test <- as.data.frame(camptothecin_rna_seq_test)
 
-camptothecin_train        <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_train)), ]
 camptothecin_rna_seq_train_df$res_sens <- camptothecin_train$res_sens
 camptothecin_rose <- ROSE(res_sens ~ ., data = camptothecin_rna_seq_train_df)$data
 camptothecin_rose_res_sens <- camptothecin_rose$res_sens
 camptothecin_rose <- camptothecin_rose[, -14210]
 
-camptothecin_test         <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_test)), ]
+cisplatin_rna_seq_train <- gdsc[rownames(gdsc) %in% cisplatin_train$COSMIC_ID, ]
+cisplatin_rna_seq_train_df <- as.data.frame(cisplatin_rna_seq_train)
+cisplatin_rna_seq_test <- gdsc[rownames(gdsc) %in% cisplatin_test$COSMIC_ID, ]
+cisplatin_rna_seq_test <- as.data.frame(cisplatin_rna_seq_test)
 
-cisplatin_train        <- cisplatin[which(cisplatin$COSMIC_ID %in% rownames(cisplatin_rna_seq_train)), ]
 cisplatin_rna_seq_train_df$res_sens <- cisplatin_train$res_sens
 cisplatin_rose <- ROSE(res_sens ~ ., data = cisplatin_rna_seq_train_df)$data
 cisplatin_rose_res_sens <- cisplatin_rose$res_sens
 cisplatin_rose <- cisplatin_rose[, -14210]
 
-cisplatin_test         <- cisplatin[which(cisplatin$COSMIC_ID %in% rownames(cisplatin_rna_seq_test)), ]
+cytarabine_rna_seq_train <- gdsc[rownames(gdsc) %in% cytarabine_train$COSMIC_ID, ]
+cytarabine_rna_seq_train_df <- as.data.frame(cytarabine_rna_seq_train)
+cytarabine_rna_seq_test <- gdsc[rownames(gdsc) %in% cytarabine_test$COSMIC_ID, ]
+cytarabine_rna_seq_test <- as.data.frame(cytarabine_rna_seq_test)
 
-cytarabine_train        <- cytarabine[which(cytarabine$COSMIC_ID %in% rownames(cytarabine_rna_seq_train)), ]
 cytarabine_rna_seq_train_df$res_sens <- cytarabine_train$res_sens
 cytarabine_rose <- ROSE(res_sens ~ ., data = cytarabine_rna_seq_train_df)$data
 cytarabine_rose_res_sens <- cytarabine_rose$res_sens
 cytarabine_rose <- cytarabine_rose[, -14210]
 
-cytarabine_test         <- cytarabine[which(cytarabine$COSMIC_ID %in% rownames(cytarabine_rna_seq_test)), ]
+doxorubicin_rna_seq_train <- gdsc[rownames(gdsc) %in% doxorubicin_train$COSMIC_ID, ]
+doxorubicin_rna_seq_train_df <- as.data.frame(doxorubicin_rna_seq_train)
+doxorubicin_rna_seq_test <- gdsc[rownames(gdsc) %in% doxorubicin_test$COSMIC_ID, ]
+doxorubicin_rna_seq_test <- as.data.frame(doxorubicin_rna_seq_test)
 
-doxorubicin_train        <- doxorubicin[which(doxorubicin$COSMIC_ID %in% rownames(doxorubicin_rna_seq_train)), ]
 doxorubicin_rna_seq_train_df$res_sens <- doxorubicin_train$res_sens
 doxorubicin_rose <- ROSE(res_sens ~ ., data = doxorubicin_rna_seq_train_df)$data
 doxorubicin_rose_res_sens <- doxorubicin_rose$res_sens
 doxorubicin_rose <- doxorubicin_rose[, -14210]
 
-doxorubicin_test         <- doxorubicin[which(doxorubicin$COSMIC_ID %in% rownames(doxorubicin_rna_seq_test)), ]
+etoposide_rna_seq_train <- gdsc[rownames(gdsc) %in% etoposide_train$COSMIC_ID, ]
+etoposide_rna_seq_train_df <- as.data.frame(etoposide_rna_seq_train)
+etoposide_rna_seq_test <- gdsc[rownames(gdsc) %in% etoposide_test$COSMIC_ID, ]
+etoposide_rna_seq_test <- as.data.frame(etoposide_rna_seq_test)
 
-etoposide_train        <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_train)), ]
 etoposide_rna_seq_train_df$res_sens <- etoposide_train$res_sens
 etoposide_rose <- ROSE(res_sens ~ ., data = etoposide_rna_seq_train_df)$data
 etoposide_rose_res_sens <- etoposide_rose$res_sens
 etoposide_rose <- etoposide_rose[, -14210]
 
-etoposide_test         <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_test)), ]
+gemcitabine_rna_seq_train <- gdsc[rownames(gdsc) %in% gemcitabine_train$COSMIC_ID, ]
+gemcitabine_rna_seq_train_df <- as.data.frame(gemcitabine_rna_seq_train)
+gemcitabine_rna_seq_test <- gdsc[rownames(gdsc) %in% gemcitabine_test$COSMIC_ID, ]
+gemcitabine_rna_seq_test <- as.data.frame(gemcitabine_rna_seq_test)
 
-gemcitabine_train        <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_train)), ]
 gemcitabine_rna_seq_train_df$res_sens <- gemcitabine_train$res_sens
 gemcitabine_rose <- ROSE(res_sens ~ ., data = gemcitabine_rna_seq_train_df)$data
 gemcitabine_rose_res_sens <- gemcitabine_rose$res_sens
 gemcitabine_rose <- gemcitabine_rose[, -14210]
 
-gemcitabine_test         <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_test)), ]
+methotrexate_rna_seq_train <- gdsc[rownames(gdsc) %in% methotrexate_train$COSMIC_ID, ]
+methotrexate_rna_seq_train_df <- as.data.frame(methotrexate_rna_seq_train)
+methotrexate_rna_seq_test <- gdsc[rownames(gdsc) %in% methotrexate_test$COSMIC_ID, ]
+methotrexate_rna_seq_test <- as.data.frame(methotrexate_rna_seq_test)
 
-methotrexate_train        <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_train)), ]
 methotrexate_rna_seq_train_df$res_sens <- methotrexate_train$res_sens
 methotrexate_rose <- ROSE(res_sens ~ ., data = methotrexate_rna_seq_train_df)$data
 methotrexate_rose_res_sens <- methotrexate_rose$res_sens
 methotrexate_rose <- methotrexate_rose[, -14210]
 
-methotrexate_test         <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_test)), ]
+mitomycin_rna_seq_train <- gdsc[rownames(gdsc) %in% mitomycin_train$COSMIC_ID, ]
+mitomycin_rna_seq_train_df <- as.data.frame(mitomycin_rna_seq_train)
+mitomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% mitomycin_test$COSMIC_ID, ]
+mitomycin_rna_seq_test <- as.data.frame(mitomycin_rna_seq_test)
 
-mitomycin_train        <- mitomycin[which(mitomycin$COSMIC_ID %in% rownames(mitomycin_rna_seq_train)), ]
 mitomycin_rna_seq_train_df$res_sens <- mitomycin_train$res_sens
 mitomycin_rose <- ROSE(res_sens ~ ., data = mitomycin_rna_seq_train_df)$data
 mitomycin_rose_res_sens <- mitomycin_rose$res_sens
 mitomycin_rose <- mitomycin_rose[, -14210]
 
-mitomycin_test         <- mitomycin[which(mitomycin$COSMIC_ID %in% rownames(mitomycin_rna_seq_test)), ]
+sn38_rna_seq_train <- gdsc[rownames(gdsc) %in% sn38_train$COSMIC_ID, ]
+sn38_rna_seq_train_df <- as.data.frame(sn38_rna_seq_train)
+sn38_rna_seq_test <- gdsc[rownames(gdsc) %in% sn38_test$COSMIC_ID, ]
+sn38_rna_seq_test <- as.data.frame(sn38_rna_seq_test)
 
-sn38_train        <- sn38[which(sn38$COSMIC_ID %in% rownames(sn38_rna_seq_train)), ]
 sn38_rna_seq_train_df$res_sens <- sn38_train$res_sens
 sn38_rose <- ROSE(res_sens ~ ., data = sn38_rna_seq_train_df)$data
 sn38_rose_res_sens <- sn38_rose$res_sens
 sn38_rose <- sn38_rose[, -14210]
 
-sn38_test         <- sn38[which(sn38$COSMIC_ID %in% rownames(sn38_rna_seq_test)), ]
+temozolomide_rna_seq_train <- gdsc[rownames(gdsc) %in% temozolomide_train$COSMIC_ID, ]
+temozolomide_rna_seq_train_df <- as.data.frame(temozolomide_rna_seq_train)
+temozolomide_rna_seq_test <- gdsc[rownames(gdsc) %in% temozolomide_test$COSMIC_ID, ]
+temozolomide_rna_seq_test <- as.data.frame(temozolomide_rna_seq_test)
 
-temozolomide_train        <- temozolomide[which(temozolomide$COSMIC_ID %in% rownames(temozolomide_rna_seq_train)), ]
 temozolomide_rna_seq_train_df$res_sens <- temozolomide_train$res_sens
 temozolomide_rose <- ROSE(res_sens ~ ., data = temozolomide_rna_seq_train_df)$data
 temozolomide_rose_res_sens <- temozolomide_rose$res_sens
 temozolomide_rose <- temozolomide_rose[, -14210]
 
-temozolomide_test         <- temozolomide[which(temozolomide$COSMIC_ID %in% rownames(temozolomide_rna_seq_test)), ]
+
+
+
+
+
+
+
+# # split GDSC randomly
+# set.seed(5)
+# # get random numbers to use for split
+# random_sample <- sample(x = rownames(gdsc), size = nrow(gdsc)/5)
+# 
+# # get training and testing sets
+# gdsc_train         <- gdsc[which(rownames(gdsc) %ni% random_sample), ] #770 x 14209
+# 
+# gdsc_test          <- gdsc[random_sample, ] #192 x 14209
+# 
+# # make sure zero overlap
+# intersect(rownames(gdsc_train), rownames(gdsc_test)) #0
+
+# create training/testing sets for each drug
+# bleomycin_rna_seq_train     <- gdsc_train[intersect(bleomycin_lines, rownames(gdsc_train)), ]
+# bleomycin_rna_seq_train_df     <- as.data.frame(bleomycin_rna_seq_train)
+# # 622 x 14209
+# bleomycin_rna_seq_test      <- gdsc_test[intersect(bleomycin_lines, rownames(gdsc_test)), ]
+# bleomycin_rna_seq_test      <- as.data.frame(bleomycin_rna_seq_test)
+# # 144 x 14209
+# camptothecin_rna_seq_train     <- gdsc_train[intersect(camptothecin_lines, rownames(gdsc_train)), ]
+# camptothecin_rna_seq_train_df <- as.data.frame(camptothecin_rna_seq_train)
+# # 549 x 14209
+# camptothecin_rna_seq_test      <- gdsc_test[intersect(camptothecin_lines, rownames(gdsc_test)), ]
+# camptothecin_rna_seq_test <- as.data.frame(camptothecin_rna_seq_test)
+# # 129 x 14209
+# cisplatin_rna_seq_train     <- gdsc_train[intersect(cisplatin_lines, rownames(gdsc_train)), ]
+# cisplatin_rna_seq_train_df <- as.data.frame(cisplatin_rna_seq_train)
+# # 551 x 14209
+# cisplatin_rna_seq_test      <- gdsc_test[intersect(cisplatin_lines, rownames(gdsc_test)), ]
+# cisplatin_rna_seq_test <- as.data.frame(cisplatin_rna_seq_test)
+# # 129 x 14209
+# cytarabine_rna_seq_train     <- gdsc_train[intersect(cytarabine_lines, rownames(gdsc_train)), ]
+# cytarabine_rna_seq_train_df <- as.data.frame(cytarabine_rna_seq_train)
+# # 547 x 14209
+# cytarabine_rna_seq_test      <- gdsc_test[intersect(cytarabine_lines, rownames(gdsc_test)), ]
+# cytarabine_rna_seq_test <- as.data.frame(cytarabine_rna_seq_test)
+# # 129 x 14209
+# doxorubicin_rna_seq_train     <- gdsc_train[intersect(doxorubicin_lines, rownames(gdsc_train)), ]
+# doxorubicin_rna_seq_train_df <- as.data.frame(doxorubicin_rna_seq_train)
+# # 581 x 14209
+# doxorubicin_rna_seq_test      <- gdsc_test[intersect(doxorubicin_lines, rownames(gdsc_test)), ]
+# doxorubicin_rna_seq_test <- as.data.frame(doxorubicin_rna_seq_test)
+# # 130 x 14209
+# etoposide_rna_seq_train     <- gdsc_train[intersect(etoposide_lines, rownames(gdsc_train)), ]
+# etoposide_rna_seq_train_df <- as.data.frame(etoposide_rna_seq_train)
+# # 584 x 14209
+# etoposide_rna_seq_test      <- gdsc_test[intersect(etoposide_lines, rownames(gdsc_test)), ]
+# etoposide_rna_seq_test <- as.data.frame(etoposide_rna_seq_test)
+# # 134 x 14209
+# gemcitabine_rna_seq_train     <- gdsc_train[intersect(gemcitabine_lines, rownames(gdsc_train)), ]
+# gemcitabine_rna_seq_train_df <- as.data.frame(gemcitabine_rna_seq_train)
+# # 577 x 14209
+# gemcitabine_rna_seq_test      <- gdsc_test[intersect(gemcitabine_lines, rownames(gdsc_test)), ]
+# gemcitabine_rna_seq_test <- as.data.frame(gemcitabine_rna_seq_test)
+# # 130 x 14209
+# methotrexate_rna_seq_train  <- gdsc_train[intersect(methotrexate_lines, rownames(gdsc_train)), ]
+# methotrexate_rna_seq_train_df <- as.data.frame(methotrexate_rna_seq_train)
+# # 550 x 14209
+# methotrexate_rna_seq_test   <- gdsc_test[intersect(methotrexate_lines, rownames(gdsc_test)), ]
+# methotrexate_rna_seq_test <- as.data.frame(methotrexate_rna_seq_test)
+# # 129 x 14209
+# mitomycin_rna_seq_train     <- gdsc_train[intersect(mitomycin_lines, rownames(gdsc_train)), ]
+# mitomycin_rna_seq_train_df <- as.data.frame(mitomycin_rna_seq_train)
+# # 581 x 14209
+# mitomycin_rna_seq_test      <- gdsc_test[intersect(mitomycin_lines, rownames(gdsc_test)), ]
+# mitomycin_rna_seq_test <- as.data.frame(mitomycin_rna_seq_test)
+# # 131 x 14209
+# sn38_rna_seq_train     <- gdsc_train[intersect(sn38_lines, rownames(gdsc_train)), ]
+# sn38_rna_seq_train_df <- as.data.frame(sn38_rna_seq_train)
+# # 619 x 14209
+# sn38_rna_seq_test      <- gdsc_test[intersect(sn38_lines, rownames(gdsc_test)), ]
+# sn38_rna_seq_test <- as.data.frame(sn38_rna_seq_test)
+# # 142 x 14209
+# temozolomide_rna_seq_train     <- gdsc_train[intersect(temozolomide_lines, rownames(gdsc_train)), ]
+# temozolomide_rna_seq_train_df <- as.data.frame(temozolomide_rna_seq_train)
+# # 601 x 14209
+# temozolomide_rna_seq_test      <- gdsc_test[intersect(temozolomide_lines, rownames(gdsc_test)), ]
+# temozolomide_rna_seq_test <- as.data.frame(temozolomide_rna_seq_test)
+# # 138 x 14209
+
+# split clinical data
+# bleomycin_train        <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_train)), ]
+# bleomycin_rna_seq_train_df$res_sens <- bleomycin_train$res_sens
+# bleomycin_rose <- ROSE(res_sens ~ ., data = bleomycin_rna_seq_train_df)$data
+# bleomycin_rose_res_sens <- bleomycin_rose$res_sens
+# bleomycin_rose <- bleomycin_rose[, -14210]
+# 
+# bleomycin_test         <- bleomycin[which(bleomycin$COSMIC_ID %in% rownames(bleomycin_rna_seq_test)), ]
+# 
+# camptothecin_train        <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_train)), ]
+# camptothecin_rna_seq_train_df$res_sens <- camptothecin_train$res_sens
+# camptothecin_rose <- ROSE(res_sens ~ ., data = camptothecin_rna_seq_train_df)$data
+# camptothecin_rose_res_sens <- camptothecin_rose$res_sens
+# camptothecin_rose <- camptothecin_rose[, -14210]
+# 
+# camptothecin_test         <- camptothecin[which(camptothecin$COSMIC_ID %in% rownames(camptothecin_rna_seq_test)), ]
+# 
+# cisplatin_train        <- cisplatin[which(cisplatin$COSMIC_ID %in% rownames(cisplatin_rna_seq_train)), ]
+# cisplatin_rna_seq_train_df$res_sens <- cisplatin_train$res_sens
+# cisplatin_rose <- ROSE(res_sens ~ ., data = cisplatin_rna_seq_train_df)$data
+# cisplatin_rose_res_sens <- cisplatin_rose$res_sens
+# cisplatin_rose <- cisplatin_rose[, -14210]
+# 
+# cisplatin_test         <- cisplatin[which(cisplatin$COSMIC_ID %in% rownames(cisplatin_rna_seq_test)), ]
+# 
+# cytarabine_train        <- cytarabine[which(cytarabine$COSMIC_ID %in% rownames(cytarabine_rna_seq_train)), ]
+# cytarabine_rna_seq_train_df$res_sens <- cytarabine_train$res_sens
+# cytarabine_rose <- ROSE(res_sens ~ ., data = cytarabine_rna_seq_train_df)$data
+# cytarabine_rose_res_sens <- cytarabine_rose$res_sens
+# cytarabine_rose <- cytarabine_rose[, -14210]
+# 
+# cytarabine_test         <- cytarabine[which(cytarabine$COSMIC_ID %in% rownames(cytarabine_rna_seq_test)), ]
+# 
+# doxorubicin_train        <- doxorubicin[which(doxorubicin$COSMIC_ID %in% rownames(doxorubicin_rna_seq_train)), ]
+# doxorubicin_rna_seq_train_df$res_sens <- doxorubicin_train$res_sens
+# doxorubicin_rose <- ROSE(res_sens ~ ., data = doxorubicin_rna_seq_train_df)$data
+# doxorubicin_rose_res_sens <- doxorubicin_rose$res_sens
+# doxorubicin_rose <- doxorubicin_rose[, -14210]
+# 
+# doxorubicin_test         <- doxorubicin[which(doxorubicin$COSMIC_ID %in% rownames(doxorubicin_rna_seq_test)), ]
+# 
+# etoposide_train        <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_train)), ]
+# etoposide_rna_seq_train_df$res_sens <- etoposide_train$res_sens
+# etoposide_rose <- ROSE(res_sens ~ ., data = etoposide_rna_seq_train_df)$data
+# etoposide_rose_res_sens <- etoposide_rose$res_sens
+# etoposide_rose <- etoposide_rose[, -14210]
+# 
+# etoposide_test         <- etoposide[which(etoposide$COSMIC_ID %in% rownames(etoposide_rna_seq_test)), ]
+# 
+# gemcitabine_train        <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_train)), ]
+# gemcitabine_rna_seq_train_df$res_sens <- gemcitabine_train$res_sens
+# gemcitabine_rose <- ROSE(res_sens ~ ., data = gemcitabine_rna_seq_train_df)$data
+# gemcitabine_rose_res_sens <- gemcitabine_rose$res_sens
+# gemcitabine_rose <- gemcitabine_rose[, -14210]
+# 
+# gemcitabine_test         <- gemcitabine[which(gemcitabine$COSMIC_ID %in% rownames(gemcitabine_rna_seq_test)), ]
+# 
+# methotrexate_train        <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_train)), ]
+# methotrexate_rna_seq_train_df$res_sens <- methotrexate_train$res_sens
+# methotrexate_rose <- ROSE(res_sens ~ ., data = methotrexate_rna_seq_train_df)$data
+# methotrexate_rose_res_sens <- methotrexate_rose$res_sens
+# methotrexate_rose <- methotrexate_rose[, -14210]
+# 
+# methotrexate_test         <- methotrexate[which(methotrexate$COSMIC_ID %in% rownames(methotrexate_rna_seq_test)), ]
+# 
+# mitomycin_train        <- mitomycin[which(mitomycin$COSMIC_ID %in% rownames(mitomycin_rna_seq_train)), ]
+# mitomycin_rna_seq_train_df$res_sens <- mitomycin_train$res_sens
+# mitomycin_rose <- ROSE(res_sens ~ ., data = mitomycin_rna_seq_train_df)$data
+# mitomycin_rose_res_sens <- mitomycin_rose$res_sens
+# mitomycin_rose <- mitomycin_rose[, -14210]
+# 
+# mitomycin_test         <- mitomycin[which(mitomycin$COSMIC_ID %in% rownames(mitomycin_rna_seq_test)), ]
+# 
+# sn38_train        <- sn38[which(sn38$COSMIC_ID %in% rownames(sn38_rna_seq_train)), ]
+# sn38_rna_seq_train_df$res_sens <- sn38_train$res_sens
+# sn38_rose <- ROSE(res_sens ~ ., data = sn38_rna_seq_train_df)$data
+# sn38_rose_res_sens <- sn38_rose$res_sens
+# sn38_rose <- sn38_rose[, -14210]
+# 
+# sn38_test         <- sn38[which(sn38$COSMIC_ID %in% rownames(sn38_rna_seq_test)), ]
+# 
+# temozolomide_train        <- temozolomide[which(temozolomide$COSMIC_ID %in% rownames(temozolomide_rna_seq_train)), ]
+# temozolomide_rna_seq_train_df$res_sens <- temozolomide_train$res_sens
+# temozolomide_rose <- ROSE(res_sens ~ ., data = temozolomide_rna_seq_train_df)$data
+# temozolomide_rose_res_sens <- temozolomide_rose$res_sens
+# temozolomide_rose <- temozolomide_rose[, -14210]
+# 
+# temozolomide_test         <- temozolomide[which(temozolomide$COSMIC_ID %in% rownames(temozolomide_rna_seq_test)), ]
 
 
 
@@ -234,7 +436,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/bleomycin_model.rds', bleomycin_fit_elnet)
 bleomycin_pred <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-bleomycin_preds <- auc(bleomycin_test$res_sens, bleomycin_pred)
+bleomycin_preds <- glmnet::auc(bleomycin_test$res_sens, bleomycin_pred)
 bleomycin_preds <- round(bleomycin_preds, digits = 2)
 
 ## camptothecin
@@ -246,7 +448,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/camptothecin_model.rds', camptothecin_fit_elnet)
 camptothecin_pred <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-camptothecin_preds <- auc(camptothecin_test$res_sens, camptothecin_pred)
+camptothecin_preds <- glmnet::auc(camptothecin_test$res_sens, camptothecin_pred)
 camptothecin_preds <- round(camptothecin_preds, digits = 2)
 
 ## cisplatin
@@ -258,7 +460,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/cisplatin_model.rds', cisplatin_fit_elnet)
 cisplatin_pred <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-cisplatin_preds <- auc(cisplatin_test$res_sens, cisplatin_pred)
+cisplatin_preds <- glmnet::auc(cisplatin_test$res_sens, cisplatin_pred)
 cisplatin_preds <- round(cisplatin_preds, digits = 2)
 
 ## cytarabine
@@ -270,7 +472,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/cytarabine_model.rds', cytarabine_fit_elnet)
 cytarabine_pred <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-cytarabine_preds <- auc(cytarabine_test$res_sens, cytarabine_pred)
+cytarabine_preds <- glmnet::auc(cytarabine_test$res_sens, cytarabine_pred)
 cytarabine_preds <- round(cytarabine_preds, digits = 2)
 
 ## doxorubicin
@@ -282,7 +484,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/doxorubicin_model.rds', doxorubicin_fit_elnet)
 doxorubicin_pred <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-doxorubicin_preds <- auc(doxorubicin_test$res_sens, doxorubicin_pred)
+doxorubicin_preds <- glmnet::auc(doxorubicin_test$res_sens, doxorubicin_pred)
 doxorubicin_preds <- round(doxorubicin_preds, digits = 2)
 
 ## etoposide
@@ -294,7 +496,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/etoposide_model.rds', etoposide_fit_elnet)
 etoposide_pred <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-etoposide_preds <- auc(etoposide_test$res_sens, etoposide_pred)
+etoposide_preds <- glmnet::auc(etoposide_test$res_sens, etoposide_pred)
 etoposide_preds <- round(etoposide_preds, digits = 2)
 
 ## gemcitabine
@@ -306,7 +508,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/gemcitabine_model.rds', gemcitabine_fit_elnet)
 gemcitabine_pred <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-gemcitabine_preds <- auc(gemcitabine_test$res_sens, gemcitabine_pred)
+gemcitabine_preds <- glmnet::auc(gemcitabine_test$res_sens, gemcitabine_pred)
 gemcitabine_preds <- round(gemcitabine_preds, digits = 2)
 
 ## methotrexate
@@ -318,7 +520,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/methotrexate_model.rds', methotrexate_fit_elnet)
 methotrexate_pred <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-methotrexate_preds <- auc(methotrexate_test$res_sens, methotrexate_pred)
+methotrexate_preds <- glmnet::auc(methotrexate_test$res_sens, methotrexate_pred)
 methotrexate_preds <- round(methotrexate_preds, digits = 2)
 
 ## mitomycin
@@ -330,7 +532,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/mitomycin_model.rds', mitomycin_fit_elnet)
 mitomycin_pred <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-mitomycin_preds <- auc(mitomycin_test$res_sens, mitomycin_pred)
+mitomycin_preds <- glmnet::auc(mitomycin_test$res_sens, mitomycin_pred)
 mitomycin_preds <- round(mitomycin_preds, digits = 2)
 
 ## sn38
@@ -342,7 +544,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/sn38_model.rds', sn38_fit_elnet)
 sn38_pred <- predict(sn38_fit_elnet, newx = as.matrix(sn38_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-sn38_preds <- auc(sn38_test$res_sens, sn38_pred)
+sn38_preds <- glmnet::auc(sn38_test$res_sens, sn38_pred)
 sn38_preds <- round(sn38_preds, digits = 2)
 
 ## temozolomide
@@ -354,7 +556,7 @@ dev.off()
 #save model
 saveRDS(file = 'GLM_Models/temozolomide_model.rds', temozolomide_fit_elnet)
 temozolomide_pred <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-temozolomide_preds <- auc(temozolomide_test$res_sens, temozolomide_pred)
+temozolomide_preds <- glmnet::auc(temozolomide_test$res_sens, temozolomide_pred)
 temozolomide_preds <- round(temozolomide_preds, digits = 2)
 
 # ### CCLE -----
