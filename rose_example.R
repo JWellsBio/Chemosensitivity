@@ -1,5 +1,34 @@
 ## test ROSE package
+if (!require ('ROSE')) install.packages('ROSE')
 library(ROSE)
+
+if (!require('dplyr')) install.packages('dplyr')
+library(dplyr)
+
+if (!require('ggplot2')) install.packages('ggplot2')
+library(ggplot2)
+
+if (!require(earth)) install.packages('earth')
+library(earth)
+
+if (!require('caret')) install.packages('caret')
+library(caret)
+
+if (!require('vip')) install.packages('vip')
+library(vip)
+
+if (!require('pdp')) install.pacakges('pdp') 
+library(pdp)
+
+if (!require('kernlab')) install.packages('kernlab')
+library(kernlab)
+
+if (!require('nnet')) install.packages('nnet')
+library(nnet)
+
+if (!require('quantreg')) install.packages('quantreg')
+library(quantreg)
+
 # 2-dimensional example
 # loading data
 data(hacide)
@@ -37,12 +66,102 @@ par(mfrow=c(1,1))
 
 
 
-library(rms)
-rcorr.cens(new_ic50,bleomycin_test_breast$res_sens)[1]
-#C Index 
-0.8931711
 
-library(AUC)
-sensitivity(new_ic50, bleomycin_test_breast$res_sens)
-specificity(new_ic50, bleomycin_test_breast$res_sens)
-accuracy(new_ic50, bleomycin_test_breast$res_sens)
+
+
+
+
+#trying multivariate adaptive regression splines
+
+
+bleomycin_rose_df <- bleomycin_rose
+bleomycin_rose_df$res_sens <- bleomycin_rose_res_sens
+
+
+
+# fit a basic MARS model
+mars1 <- earth(res_sens ~ ., data = bleomycin_rose_df)
+#print model summary
+print(mars1)
+summary(mars1)
+coef(mars1)
+
+#plot it ###THIS TAKES FOREVER
+plot(mars1, which = 1)
+
+# fit a basic MARS model
+mars2 <- earth(res_sens ~ ., data = bleomycin_rose_df, degree = 2)
+
+summary(mars2)
+
+## create a tuning grid
+hyper_grid <- expand.grid(degree = 1:3, nprune = seq(2,100,length.out = 10) %>% floor())
+
+head(hyper_grid)
+
+# cross-validated model
+set.seed(5)
+cv_mars <- train(x = subset(bleomycin_rose_df, select = -res_sens), 
+                 y = bleomycin_rose_df$res_sens, 
+                 method = 'earth', 
+                 metric = 'accuracy', trControl = trainControl(method = 'cv', number = 10), 
+                 tuneGrid = hyper_grid)
+
+#results
+cv_mars$bestTune
+
+#plot it
+ggplot(cv_mars)
+
+#refine grid search (nprune)
+
+
+#comparing multiple methods
+## MARS
+#data
+data(longley)
+#fit model
+fit <- earth(Employed ~ ., longley)
+#summarize
+summary(fit)
+# summarize importance of input vars
+evimp(fit)
+# make predictions
+predictions <- predict(fit, longley)
+# summarize accuracy
+mse <- mean((longley$Employed - predictions) ^ 2)
+mse #0.0457
+
+
+
+## SVM
+data(longley)
+# fit model
+fit <- ksvm(Employed ~ ., longley)
+summary(fit) # is there better info than this?
+
+predictions <- predict(fit, longley)
+mse <- mean((longley$Employed - predictions) ^ 2)
+mse #0.1168
+
+
+
+
+## kNN
+fit <- knnreg(longley[ 1:6], longley[, 7], k = 3)
+summary(fit)
+predictions <- predict(fit, longley[, 1:6])
+mse <- mean((longley$Employed - predictions) ^ 2)
+mse #0.925
+
+
+
+# neural net
+data(longley)
+x <- longley[, 1:6]
+y <- longley[, 7]
+fit <- nnet(Employed ~ ., longley, size = 12, maxit = 500, linout = T, decay = 0.01)
+summary(fit)
+predictions <- predict(fit, x, type = 'raw')
+mse <- mean((y - predictions) ^ 2)
+mse #0.00002
