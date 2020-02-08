@@ -94,6 +94,7 @@ mars2 <- earth(res_sens ~ ., data = bleomycin_rose_df, degree = 2)
 
 summary(mars2)
 
+
 ## create a tuning grid
 hyper_grid <- expand.grid(degree = 1:3, nprune = seq(2,100,length.out = 10) %>% floor())
 
@@ -102,9 +103,9 @@ head(hyper_grid)
 # cross-validated model
 set.seed(5)
 cv_mars <- train(x = subset(bleomycin_rose_df, select = -res_sens), 
-                 y = bleomycin_rose_df$res_sens, 
+                 y = as.factor(bleomycin_rose_df$res_sens), 
                  method = 'earth', 
-                 metric = 'accuracy', trControl = trainControl(method = 'cv', number = 10), 
+                 trControl = trainControl(method = 'cv', number = 10), 
                  tuneGrid = hyper_grid)
 
 #results
@@ -115,52 +116,65 @@ ggplot(cv_mars)
 
 #refine grid search (nprune)
 
+## feature importance
+# this should be done on cv_mars
+p1 <- vip(cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('GCV')
+p1
+p2 <- vip(cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('RSS')
+p2
+#partial dependence plots (although these don't make a ton of sense in binary classification)
+p1 <- partial(mars2, pred.var = 'ENSG00000105388', grid.resolution = 10) %>% autoplot()
+p2 <- partial(mars2, pred.var = 'ENSG00000122133', grid.resolution = 10) %>% autoplot()
+
+
+
+
 
 #comparing multiple methods
 ## MARS
 #data
 data(longley)
 #fit model
-fit <- earth(Employed ~ ., longley)
+fit <- earth(res_sens ~ ., bleomycin_rose_df)
 #summarize
 summary(fit)
 # summarize importance of input vars
 evimp(fit)
 # make predictions
-predictions <- predict(fit, longley)
+predictions <- predict(fit, bleomycin_rose_df)
 # summarize accuracy
-mse <- mean((longley$Employed - predictions) ^ 2)
-mse #0.0457
+mse <- mean((bleomycin_rose_df$res_sens - predictions) ^ 2)
+mse #0.022
 
 
 
 ## SVM
 data(longley)
 # fit model
-fit <- ksvm(Employed ~ ., longley)
+fit <- ksvm(res_sens ~ ., bleomycin_rose_df)
 summary(fit) # is there better info than this?
 
-predictions <- predict(fit, longley)
-mse <- mean((longley$Employed - predictions) ^ 2)
-mse #0.1168
+predictions <- predict(fit, bleomycin_rose_df)
+mse <- mean((bleomycin_rose_df$res_sens - predictions) ^ 2)
+mse #0.003
 
 
 
 
 ## kNN
-fit <- knnreg(longley[ 1:6], longley[, 7], k = 3)
+fit <- knnreg(bleomycin_rose_df[ ,1:14209], bleomycin_rose_df[, 14210], k = 2)
 summary(fit)
-predictions <- predict(fit, longley[, 1:6])
-mse <- mean((longley$Employed - predictions) ^ 2)
-mse #0.925
+predictions <- predict(fit, bleomycin_rose_df[, 1:14209])
+mse <- mean((bleomycin_rose_df$res_sens - predictions) ^ 2)
+mse #0.013
 
 
 
 # neural net
 data(longley)
-x <- longley[, 1:6]
-y <- longley[, 7]
-fit <- nnet(Employed ~ ., longley, size = 12, maxit = 500, linout = T, decay = 0.01)
+x <- bleomycin_rose_df[, 1:14209]
+y <- bleomycin_rose_df[, 14210]
+fit <- nnet(res_sens ~ ., bleomycin_rose_df, size = 12, maxit = 500, linout = T, decay = 0.01)
 summary(fit)
 predictions <- predict(fit, x, type = 'raw')
 mse <- mean((y - predictions) ^ 2)
