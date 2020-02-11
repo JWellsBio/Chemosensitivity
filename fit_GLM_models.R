@@ -28,6 +28,9 @@ library(nnet)
 if (!require('quantreg')) install.packages('quantreg')
 library(quantreg)
 
+if(!require('gridExtra')) install.packages('gridExtra')
+library(gridExtra)
+
 
 ### functions needed ----
 # create function opposite of %in%
@@ -731,15 +734,19 @@ png(filename = 'Images/bleomycin_cv_mars.png')
 ggplot(bleomycin_cv_mars) + ggtitle('Bleomycin CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_model.rds', bleomycin_cv_mars)
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(bleomycin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('Bleomycin GCV')
-#p1
-#p2 <- vip(bleomycin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('Bleomycin RSS')
-#p2
+p1 <- vip(bleomycin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('Bleomycin GCV')
 
+p2 <- vip(bleomycin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('Bleomycin RSS')
+
+png(filename = 'Images/bleomycin_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 bleomycin_svm <- ksvm(res_sens ~ ., bleomycin_rose)
@@ -799,15 +806,20 @@ png(filename = 'Images/camptothecin_cv_mars.png')
 ggplot(camptothecin_cv_mars) + ggtitle('Camptothecin CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_model.rds', camptothecin_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(camptothecin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('camptothecin GCV')
-#p1
-#p2 <- vip(camptothecin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('camptothecin RSS')
-#p2
+p1 <- vip(camptothecin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('camptothecin GCV')
 
+p2 <- vip(camptothecin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('camptothecin RSS')
+
+png(filename = 'Images/camptothecin_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 camptothecin_svm <- ksvm(res_sens ~ ., camptothecin_rose)
@@ -866,15 +878,20 @@ png(filename = 'Images/cisplatin_cv_mars.png')
 ggplot(cisplatin_cv_mars) + ggtitle('Cisplatin CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_model.rds', cisplatin_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(cisplatin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('cisplatin GCV')
-#p1
-#p2 <- vip(cisplatin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('cisplatin RSS')
-#p2
+p1 <- vip(cisplatin_cv_mars, num_features = 30, bar = FALSE, value = 'gcv') + ggtitle('cisplatin GCV')
 
+p2 <- vip(cisplatin_cv_mars, num_features = 30, bar = FALSE, value = 'rss') + ggtitle('cisplatin RSS')
+
+png(filename = 'Images/cisplatin_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 cisplatin_svm <- ksvm(res_sens ~ ., cisplatin_rose)
@@ -931,14 +948,20 @@ png(filename = 'Images/cytarabine_cv_mars.png')
 ggplot(cytarabine_cv_mars) + ggtitle('Cytarabine CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/cytarabine_cv_mars_model.rds', cytarabine_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(cytarabine_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('cytarabine GCV')
-#p1
-#p2 <- vip(cytarabine_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('cytarabine RSS')
-#p2
+p1 <- vip(cytarabine_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('cytarabine GCV')
+
+p2 <- vip(cytarabine_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('cytarabine RSS')
+
+png(filename = 'Images/cytarabine_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 
 ## svm
@@ -996,15 +1019,20 @@ png(filename = 'Images/doxorubicin_cv_mars.png')
 ggplot(doxorubicin_cv_mars) + ggtitle('Doxorubicin CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/doxorubicin_cv_mars_model.rds', doxorubicin_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(doxorubicin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('doxorubicin GCV')
-#p1
-#p2 <- vip(doxorubicin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('doxorubicin RSS')
-#p2
+p1 <- vip(doxorubicin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('doxorubicin GCV')
 
+p2 <- vip(doxorubicin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('doxorubicin RSS')
+
+png(filename = 'Images/doxorubicin_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 doxorubicin_svm <- ksvm(res_sens ~ ., doxorubicin_rose)
@@ -1061,14 +1089,21 @@ png(filename = 'Images/etoposide_cv_mars.png')
 ggplot(etoposide_cv_mars) + ggtitle('Etoposide CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/etoposide_cv_mars_model.rds', etoposide_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(etoposide_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('etoposide GCV')
-#p1
-#p2 <- vip(etoposide_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('etoposide RSS')
-#p2
+p1 <- vip(etoposide_cv_mars, num_features = 30, bar = FALSE, value = 'gcv') + ggtitle('etoposide GCV')
+
+p2 <- vip(etoposide_cv_mars, num_features = 30, bar = FALSE, value = 'rss') + ggtitle('etoposide RSS')
+
+png(filename = 'Images/etoposide_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
+
 
 
 ## svm
@@ -1126,14 +1161,19 @@ png(filename = 'Images/gemcitabine_cv_mars.png')
 ggplot(gemcitabine_cv_mars) + ggtitle('Gemcitabine CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/gemcitabine_cv_mars_model.rds', gemcitabine_cv_mars)
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(gemcitabine_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('gemcitabine GCV')
-#p1
-#p2 <- vip(gemcitabine_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('gemcitabine RSS')
-#p2
+p1 <- vip(gemcitabine_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('gemcitabine GCV')
+
+p2 <- vip(gemcitabine_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('gemcitabine RSS')
+
+png(filename = 'Images/gemcitabine_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 
 ## svm
@@ -1191,14 +1231,20 @@ png(filename = 'Images/methotrexate_cv_mars.png')
 ggplot(methotrexate_cv_mars) + ggtitle('Methotrexate CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/methotrexate_cv_mars_model.rds', methotrexate_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(methotrexate_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('methotrexate GCV')
-#p1
-#p2 <- vip(methotrexate_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('methotrexate RSS')
-#p2
+p1 <- vip(methotrexate_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('methotrexate GCV')
+
+p2 <- vip(methotrexate_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('methotrexate RSS')
+
+png(filename = 'Images/methotrexate_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 
 ## svm
@@ -1256,14 +1302,20 @@ png(filename = 'Images/mitomycin_cv_mars.png')
 ggplot(mitomycin_cv_mars) + ggtitle('Mitomycin CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/mitomycin_cv_mars_model.rds', mitomycin_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(mitomycin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('mitomycin GCV')
-#p1
-#p2 <- vip(mitomycin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('mitomycin RSS')
-#p2
+p1 <- vip(mitomycin_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('mitomycin GCV')
+
+p2 <- vip(mitomycin_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('mitomycin RSS')
+
+png(filename = 'Images/mitomycin_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 
 ## svm
@@ -1321,15 +1373,20 @@ png(filename = 'Images/sn38_cv_mars.png')
 ggplot(sn38_cv_mars) + ggtitle('Sn38 CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/sn38_cv_mars_model.rds', sn38_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(sn38_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('sn38 GCV')
-#p1
-#p2 <- vip(sn38_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('sn38 RSS')
-#p2
+p1 <- vip(sn38_cv_mars, num_features = 30, bar = FALSE, value = 'gcv') + ggtitle('sn38 GCV')
 
+p2 <- vip(sn38_cv_mars, num_features = 30, bar = FALSE, value = 'rss') + ggtitle('sn38 RSS')
+
+png(filename = 'Images/sn38_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 sn38_svm <- ksvm(res_sens ~ ., sn38_rose)
@@ -1386,15 +1443,20 @@ png(filename = 'Images/temozolomide_cv_mars.png')
 ggplot(temozolomide_cv_mars) + ggtitle('Temozolomide CV Mars')
 dev.off()
 
+saveRDS(file = 'GLM_Models/temozolomide_cv_mars_model.rds', temozolomide_cv_mars)
+
+
 #refine grid search (nprune)
 
 ## feature importance
 # this should be done on cv_mars
-#p1 <- vip(temozolomide_cv_mars, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('temozolomide GCV')
-#p1
-#p2 <- vip(temozolomide_cv_mars, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('temozolomide RSS')
-#p2
+p1 <- vip(temozolomide_cv_mars, num_features = 30, bar = FALSE, value = 'gcv') + ggtitle('temozolomide GCV')
 
+p2 <- vip(temozolomide_cv_mars, num_features = 30, bar = FALSE, value = 'rss') + ggtitle('temozolomide RSS')
+
+png(filename = 'Images/temozolomide_feat_imp.png')
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 ## svm
 temozolomide_svm <- ksvm(res_sens ~ ., temozolomide_rose)
@@ -1414,6 +1476,329 @@ temozolomide_knn_predictions <- predict(temozolomide_knn, temozolomide_rna_seq_t
 mse <- mean((temozolomide_test$res_sens - temozolomide_knn_predictions) ^ 2)
 mse #0.12
 
+
+
+
+
+##refined grid searches
+## bleomycin
+hyper_grid <- expand.grid(degree = 1, nprune = seq(29,35,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+bleomycin_cv_mars_refined <- train(x = subset(bleomycin_rose, select = -res_sens), 
+                           y = as.factor(bleomycin_rose$res_sens), 
+                           method = 'earth', 
+                           trControl = trainControl(method = 'cv', number = 10), 
+                           tuneGrid = hyper_grid)
+
+#results
+bleomycin_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/bleomycin_cv_mars_refined.png')
+ggplot(bleomycin_cv_mars_refined) + ggtitle('Bleomycin CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_refined_model.rds', bleomycin_cv_mars_refined)
+
+# p1 <- vip(bleomycin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('Bleomycin GCV')
+# 
+# p2 <- vip(bleomycin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('Bleomycin RSS')
+# 
+# png(filename = 'Images/bleomycin_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## camptothecin
+hyper_grid <- expand.grid(degree = 1:3, nprune = seq(14,20,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+camptothecin_cv_mars_refined <- train(x = subset(camptothecin_rose, select = -res_sens), 
+                                   y = as.factor(camptothecin_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+camptothecin_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/camptothecin_cv_mars_refined.png')
+ggplot(camptothecin_cv_mars_refined) + ggtitle('Camptothecin CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_refined_model.rds', camptothecin_cv_mars_refined)
+
+# p1 <- vip(camptothecin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('Camptothecin GCV')
+# 
+# p2 <- vip(camptothecin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('Camptothecin RSS')
+# 
+# png(filename = 'Images/camptothecin_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## cisplatin
+hyper_grid <- expand.grid(degree = 1, nprune = seq(21,27,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+cisplatin_cv_mars_refined <- train(x = subset(cisplatin_rose, select = -res_sens), 
+                                   y = as.factor(cisplatin_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+cisplatin_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/cisplatin_cv_mars_refined.png')
+ggplot(cisplatin_cv_mars_refined) + ggtitle('cisplatin CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_refined_model.rds', cisplatin_cv_mars_refined)
+
+# p1 <- vip(cisplatin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('cisplatin GCV')
+# 
+# p2 <- vip(cisplatin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('cisplatin RSS')
+# 
+# png(filename = 'Images/cisplatin_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## cytarabine
+hyper_grid <- expand.grid(degree = 1, nprune = seq(14,20,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+cytarabine_cv_mars_refined <- train(x = subset(cytarabine_rose, select = -res_sens), 
+                                   y = as.factor(cytarabine_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+cytarabine_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/cytarabine_cv_mars_refined.png')
+ggplot(cytarabine_cv_mars_refined) + ggtitle('cytarabine CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/cytarabine_cv_mars_refined_model.rds', cytarabine_cv_mars_refined)
+
+# p1 <- vip(cytarabine_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('cytarabine GCV')
+# 
+# p2 <- vip(cytarabine_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('cytarabine RSS')
+# 
+# png(filename = 'Images/cytarabine_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## doxorubicin
+hyper_grid <- expand.grid(degree = 1, nprune = seq(21,27,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+doxorubicin_cv_mars_refined <- train(x = subset(doxorubicin_rose, select = -res_sens), 
+                                   y = as.factor(doxorubicin_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+doxorubicin_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/doxorubicin_cv_mars_refined.png')
+ggplot(doxorubicin_cv_mars_refined) + ggtitle('doxorubicin CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/doxorubicin_cv_mars_refined_model.rds', doxorubicin_cv_mars_refined)
+
+# p1 <- vip(doxorubicin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('doxorubicin GCV')
+# 
+# p2 <- vip(doxorubicin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('doxorubicin RSS')
+# 
+# png(filename = 'Images/doxorubicin_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## etoposide
+hyper_grid <- expand.grid(degree = 1, nprune = seq(21,27,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+etoposide_cv_mars_refined <- train(x = subset(etoposide_rose, select = -res_sens), 
+                                   y = as.factor(etoposide_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+etoposide_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/etoposide_cv_mars_refined.png')
+ggplot(etoposide_cv_mars_refined) + ggtitle('etoposide CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/etoposide_cv_mars_refined_model.rds', etoposide_cv_mars_refined)
+
+# p1 <- vip(etoposide_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('etoposide GCV')
+# 
+# p2 <- vip(etoposide_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('etoposide RSS')
+# 
+# png(filename = 'Images/etoposide_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## gemcitabine
+hyper_grid <- expand.grid(degree = 1, nprune = seq(29,35,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+gemcitabine_cv_mars_refined <- train(x = subset(gemcitabine_rose, select = -res_sens), 
+                                   y = as.factor(gemcitabine_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+gemcitabine_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/gemcitabine_cv_mars_refined.png')
+ggplot(gemcitabine_cv_mars_refined) + ggtitle('gemcitabine CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/gemcitabine_cv_mars_refined_model.rds', gemcitabine_cv_mars_refined)
+
+# p1 <- vip(gemcitabine_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('gemcitabine GCV')
+# 
+# p2 <- vip(gemcitabine_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('gemcitabine RSS')
+# 
+# png(filename = 'Images/gemcitabine_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## methotrexate
+hyper_grid <- expand.grid(degree = 1:3, nprune = seq(14,20,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+methotrexate_cv_mars_refined <- train(x = subset(methotrexate_rose, select = -res_sens), 
+                                   y = as.factor(methotrexate_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+methotrexate_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/methotrexate_cv_mars_refined.png')
+ggplot(methotrexate_cv_mars_refined) + ggtitle('methotrexate CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/methotrexate_cv_mars_refined_model.rds', methotrexate_cv_mars_refined)
+
+# p1 <- vip(methotrexate_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('methotrexate GCV')
+# 
+# p2 <- vip(methotrexate_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('methotrexate RSS')
+# 
+# png(filename = 'Images/methotrexate_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## mitomycin
+hyper_grid <- expand.grid(degree = 1, nprune = seq(21,27,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+mitomycin_cv_mars_refined <- train(x = subset(mitomycin_rose, select = -res_sens), 
+                                   y = as.factor(mitomycin_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+mitomycin_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/mitomycin_cv_mars_refined.png')
+ggplot(mitomycin_cv_mars_refined) + ggtitle('mitomycin CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/mitomycin_cv_mars_refined_model.rds', mitomycin_cv_mars_refined)
+
+# p1 <- vip(mitomycin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('mitomycin GCV')
+# 
+# p2 <- vip(mitomycin_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('mitomycin RSS')
+# 
+# png(filename = 'Images/mitomycin_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## sn38
+hyper_grid <- expand.grid(degree = 1, nprune = seq(21,27,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+sn38_cv_mars_refined <- train(x = subset(sn38_rose, select = -res_sens), 
+                                   y = as.factor(sn38_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+sn38_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/sn38_cv_mars_refined.png')
+ggplot(sn38_cv_mars_refined) + ggtitle('sn38 CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/sn38_cv_mars_refined_model.rds', sn38_cv_mars_refined)
+
+# p1 <- vip(sn38_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('sn38 GCV')
+# 
+# p2 <- vip(sn38_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('sn38 RSS')
+# 
+# png(filename = 'Images/sn38_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
+
+## temozolomide
+hyper_grid <- expand.grid(degree = 1, nprune = seq(29,35,length.out = 7) %>% floor())
+hyper_grid
+
+set.seed(5)
+temozolomide_cv_mars_refined <- train(x = subset(temozolomide_rose, select = -res_sens), 
+                                   y = as.factor(temozolomide_rose$res_sens), 
+                                   method = 'earth', 
+                                   trControl = trainControl(method = 'cv', number = 10), 
+                                   tuneGrid = hyper_grid)
+
+#results
+temozolomide_cv_mars_refined$bestTune
+
+#plot it
+png(filename = 'Images/temozolomide_cv_mars_refined.png')
+ggplot(temozolomide_cv_mars_refined) + ggtitle('temozolomide CV Mars')
+dev.off()
+
+saveRDS(file = 'GLM_Models/temozolomide_cv_mars_refined_model.rds', temozolomide_cv_mars_refined)
+
+# p1 <- vip(temozolomide_cv_mars_refined, num_features = 23, bar = FALSE, value = 'gcv') + ggtitle('temozolomide GCV')
+# 
+# p2 <- vip(temozolomide_cv_mars_refined, num_features = 23, bar = FALSE, value = 'rss') + ggtitle('temozolomide RSS')
+# 
+# png(filename = 'Images/temozolomide_feat_imp_refined.png')
+# gridExtra::grid.arrange(p1, p2, ncol = 2)
+# dev.off()
 
 # ### CCLE -----
 # ## load clinical data ----
