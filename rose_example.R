@@ -135,7 +135,7 @@ p2 <- partial(mars2, pred.var = 'ENSG00000122133', grid.resolution = 10) %>% aut
 #data
 data(longley)
 #fit model
-fit <- earth(res_sens ~ ., bleomycin_rose_df)
+fit <- earth(res_sens ~ ., bleomycin_rose, glm=list(family=binomial), trace=1)
 #summarize
 summary(fit)
 # summarize importance of input vars
@@ -151,7 +151,7 @@ mse #0.022
 ## SVM
 data(longley)
 # fit model
-fit <- ksvm(res_sens ~ ., bleomycin_rose_df)
+fit <- ksvm(res_sens ~ ., bleomycin_rose, glm=list(family=binomial), trace=1)
 summary(fit) # is there better info than this?
 
 predictions <- predict(fit, bleomycin_rose_df)
@@ -179,3 +179,258 @@ summary(fit)
 predictions <- predict(fit, x, type = 'raw')
 mse <- mean((y - predictions) ^ 2)
 mse #0.00002
+
+
+#full earth tutorial
+data(Titanic)
+binary.mod <- earth(res_sens ~ ., data = bleomycin_rose,
+                    glm=list(family=binomial), trace=1)
+plot(binary.mod)
+summary(binary.mod)
+evimp(binary.mod)
+plot(binary.mod$glm.list[[1]])
+
+library(mda)
+(fda <- fda(res_sens ~ ., data=bleomycin_rose, keep.fitted=TRUE, method=earth, keepxy=TRUE)) 
+summary(fda$fit) # examine earth model embedded in fda model 
+plot(fda)	# right side of the figure
+
+## fit glm mars
+set.seed(5)
+# bleomycin
+bleomycin_fit_1 <- earth(res_sens ~ ., data = bleomycin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+bleomycin_fit_1_summary <- summary(bleomycin_fit_1)
+bleomycin_fit_1_evimp <- evimp(bleomycin_fit_1)
+
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_glm_model_1.rds', bleomycin_fit_1)
+
+# bleomycin_fit_1_gcv <- vip(fit_1, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('bleomycin_fit_1 GCV')
+# bleomycin_fit_1_rss <- vip(fit_1, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('bleomycin_fit_1 RSS')
+
+
+bleomycin_fit_2 <- earth(res_sens ~ ., data = bleomycin_rose, ncross = 5, degree=2, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+bleomycin_fit_2_summary <- summary(bleomycin_fit_2)
+bleomycin_fit_2_evimp <- evimp(bleomycin_fit_2)
+
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_glm_model_2.rds', bleomycin_fit_2)
+
+# bleomycin_fit_2_gcv <- vip(fit_2, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('bleomycin_fit_2 GCV')
+# bleomycin_fit_2_rss <- vip(fit_2, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('bleomycin_fit_2 RSS')
+
+bleomycin_fit_3 <- earth(res_sens ~ ., data = bleomycin_rose, ncross = 5, degree=3, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+bleomycin_fit_3_summary <- summary(bleomycin_fit_3)
+bleomycin_fit_3_evimp <- evimp(bleomycin_fit_3)
+
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_glm_model_3.rds', bleomycin_fit_3)
+
+# bleomycin_fit_3_gcv <- vip(fit_3, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('bleomycin_fit_3 GCV')
+# bleomycin_fit_3_rss <- vip(fit_3, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('bleomycin_fit_3 RSS')
+
+
+bleomycin_fit_1_plot <- plot(bleomycin_fit_1, which = 1, main = 'Bleomycin, first degree model selection')
+bleomycin_fit_2_plot <- plot(bleomycin_fit_2, which = 1, main = 'Bleomycin, second degree model selection')
+bleomycin_fit_3_plot <- plot(bleomycin_fit_3, which = 1, main = 'Bleomycin, third degree model selection')
+
+png(filename = 'Images/bleomycin_mars_glm_cv_degrees_plots.png')
+gridExtra::grid.arrange(bleomycin_fit_1_plot, bleomycin_fit_2_plot, bleomycin_fit_3_plot, ncol = 3)
+dev.off()
+
+# png(filename = 'Images/bleomycin_mars_glm_cv_imp_degrees_plots.png')
+# gridExtra::grid.arrange(bleomycin_fit_1_gcv, bleomycin_fit_2_gcv, bleomycin_fit_3_gcv, 
+#                         bleomycin_fit_1_rss, bleomycin_fit_2_rss, bleomycin_fit_3_rss, ncol = 3)
+# dev.off()
+
+
+
+bleomycin_test_cv_mars <- predict(fit_2, newdata = as.matrix(bleomycin_rna_seq_test), type = 'class') #class for everything else
+
+bleomycin_test_cv_mars_auc <- auc(bleomycin_test$res_sens, bleomycin_test_cv_mars)
+bleomycin_test_cv_mars_auc <- round(bleomycin_test_cv_mars_auc, digits = 2)
+bleomycin_cv_mars_acc <- sum(bleomycin_test$res_sens == bleomycin_test_cv_mars)/length(bleomycin_test_cv_mars)
+print(1 - sum((bleomycin_test$res_sens - bleomycin_test_cv_mars)^2) / sum((bleomycin_test$res_sens - mean(bleomycin_test$res_sens))^2))
+
+set.seed(5)
+# camptothecin
+camptothecin_fit_1 <- earth(res_sens ~ ., data = camptothecin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+camptothecin_fit_1_summary <- summary(camptothecin_fit_1)
+camptothecin_fit_1_evimp <- evimp(camptothecin_fit_1)
+
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_glm_model_1.rds', camptothecin_fit_1)
+
+# camptothecin_fit_1_gcv <- vip(fit_1, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('camptothecin_fit_1 GCV')
+# camptothecin_fit_1_rss <- vip(fit_1, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('camptothecin_fit_1 RSS')
+
+
+camptothecin_fit_2 <- earth(res_sens ~ ., data = camptothecin_rose, ncross = 5, degree=2, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+camptothecin_fit_2_summary <- summary(camptothecin_fit_2)
+camptothecin_fit_2_evimp <- evimp(camptothecin_fit_2)
+
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_glm_model_2.rds', camptothecin_fit_2)
+
+# camptothecin_fit_2_gcv <- vip(fit_2, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('camptothecin_fit_2 GCV')
+# camptothecin_fit_2_rss <- vip(fit_2, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('camptothecin_fit_2 RSS')
+
+camptothecin_fit_3 <- earth(res_sens ~ ., data = camptothecin_rose, ncross = 5, degree=3, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+camptothecin_fit_3_summary <- summary(camptothecin_fit_3)
+camptothecin_fit_3_evimp <- evimp(camptothecin_fit_3)
+
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_glm_model_3.rds', camptothecin_fit_3)
+
+# camptothecin_fit_3_gcv <- vip(fit_3, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('camptothecin_fit_3 GCV')
+# camptothecin_fit_3_rss <- vip(fit_3, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('camptothecin_fit_3 RSS')
+
+
+camptothecin_fit_1_plot <- plot(camptothecin_fit_1, which = 1, main = 'camptothecin, first degree model selection')
+camptothecin_fit_2_plot <- plot(camptothecin_fit_2, which = 1, main = 'camptothecin, second degree model selection')
+camptothecin_fit_3_plot <- plot(camptothecin_fit_3, which = 1, main = 'camptothecin, third degree model selection')
+
+png(filename = 'Images/camptothecin_mars_glm_cv_degrees_plots.png')
+gridExtra::grid.arrange(camptothecin_fit_1_plot, camptothecin_fit_2_plot, camptothecin_fit_3_plot, ncol = 3)
+dev.off()
+
+# png(filename = 'Images/camptothecin_mars_glm_cv_imp_degrees_plots.png')
+# gridExtra::grid.arrange(camptothecin_fit_1_gcv, camptothecin_fit_2_gcv, camptothecin_fit_3_gcv, 
+#                         camptothecin_fit_1_rss, camptothecin_fit_2_rss, camptothecin_fit_3_rss, ncol = 3)
+# dev.off()
+
+
+
+camptothecin_test_cv_mars <- predict(fit_2, newdata = as.matrix(camptothecin_rna_seq_test), type = 'class') #class for everything else
+
+camptothecin_test_cv_mars_auc <- auc(camptothecin_test$res_sens, camptothecin_test_cv_mars)
+camptothecin_test_cv_mars_auc <- round(camptothecin_test_cv_mars_auc, digits = 2)
+camptothecin_cv_mars_acc <- sum(camptothecin_test$res_sens == camptothecin_test_cv_mars)/length(camptothecin_test_cv_mars)
+print(1 - sum((camptothecin_test$res_sens - camptothecin_test_cv_mars)^2) / sum((camptothecin_test$res_sens - mean(camptothecin_test$res_sens))^2))
+
+set.seed(5)
+# cisplatin
+cisplatin_fit_1 <- earth(res_sens ~ ., data = cisplatin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+cisplatin_fit_1_summary <- summary(cisplatin_fit_1)
+cisplatin_fit_1_evimp <- evimp(cisplatin_fit_1)
+
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_glm_model_1.rds', cisplatin_fit_1)
+
+# cisplatin_fit_1_gcv <- vip(fit_1, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('cisplatin_fit_1 GCV')
+# cisplatin_fit_1_rss <- vip(fit_1, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('cisplatin_fit_1 RSS')
+
+
+cisplatin_fit_2 <- earth(res_sens ~ ., data = cisplatin_rose, ncross = 5, degree=2, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+cisplatin_fit_2_summary <- summary(cisplatin_fit_2)
+cisplatin_fit_2_evimp <- evimp(cisplatin_fit_2)
+
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_glm_model_2.rds', cisplatin_fit_2)
+
+# cisplatin_fit_2_gcv <- vip(fit_2, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('cisplatin_fit_2 GCV')
+# cisplatin_fit_2_rss <- vip(fit_2, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('cisplatin_fit_2 RSS')
+
+cisplatin_fit_3 <- earth(res_sens ~ ., data = cisplatin_rose, ncross = 5, degree=3, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+cisplatin_fit_3_summary <- summary(cisplatin_fit_3)
+cisplatin_fit_3_evimp <- evimp(cisplatin_fit_3)
+
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_glm_model_3.rds', cisplatin_fit_3)
+
+# cisplatin_fit_3_gcv <- vip(fit_3, num_features = 25, bar = FALSE, value = 'gcv') + ggtitle('cisplatin_fit_3 GCV')
+# cisplatin_fit_3_rss <- vip(fit_3, num_features = 25, bar = FALSE, value = 'rss') + ggtitle('cisplatin_fit_3 RSS')
+
+
+cisplatin_fit_1_plot <- plot(cisplatin_fit_1, which = 1, main = 'cisplatin, first degree model selection')
+cisplatin_fit_2_plot <- plot(cisplatin_fit_2, which = 1, main = 'cisplatin, second degree model selection')
+cisplatin_fit_3_plot <- plot(cisplatin_fit_3, which = 1, main = 'cisplatin, third degree model selection')
+
+png(filename = 'Images/cisplatin_mars_glm_cv_degrees_plots.png')
+gridExtra::grid.arrange(cisplatin_fit_1_plot, cisplatin_fit_2_plot, cisplatin_fit_3_plot, ncol = 3)
+dev.off()
+
+# png(filename = 'Images/cisplatin_mars_glm_cv_imp_degrees_plots.png')
+# gridExtra::grid.arrange(cisplatin_fit_1_gcv, cisplatin_fit_2_gcv, cisplatin_fit_3_gcv, 
+#                         cisplatin_fit_1_rss, cisplatin_fit_2_rss, cisplatin_fit_3_rss, ncol = 3)
+# dev.off()
+
+
+
+cisplatin_test_cv_mars <- predict(cisplatin_fit_1, newdata = as.matrix(cisplatin_rna_seq_test), type = 'class') #class for everything else
+
+cisplatin_test_cv_mars_auc <- auc(cisplatin_test$res_sens, cisplatin_test_cv_mars)
+cisplatin_test_cv_mars_auc <- round(cisplatin_test_cv_mars_auc, digits = 2)
+cisplatin_cv_mars_acc <- sum(cisplatin_test$res_sens == cisplatin_test_cv_mars)/length(cisplatin_test_cv_mars)
+print(1 - sum((cisplatin_test$res_sens - cisplatin_test_cv_mars)^2) / sum((cisplatin_test$res_sens - mean(cisplatin_test$res_sens))^2))
+
+# BLCA W CISPLATIN (49)
+blca_clinical <- read.csv('Processed_Clinical_Data/blca_tcga_clinical_processed.csv', row.names = 1)
+na_idx <- is.na(blca_clinical$most_sensitive)
+blca_clinical <- blca_clinical[!na_idx, ]
+table(blca_clinical$drug_name)
+blca_clinical_cisplatin <- blca_clinical[which(blca_clinical$drug_name == 'cisplatin' | blca_clinical$drug_name == 'Cisplatin' | 
+                                                 blca_clinical$drug_name == 'Cisplatnin'), ]
+
+blca_gene <- read.csv('Processed_Gene_Expression/blca_tcga_rna_seq_processed.csv', row.names = 1)
+colnames(blca_gene) <- gsub('\\.', '-', colnames(blca_gene))
+blca_matching_idx <- blca_clinical_cisplatin$submitter_id.samples %in% colnames(blca_gene)
+blca_clinical_cisplatin_short <- blca_clinical_cisplatin[blca_matching_idx, ]
+blca_matching_idx <- colnames(blca_gene) %in% blca_clinical_cisplatin_short$submitter_id.samples
+blca_gene_short <- blca_gene[, blca_matching_idx]
+blca_gene_short <- t(blca_gene_short)
+blca_gene_short_scaled <- apply(blca_gene_short, 2, scale)
+
+new_blca_tcga_cisplatin <- predict(cisplatin_fit_1, newdata = as.matrix(blca_gene_short_scaled), type = 'class', na.action = 'na.pass')
+
+blca_surv_times <- blca_clinical_cisplatin_short$PFS
+blca_status <- ifelse(blca_clinical_cisplatin_short$PFS == blca_clinical_cisplatin_short$OS, 0, 1)
+
+blca_surv_df <- data.frame(blca_surv_times, blca_status, new_blca_tcga_cisplatin)
+fit <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_cisplatin,
+               data = blca_surv_df)
+fit2 <- survfit(Surv(blca_surv_times, blca_status) ~ new_blca_tcga_cisplatin,
+                data = blca_surv_df)
+fit_pvalue <- surv_pvalue(fit)$pval.txt
+plot(fit, col = c('limegreen', 'darkviolet'), xlab = 'Time (d)', ylab = 'Percent Recurrence-Free', lwd = 2)
+legend(x = 2000, y = 0.8, legend = paste0('log-rank\n', fit_pvalue), bty = 'n', cex = 0.8)
+legend(x = 450, y = 0.4, legend = c('predicted sensitive', 'predicted resistant'), lty = c(1,1), lwd = 2, col = c('darkviolet', 'limegreen'), bty = 'n', cex = 0.8)
+
+
+#fxn to get a variable with names of genes used
+get.used.pred.names <- function(obj) {
+  any1 <- function(x) any(x != 0)	# like any but no warning 
+  names(which(apply(obj$dirs[obj$selected.terms, , drop=FALSE], 2, any1))) 
+  }
+get.used.pred.names(fit)
+
+
+## more extensive SVM
+install.packages('e1071') 
+library(e1071) 
+
+classifier <- svm(formula = res_sens ~ ., 
+                 data = bleomycin_rose, 
+                 type = 'C-classification', 
+                 kernel = 'linear') 
+
+classifier
+
+bleomycin_svm_pred = predict(classifier, newdata = bleomycin_rna_seq_test) 
+
+cm = table(bleomycin_test$res_sens, bleomycin_svm_pred)
+cm
+
+
+library(caret)
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(3233)
+
+svm_Linear <- train(factor(res_sens) ~ ., data = bleomycin_rose, method = "svmLinear",
+                    trControl=trctrl,
+                    preProcess = c("center", "scale"),
+                    tuneLength = 10)
+
+svm_Linear
+
+
+
+test_pred <- predict(svm_Linear, newdata = bleomycin_rna_seq_test)
+test_pred
+
+
+confusionMatrix(test_pred, factor(bleomycin_test$res_sens))
+
+
+
