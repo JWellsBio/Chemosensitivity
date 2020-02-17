@@ -160,117 +160,120 @@ temozolomide_lines        <- temozolomide$COSMIC_ID #739
 # split expression data to match
 bleomycin_rna_seq <- gdsc[rownames(gdsc) %in% bleomycin$COSMIC_ID, ]
 bleomycin_rna_seq <- as.data.frame(bleomycin_rna_seq)
-bleomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% bleomycin_test$COSMIC_ID, ]
-bleomycin_rna_seq_test <- as.data.frame(bleomycin_rna_seq_test)
+#bleomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% bleomycin_test$COSMIC_ID, ]
+#bleomycin_rna_seq_test <- as.data.frame(bleomycin_rna_seq_test)
 
-bleomycin_rna_seq_train$res_sens <- bleomycin$res_sens
-bleomycin_rose <- ROSE(res_sens ~ ., data = bleomycin_rna_seq_train_df)$data
-bleomycin_rose_res_sens <- bleomycin_rose$res_sens
-bleomycin_rose <- bleomycin_rose[, -14210]
+bleomycin_rna_seq$res_sens <- bleomycin$res_sens
+bleomycin_rose <- ROSE(res_sens ~ ., data = bleomycin_rna_seq)$data
+#bleomycin_rose_res_sens <- bleomycin_rose$res_sens
+#bleomycin_rose <- bleomycin_rose[, -14210]
 
-camptothecin_rna_seq_train <- gdsc[rownames(gdsc) %in% camptothecin_train$COSMIC_ID, ]
-camptothecin_rna_seq_train_df <- as.data.frame(camptothecin_rna_seq_train)
-camptothecin_rna_seq_test <- gdsc[rownames(gdsc) %in% camptothecin_test$COSMIC_ID, ]
-camptothecin_rna_seq_test <- as.data.frame(camptothecin_rna_seq_test)
+camptothecin_rna_seq <- gdsc[rownames(gdsc) %in% camptothecin$COSMIC_ID, ]
+camptothecin_rna_seq <- as.data.frame(camptothecin_rna_seq)
+#camptothecin_rna_seq_test <- gdsc[rownames(gdsc) %in% camptothecin_test$COSMIC_ID, ]
+#camptothecin_rna_seq_test <- as.data.frame(camptothecin_rna_seq_test)
 
-camptothecin_rna_seq_train_df$res_sens <- camptothecin_train$res_sens
-camptothecin_rose <- ROSE(res_sens ~ ., data = camptothecin_rna_seq_train_df)$data
-camptothecin_rose_res_sens <- camptothecin_rose$res_sens
-camptothecin_rose <- camptothecin_rose[, -14210]
+camptothecin_rna_seq$res_sens <- camptothecin$res_sens
+camptothecin_rose <- ROSE(res_sens ~ ., data = camptothecin_rna_seq)$data
+#camptothecin_rose_res_sens <- camptothecin_rose$res_sens
+#camptothecin_rose <- camptothecin_rose[, -14210]
 
-cisplatin_rna_seq_train <- gdsc[rownames(gdsc) %in% cisplatin_train$COSMIC_ID, ]
-cisplatin_rna_seq_train_df <- as.data.frame(cisplatin_rna_seq_train)
-cisplatin_rna_seq_test <- gdsc[rownames(gdsc) %in% cisplatin_test$COSMIC_ID, ]
-cisplatin_rna_seq_test <- as.data.frame(cisplatin_rna_seq_test)
+cisplatin_rna_seq <- gdsc[rownames(gdsc) %in% cisplatin$COSMIC_ID, ]
+cisplatin_rna_seq <- as.data.frame(cisplatin_rna_seq)
+#cisplatin_rna_seq_test <- gdsc[rownames(gdsc) %in% cisplatin_test$COSMIC_ID, ]
+#cisplatin_rna_seq_test <- as.data.frame(cisplatin_rna_seq_test)
 
-cisplatin_rna_seq_train_df$res_sens <- cisplatin_train$res_sens
-cisplatin_rose <- ROSE(res_sens ~ ., data = cisplatin_rna_seq_train_df)$data
-cisplatin_rose_res_sens <- cisplatin_rose$res_sens
-cisplatin_rose <- cisplatin_rose[, -14210]
+cisplatin_rna_seq$res_sens <- cisplatin$res_sens
+cisplatin_rose <- ROSE(res_sens ~ ., data = cisplatin_rna_seq)$data
+#cisplatin_rose_res_sens <- cisplatin_rose$res_sens
+#cisplatin_rose <- cisplatin_rose[, -14210]
 
-cytarabine_rna_seq_train <- gdsc[rownames(gdsc) %in% cytarabine_train$COSMIC_ID, ]
-cytarabine_rna_seq_train_df <- as.data.frame(cytarabine_rna_seq_train)
-cytarabine_rna_seq_test <- gdsc[rownames(gdsc) %in% cytarabine_test$COSMIC_ID, ]
-cytarabine_rna_seq_test <- as.data.frame(cytarabine_rna_seq_test)
+cytarabine_rna_seq <- gdsc[rownames(gdsc) %in% cytarabine$COSMIC_ID, ]
+cytarabine_rna_seq <- as.data.frame(cytarabine_rna_seq)
+#cytarabine_rna_seq_test <- gdsc[rownames(gdsc) %in% cytarabine_test$COSMIC_ID, ]
+#cytarabine_rna_seq_test <- as.data.frame(cytarabine_rna_seq_test)
 
-cytarabine_rna_seq_train_df$res_sens <- cytarabine_train$res_sens
-cytarabine_rose <- ROSE(res_sens ~ ., data = cytarabine_rna_seq_train_df)$data
-cytarabine_rose_res_sens <- cytarabine_rose$res_sens
-cytarabine_rose <- cytarabine_rose[, -14210]
+cytarabine_rna_seq$res_sens <- cytarabine$res_sens
+cytarabine_rose <- ROSE(res_sens ~ ., data = cytarabine_rna_seq)$data
+#cytarabine_rose_res_sens <- cytarabine_rose$res_sens
+#cytarabine_rose <- cytarabine_rose[, -14210]
 
-doxorubicin_rna_seq_train <- gdsc[rownames(gdsc) %in% doxorubicin_train$COSMIC_ID, ]
-doxorubicin_rna_seq_train_df <- as.data.frame(doxorubicin_rna_seq_train)
-doxorubicin_rna_seq_test <- gdsc[rownames(gdsc) %in% doxorubicin_test$COSMIC_ID, ]
-doxorubicin_rna_seq_test <- as.data.frame(doxorubicin_rna_seq_test)
+doxorubicin_rna_seq <- gdsc[rownames(gdsc) %in% doxorubicin$COSMIC_ID, ]
+doxorubicin_rna_seq <- as.data.frame(doxorubicin_rna_seq)
+#doxorubicin_rna_seq_test <- gdsc[rownames(gdsc) %in% doxorubicin_test$COSMIC_ID, ]
+#doxorubicin_rna_seq_test <- as.data.frame(doxorubicin_rna_seq_test)
 
-doxorubicin_rna_seq_train_df$res_sens <- doxorubicin_train$res_sens
-doxorubicin_rose <- ROSE(res_sens ~ ., data = doxorubicin_rna_seq_train_df)$data
-doxorubicin_rose_res_sens <- doxorubicin_rose$res_sens
-doxorubicin_rose <- doxorubicin_rose[, -14210]
+doxorubicin_rna_seq$res_sens <- doxorubicin$res_sens
+doxorubicin_rose <- ROSE(res_sens ~ ., data = doxorubicin_rna_seq)$data
+#doxorubicin_rose_res_sens <- doxorubicin_rose$res_sens
+#doxorubicin_rose <- doxorubicin_rose[, -14210]
 
-etoposide_rna_seq_train <- gdsc[rownames(gdsc) %in% etoposide_train$COSMIC_ID, ]
-etoposide_rna_seq_train_df <- as.data.frame(etoposide_rna_seq_train)
-etoposide_rna_seq_test <- gdsc[rownames(gdsc) %in% etoposide_test$COSMIC_ID, ]
-etoposide_rna_seq_test <- as.data.frame(etoposide_rna_seq_test)
+etoposide_rna_seq <- gdsc[rownames(gdsc) %in% etoposide$COSMIC_ID, ]
+etoposide_rna_seq <- as.data.frame(etoposide_rna_seq)
+#etoposide_rna_seq_test <- gdsc[rownames(gdsc) %in% etoposide_test$COSMIC_ID, ]
+#etoposide_rna_seq_test <- as.data.frame(etoposide_rna_seq_test)
 
-etoposide_rna_seq_train_df$res_sens <- etoposide_train$res_sens
-etoposide_rose <- ROSE(res_sens ~ ., data = etoposide_rna_seq_train_df)$data
-etoposide_rose_res_sens <- etoposide_rose$res_sens
-etoposide_rose <- etoposide_rose[, -14210]
+etoposide_rna_seq$res_sens <- etoposide$res_sens
+etoposide_rose <- ROSE(res_sens ~ ., data = etoposide_rna_seq)$data
+#etoposide_rose_res_sens <- etoposide_rose$res_sens
+#etoposide_rose <- etoposide_rose[, -14210]
 
-gemcitabine_rna_seq_train <- gdsc[rownames(gdsc) %in% gemcitabine_train$COSMIC_ID, ]
-gemcitabine_rna_seq_train_df <- as.data.frame(gemcitabine_rna_seq_train)
-gemcitabine_rna_seq_test <- gdsc[rownames(gdsc) %in% gemcitabine_test$COSMIC_ID, ]
-gemcitabine_rna_seq_test <- as.data.frame(gemcitabine_rna_seq_test)
+gemcitabine_rna_seq <- gdsc[rownames(gdsc) %in% gemcitabine$COSMIC_ID, ]
+gemcitabine_rna_seq <- as.data.frame(gemcitabine_rna_seq)
+#gemcitabine_rna_seq_test <- gdsc[rownames(gdsc) %in% gemcitabine_test$COSMIC_ID, ]
+#gemcitabine_rna_seq_test <- as.data.frame(gemcitabine_rna_seq_test)
 
-gemcitabine_rna_seq_train_df$res_sens <- gemcitabine_train$res_sens
-gemcitabine_rose <- ROSE(res_sens ~ ., data = gemcitabine_rna_seq_train_df)$data
-gemcitabine_rose_res_sens <- gemcitabine_rose$res_sens
-gemcitabine_rose <- gemcitabine_rose[, -14210]
+gemcitabine_rna_seq$res_sens <- gemcitabine$res_sens
+gemcitabine_rose <- ROSE(res_sens ~ ., data = gemcitabine_rna_seq)$data
+#gemcitabine_rose_res_sens <- gemcitabine_rose$res_sens
+#gemcitabine_rose <- gemcitabine_rose[, -14210]
 
-methotrexate_rna_seq_train <- gdsc[rownames(gdsc) %in% methotrexate_train$COSMIC_ID, ]
-methotrexate_rna_seq_train_df <- as.data.frame(methotrexate_rna_seq_train)
-methotrexate_rna_seq_test <- gdsc[rownames(gdsc) %in% methotrexate_test$COSMIC_ID, ]
-methotrexate_rna_seq_test <- as.data.frame(methotrexate_rna_seq_test)
+methotrexate_rna_seq <- gdsc[rownames(gdsc) %in% methotrexate$COSMIC_ID, ]
+methotrexate_rna_seq <- as.data.frame(methotrexate_rna_seq)
+#methotrexate_rna_seq_test <- gdsc[rownames(gdsc) %in% methotrexate_test$COSMIC_ID, ]
+#methotrexate_rna_seq_test <- as.data.frame(methotrexate_rna_seq_test)
 
-methotrexate_rna_seq_train_df$res_sens <- methotrexate_train$res_sens
-methotrexate_rose <- ROSE(res_sens ~ ., data = methotrexate_rna_seq_train_df)$data
-methotrexate_rose_res_sens <- methotrexate_rose$res_sens
-methotrexate_rose <- methotrexate_rose[, -14210]
+methotrexate_rna_seq$res_sens <- methotrexate$res_sens
+methotrexate_rose <- ROSE(res_sens ~ ., data = methotrexate_rna_seq)$data
+#methotrexate_rose_res_sens <- methotrexate_rose$res_sens
+#methotrexate_rose <- methotrexate_rose[, -14210]
 
-mitomycin_rna_seq_train <- gdsc[rownames(gdsc) %in% mitomycin_train$COSMIC_ID, ]
-mitomycin_rna_seq_train_df <- as.data.frame(mitomycin_rna_seq_train)
-mitomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% mitomycin_test$COSMIC_ID, ]
-mitomycin_rna_seq_test <- as.data.frame(mitomycin_rna_seq_test)
+mitomycin_rna_seq <- gdsc[rownames(gdsc) %in% mitomycin$COSMIC_ID, ]
+mitomycin_rna_seq <- as.data.frame(mitomycin_rna_seq)
+#mitomycin_rna_seq_test <- gdsc[rownames(gdsc) %in% mitomycin_test$COSMIC_ID, ]
+#mitomycin_rna_seq_test <- as.data.frame(mitomycin_rna_seq_test)
 
-mitomycin_rna_seq_train_df$res_sens <- mitomycin_train$res_sens
-mitomycin_rose <- ROSE(res_sens ~ ., data = mitomycin_rna_seq_train_df)$data
-mitomycin_rose_res_sens <- mitomycin_rose$res_sens
-mitomycin_rose <- mitomycin_rose[, -14210]
+mitomycin_rna_seq$res_sens <- mitomycin$res_sens
+mitomycin_rose <- ROSE(res_sens ~ ., data = mitomycin_rna_seq)$data
+#mitomycin_rose_res_sens <- mitomycin_rose$res_sens
+#mitomycin_rose <- mitomycin_rose[, -14210]
 
-sn38_rna_seq_train <- gdsc[rownames(gdsc) %in% sn38_train$COSMIC_ID, ]
-sn38_rna_seq_train_df <- as.data.frame(sn38_rna_seq_train)
-sn38_rna_seq_test <- gdsc[rownames(gdsc) %in% sn38_test$COSMIC_ID, ]
-sn38_rna_seq_test <- as.data.frame(sn38_rna_seq_test)
+sn38_rna_seq <- gdsc[rownames(gdsc) %in% sn38$COSMIC_ID, ]
+sn38_rna_seq <- as.data.frame(sn38_rna_seq)
+#sn38_rna_seq_test <- gdsc[rownames(gdsc) %in% sn38_test$COSMIC_ID, ]
+#sn38_rna_seq_test <- as.data.frame(sn38_rna_seq_test)
 
-sn38_rna_seq_train_df$res_sens <- sn38_train$res_sens
-sn38_rose <- ROSE(res_sens ~ ., data = sn38_rna_seq_train_df)$data
-sn38_rose_res_sens <- sn38_rose$res_sens
-sn38_rose <- sn38_rose[, -14210]
+sn38_rna_seq$res_sens <- sn38$res_sens
+sn38_rose <- ROSE(res_sens ~ ., data = sn38_rna_seq)$data
+#sn38_rose_res_sens <- sn38_rose$res_sens
+#sn38_rose <- sn38_rose[, -14210]
 
-temozolomide_rna_seq_train <- gdsc[rownames(gdsc) %in% temozolomide_train$COSMIC_ID, ]
-temozolomide_rna_seq_train_df <- as.data.frame(temozolomide_rna_seq_train)
-temozolomide_rna_seq_test <- gdsc[rownames(gdsc) %in% temozolomide_test$COSMIC_ID, ]
-temozolomide_rna_seq_test <- as.data.frame(temozolomide_rna_seq_test)
+temozolomide_rna_seq <- gdsc[rownames(gdsc) %in% temozolomide$COSMIC_ID, ]
+temozolomide_rna_seq <- as.data.frame(temozolomide_rna_seq)
+#temozolomide_rna_seq_test <- gdsc[rownames(gdsc) %in% temozolomide_test$COSMIC_ID, ]
+#temozolomide_rna_seq_test <- as.data.frame(temozolomide_rna_seq_test)
 
-temozolomide_rna_seq_train_df$res_sens <- temozolomide_train$res_sens
-temozolomide_rose <- ROSE(res_sens ~ ., data = temozolomide_rna_seq_train_df)$data
-temozolomide_rose_res_sens <- temozolomide_rose$res_sens
-temozolomide_rose <- temozolomide_rose[, -14210]
+temozolomide_rna_seq$res_sens <- temozolomide$res_sens
+temozolomide_rose <- ROSE(res_sens ~ ., data = temozolomide_rna_seq)$data
+#temozolomide_rose_res_sens <- temozolomide_rose$res_sens
+#temozolomide_rose <- temozolomide_rose[, -14210]
 
 #
 # temozolomide_rose$res_sens <- temozolomide_rose_res_sens
-# write.csv(temozolomide_rose, file = 'Processed_Gene_Expression/temozolomide_rose.csv', row.names = TRUE)
+
+
+write.csv(doxorubicin_rose, file = 'Processed_Gene_Expression/doxorubicin_rose_full.csv', row.names = TRUE)
+
 # write.csv(temozolomide_test, file = 'Processed_Clinical_Data/temozolomide_test.csv', row.names = TRUE)
 # write.csv(temozolomide_rna_seq_test, file = 'Processed_Gene_Expression/temozolomide_rna_seq_test.csv', row.names = TRUE)
 
@@ -451,94 +454,98 @@ temozolomide_rose <- temozolomide_rose[, -14210]
 
 ### fit models --------
 #training sequence data
-bleomycin_rose <- read.csv('Processed_Gene_Expression/bleomycin_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+bleomycin_rose <- read.csv('Processed_Gene_Expression/bleomycin_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-bleomycin_test <- read.csv('Processed_Clinical_Data/bleomycin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#bleomycin_test <- read.csv('Processed_Clinical_Data/bleomycin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-bleomycin_rna_seq_test <- read.csv('Processed_Gene_Expression/bleomycin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#bleomycin_rna_seq_test <- read.csv('Processed_Gene_Expression/bleomycin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-camptothecin_rose <- read.csv('Processed_Gene_Expression/camptothecin_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+camptothecin_rose <- read.csv('Processed_Gene_Expression/camptothecin_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-camptothecin_test <- read.csv('Processed_Clinical_Data/camptothecin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#camptothecin_test <- read.csv('Processed_Clinical_Data/camptothecin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-camptothecin_rna_seq_test <- read.csv('Processed_Gene_Expression/camptothecin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#camptothecin_rna_seq_test <- read.csv('Processed_Gene_Expression/camptothecin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-cisplatin_rose <- read.csv('Processed_Gene_Expression/cisplatin_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+cisplatin_rose <- read.csv('Processed_Gene_Expression/cisplatin_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-cisplatin_test <- read.csv('Processed_Clinical_Data/cisplatin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#cisplatin_test <- read.csv('Processed_Clinical_Data/cisplatin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-cisplatin_rna_seq_test <- read.csv('Processed_Gene_Expression/cisplatin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#cisplatin_rna_seq_test <- read.csv('Processed_Gene_Expression/cisplatin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-cytarabine_rose <- read.csv('Processed_Gene_Expression/cytarabine_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+cytarabine_rose <- read.csv('Processed_Gene_Expression/cytarabine_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-cytarabine_test <- read.csv('Processed_Clinical_Data/cytarabine_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#cytarabine_test <- read.csv('Processed_Clinical_Data/cytarabine_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-cytarabine_rna_seq_test <- read.csv('Processed_Gene_Expression/cytarabine_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#cytarabine_rna_seq_test <- read.csv('Processed_Gene_Expression/cytarabine_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-doxorubicin_rose <- read.csv('Processed_Gene_Expression/doxorubicin_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+doxorubicin_rose <- read.csv('Processed_Gene_Expression/doxorubicin_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-doxorubicin_test <- read.csv('Processed_Clinical_Data/doxorubicin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#doxorubicin_test <- read.csv('Processed_Clinical_Data/doxorubicin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-doxorubicin_rna_seq_test <- read.csv('Processed_Gene_Expression/doxorubicin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#doxorubicin_rna_seq_test <- read.csv('Processed_Gene_Expression/doxorubicin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-etoposide_rose <- read.csv('Processed_Gene_Expression/etoposide_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+etoposide_rose <- read.csv('Processed_Gene_Expression/etoposide_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-etoposide_test <- read.csv('Processed_Clinical_Data/etoposide_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#etoposide_test <- read.csv('Processed_Clinical_Data/etoposide_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-etoposide_rna_seq_test <- read.csv('Processed_Gene_Expression/etoposide_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#etoposide_rna_seq_test <- read.csv('Processed_Gene_Expression/etoposide_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-gemcitabine_rose <- read.csv('Processed_Gene_Expression/gemcitabine_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+gemcitabine_rose <- read.csv('Processed_Gene_Expression/gemcitabine_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-gemcitabine_test <- read.csv('Processed_Clinical_Data/gemcitabine_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#gemcitabine_test <- read.csv('Processed_Clinical_Data/gemcitabine_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-gemcitabine_rna_seq_test <- read.csv('Processed_Gene_Expression/gemcitabine_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#gemcitabine_rna_seq_test <- read.csv('Processed_Gene_Expression/gemcitabine_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-methotrexate_rose <- read.csv('Processed_Gene_Expression/methotrexate_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+methotrexate_rose <- read.csv('Processed_Gene_Expression/methotrexate_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-methotrexate_test <- read.csv('Processed_Clinical_Data/methotrexate_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#methotrexate_test <- read.csv('Processed_Clinical_Data/methotrexate_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-methotrexate_rna_seq_test <- read.csv('Processed_Gene_Expression/methotrexate_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#methotrexate_rna_seq_test <- read.csv('Processed_Gene_Expression/methotrexate_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-mitomycin_rose <- read.csv('Processed_Gene_Expression/mitomycin_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+mitomycin_rose <- read.csv('Processed_Gene_Expression/mitomycin_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-mitomycin_test <- read.csv('Processed_Clinical_Data/mitomycin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#mitomycin_test <- read.csv('Processed_Clinical_Data/mitomycin_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-mitomycin_rna_seq_test <- read.csv('Processed_Gene_Expression/mitomycin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#mitomycin_rna_seq_test <- read.csv('Processed_Gene_Expression/mitomycin_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-sn38_rose <- read.csv('Processed_Gene_Expression/sn38_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+sn38_rose <- read.csv('Processed_Gene_Expression/sn38_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-sn38_test <- read.csv('Processed_Clinical_Data/sn38_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#sn38_test <- read.csv('Processed_Clinical_Data/sn38_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-sn38_rna_seq_test <- read.csv('Processed_Gene_Expression/sn38_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#sn38_rna_seq_test <- read.csv('Processed_Gene_Expression/sn38_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #training sequence data
-temozolomide_rose <- read.csv('Processed_Gene_Expression/temozolomide_rose.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+temozolomide_rose <- read.csv('Processed_Gene_Expression/temozolomide_rose_full.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
 #testing clinical data
-temozolomide_test <- read.csv('Processed_Clinical_Data/temozolomide_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#temozolomide_test <- read.csv('Processed_Clinical_Data/temozolomide_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 #testing sequence data
-temozolomide_rna_seq_test <- read.csv('Processed_Gene_Expression/temozolomide_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
+#temozolomide_rna_seq_test <- read.csv('Processed_Gene_Expression/temozolomide_rna_seq_test.csv', stringsAsFactors = FALSE, row.names = 1, header = TRUE)
 
-## bleomycin
+## fit models ----
+
+## bleomycin ----
+## glm model
+set.seed(5)
 bleomycin_fit_elnet <- cv.glmnet(x = as.matrix(bleomycin_rose[, -14210]), y = bleomycin_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/bleomycin_auc.png')
@@ -546,13 +553,53 @@ plot(bleomycin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/bleomycin_model.rds', bleomycin_fit_elnet)
-bleomycin_pred <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-bleomycin_preds <- glmnet::auc(bleomycin_test$res_sens, bleomycin_pred)
-bleomycin_preds <- round(bleomycin_preds, digits = 2) #0.66
+bleomycin_pred <- predict(bleomycin_fit_elnet, newx = as.matrix(bleomycin_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#bleomycin_preds <- glmnet::auc(bleomycin$res_sens, bleomycin_pred)
+#bleomycin_preds <- round(bleomycin_preds, digits = 2) #0.66
 
-bleomycin_overall_acc <- sum(bleomycin_test$res_sens == bleomycin_pred)/length(bleomycin_pred) #0.90
+bleomycin_overall_acc <- sum(bleomycin$res_sens == bleomycin_pred)/length(bleomycin_pred) #0.916
 
-## camptothecin
+bleomycin_glm_confusion <- confusionMatrix(factor(bleomycin_pred), factor(bleomycin$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+bleomycin_svm <- train(factor(res_sens) ~ ., data = bleomycin_rose, method = "svmLinear",
+                    trControl=trctrl,
+                    preProcess = c("center", "scale"),
+                    tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+bleomycin_pred <- predict(bleomycin_svm, newdata = bleomycin_rna_seq)
+
+
+bleomycin_svm_confusion <- confusionMatrix(bleomycin_pred, factor(bleomycin$res_sens))
+
+saveRDS(file = 'GLM_Models/bleomycin_svm_model_1.rds', bleomycin_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+bleomycin_fit_1 <- earth(res_sens ~ ., data = bleomycin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+bleomycin_fit_1_summary <- summary(bleomycin_fit_1)
+bleomycin_fit_1_evimp <- evimp(bleomycin_fit_1) #plot these w ggplot side by side
+
+bleomycin_fit_1_pred <- predict(bleomycin_fit_1, newdata = as.matrix(bleomycin_rna_seq), type = 'class')
+
+bleomycin_mars_confusion <- confusionMatrix(factor(bleomycin_fit_1_pred), factor(bleomycin$res_sens))
+
+
+saveRDS(file = 'GLM_Models/bleomycin_cv_mars_glm_model_1.rds', bleomycin_fit_1)
+
+
+## camptothecin ----
+## glm model
+set.seed(5)
 camptothecin_fit_elnet <- cv.glmnet(x = as.matrix(camptothecin_rose[, -14210]), y = camptothecin_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/camptothecin_auc.png')
@@ -560,13 +607,54 @@ plot(camptothecin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/camptothecin_model.rds', camptothecin_fit_elnet)
-camptothecin_pred <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-camptothecin_preds <- glmnet::auc(camptothecin_test$res_sens, camptothecin_pred)
-camptothecin_preds <- round(camptothecin_preds, digits = 2) #0.78
+camptothecin_pred <- predict(camptothecin_fit_elnet, newx = as.matrix(camptothecin_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#camptothecin_preds <- glmnet::auc(camptothecin$res_sens, camptothecin_pred)
+#camptothecin_preds <- round(camptothecin_preds, digits = 2) #0.66
 
-camptothecin_overall_acc <- sum(camptothecin_test$res_sens == camptothecin_pred)/length(camptothecin_pred) #0.88
+camptothecin_overall_acc <- sum(camptothecin$res_sens == camptothecin_pred)/length(camptothecin_pred) #0.916
 
-## cisplatin
+camptothecin_glm_confusion <- confusionMatrix(factor(camptothecin_pred), factor(camptothecin$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+camptothecin_svm <- train(factor(res_sens) ~ ., data = camptothecin_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+camptothecin_pred <- predict(camptothecin_svm, newdata = camptothecin_rna_seq)
+
+
+camptothecin_svm_confusion <- confusionMatrix(camptothecin_pred, factor(camptothecin$res_sens))
+
+saveRDS(file = 'GLM_Models/camptothecin_svm_model_1.rds', camptothecin_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+camptothecin_fit_1 <- earth(res_sens ~ ., data = camptothecin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+camptothecin_fit_1_summary <- summary(camptothecin_fit_1)
+camptothecin_fit_1_evimp <- evimp(camptothecin_fit_1) #plot these w ggplot side by side
+
+camptothecin_fit_1_pred <- predict(camptothecin_fit_1, newdata = as.matrix(camptothecin_rna_seq), type = 'class')
+
+camptothecin_mars_confusion <- confusionMatrix(factor(camptothecin_fit_1_pred), factor(camptothecin$res_sens))
+
+
+saveRDS(file = 'GLM_Models/camptothecin_cv_mars_glm_model_1.rds', camptothecin_fit_1)
+
+
+
+## cisplatin ----
+## glm model
+set.seed(5)
 cisplatin_fit_elnet <- cv.glmnet(x = as.matrix(cisplatin_rose[, -14210]), y = cisplatin_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/cisplatin_auc.png')
@@ -574,13 +662,54 @@ plot(cisplatin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/cisplatin_model.rds', cisplatin_fit_elnet)
-cisplatin_pred <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-cisplatin_preds <- glmnet::auc(cisplatin_test$res_sens, cisplatin_pred)
-cisplatin_preds <- round(cisplatin_preds, digits = 2) #0.50
+cisplatin_pred <- predict(cisplatin_fit_elnet, newx = as.matrix(cisplatin_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#cisplatin_preds <- glmnet::auc(cisplatin$res_sens, cisplatin_pred)
+#cisplatin_preds <- round(cisplatin_preds, digits = 2) #0.66
 
-cisplatin_overall_acc <- sum(cisplatin_test$res_sens == cisplatin_pred)/length(cisplatin_pred) #0.83
+cisplatin_overall_acc <- sum(cisplatin$res_sens == cisplatin_pred)/length(cisplatin_pred) #0.916
 
-## cytarabine
+cisplatin_glm_confusion <- confusionMatrix(factor(cisplatin_pred), factor(cisplatin$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+cisplatin_svm <- train(factor(res_sens) ~ ., data = cisplatin_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+cisplatin_pred <- predict(cisplatin_svm, newdata = cisplatin_rna_seq)
+
+
+cisplatin_svm_confusion <- confusionMatrix(cisplatin_pred, factor(cisplatin$res_sens))
+
+saveRDS(file = 'GLM_Models/cisplatin_svm_model_1.rds', cisplatin_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+cisplatin_fit_1 <- earth(res_sens ~ ., data = cisplatin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+cisplatin_fit_1_summary <- summary(cisplatin_fit_1)
+cisplatin_fit_1_evimp <- evimp(cisplatin_fit_1) #plot these w ggplot side by side
+
+cisplatin_fit_1_pred <- predict(cisplatin_fit_1, newdata = as.matrix(cisplatin_rna_seq), type = 'class')
+
+cisplatin_mars_confusion <- confusionMatrix(factor(cisplatin_fit_1_pred), factor(cisplatin$res_sens))
+
+
+saveRDS(file = 'GLM_Models/cisplatin_cv_mars_glm_model_1.rds', cisplatin_fit_1)
+
+
+
+## cytarabine ----
+## glm model
+set.seed(5)
 cytarabine_fit_elnet <- cv.glmnet(x = as.matrix(cytarabine_rose[, -14210]), y = cytarabine_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/cytarabine_auc.png')
@@ -588,13 +717,54 @@ plot(cytarabine_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/cytarabine_model.rds', cytarabine_fit_elnet)
-cytarabine_pred <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-cytarabine_preds <- glmnet::auc(cytarabine_test$res_sens, cytarabine_pred)
-cytarabine_preds <- round(cytarabine_preds, digits = 2) #0.57
+cytarabine_pred <- predict(cytarabine_fit_elnet, newx = as.matrix(cytarabine_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#cytarabine_preds <- glmnet::auc(cytarabine$res_sens, cytarabine_pred)
+#cytarabine_preds <- round(cytarabine_preds, digits = 2) #0.66
 
-cytarabine_overall_acc <- sum(cytarabine_test$res_sens == cytarabine_pred)/length(cytarabine_pred) #0.85
+cytarabine_overall_acc <- sum(cytarabine$res_sens == cytarabine_pred)/length(cytarabine_pred) #0.916
 
-## doxorubicin
+cytarabine_glm_confusion <- confusionMatrix(factor(cytarabine_pred), factor(cytarabine$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+cytarabine_svm <- train(factor(res_sens) ~ ., data = cytarabine_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+cytarabine_pred <- predict(cytarabine_svm, newdata = cytarabine_rna_seq)
+
+
+cytarabine_svm_confusion <- confusionMatrix(cytarabine_pred, factor(cytarabine$res_sens))
+
+saveRDS(file = 'GLM_Models/cytarabine_svm_model_1.rds', cytarabine_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+cytarabine_fit_1 <- earth(res_sens ~ ., data = cytarabine_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+cytarabine_fit_1_summary <- summary(cytarabine_fit_1)
+cytarabine_fit_1_evimp <- evimp(cytarabine_fit_1) #plot these w ggplot side by side
+
+cytarabine_fit_1_pred <- predict(cytarabine_fit_1, newdata = as.matrix(cytarabine_rna_seq), type = 'class')
+
+cytarabine_mars_confusion <- confusionMatrix(factor(cytarabine_fit_1_pred), factor(cytarabine$res_sens))
+
+
+saveRDS(file = 'GLM_Models/cytarabine_cv_mars_glm_model_1.rds', cytarabine_fit_1)
+
+
+
+## doxorubicin ----
+## glm model
+set.seed(5)
 doxorubicin_fit_elnet <- cv.glmnet(x = as.matrix(doxorubicin_rose[, -14210]), y = doxorubicin_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/doxorubicin_auc.png')
@@ -602,13 +772,54 @@ plot(doxorubicin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/doxorubicin_model.rds', doxorubicin_fit_elnet)
-doxorubicin_pred <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-doxorubicin_preds <- glmnet::auc(doxorubicin_test$res_sens, doxorubicin_pred)
-doxorubicin_preds <- round(doxorubicin_preds, digits = 2) #0.54
+doxorubicin_pred <- predict(doxorubicin_fit_elnet, newx = as.matrix(doxorubicin_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#doxorubicin_preds <- glmnet::auc(doxorubicin$res_sens, doxorubicin_pred)
+#doxorubicin_preds <- round(doxorubicin_preds, digits = 2) #0.66
 
-doxorubicin_overall_acc <- sum(doxorubicin_test$res_sens == doxorubicin_pred)/length(doxorubicin_pred) #0.84
+doxorubicin_overall_acc <- sum(doxorubicin$res_sens == doxorubicin_pred)/length(doxorubicin_pred) #0.916
 
-## etoposide
+doxorubicin_glm_confusion <- confusionMatrix(factor(doxorubicin_pred), factor(doxorubicin$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+doxorubicin_svm <- train(factor(res_sens) ~ ., data = doxorubicin_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+doxorubicin_pred <- predict(doxorubicin_svm, newdata = doxorubicin_rna_seq)
+
+
+doxorubicin_svm_confusion <- confusionMatrix(doxorubicin_pred, factor(doxorubicin$res_sens))
+
+saveRDS(file = 'GLM_Models/doxorubicin_svm_model_1.rds', doxorubicin_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+doxorubicin_fit_1 <- earth(res_sens ~ ., data = doxorubicin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+doxorubicin_fit_1_summary <- summary(doxorubicin_fit_1)
+doxorubicin_fit_1_evimp <- evimp(doxorubicin_fit_1) #plot these w ggplot side by side
+
+doxorubicin_fit_1_pred <- predict(doxorubicin_fit_1, newdata = as.matrix(doxorubicin_rna_seq), type = 'class')
+
+doxorubicin_mars_confusion <- confusionMatrix(factor(doxorubicin_fit_1_pred), factor(doxorubicin$res_sens))
+
+
+saveRDS(file = 'GLM_Models/doxorubicin_cv_mars_glm_model_1.rds', doxorubicin_fit_1)
+
+
+
+## etoposide ----
+## glm model
+set.seed(5)
 etoposide_fit_elnet <- cv.glmnet(x = as.matrix(etoposide_rose[, -14210]), y = etoposide_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/etoposide_auc.png')
@@ -616,13 +827,54 @@ plot(etoposide_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/etoposide_model.rds', etoposide_fit_elnet)
-etoposide_pred <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-etoposide_preds <- glmnet::auc(etoposide_test$res_sens, etoposide_pred)
-etoposide_preds <- round(etoposide_preds, digits = 2) #0.77
+etoposide_pred <- predict(etoposide_fit_elnet, newx = as.matrix(etoposide_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#etoposide_preds <- glmnet::auc(etoposide$res_sens, etoposide_pred)
+#etoposide_preds <- round(etoposide_preds, digits = 2) #0.66
 
-etoposide_overall_acc <- sum(etoposide_test$res_sens == etoposide_pred)/length(etoposide_pred) #0.88
+etoposide_overall_acc <- sum(etoposide$res_sens == etoposide_pred)/length(etoposide_pred) #0.916
 
-## gemcitabine
+etoposide_glm_confusion <- confusionMatrix(factor(etoposide_pred), factor(etoposide$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+etoposide_svm <- train(factor(res_sens) ~ ., data = etoposide_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+etoposide_pred <- predict(etoposide_svm, newdata = etoposide_rna_seq)
+
+
+etoposide_svm_confusion <- confusionMatrix(etoposide_pred, factor(etoposide$res_sens))
+
+saveRDS(file = 'GLM_Models/etoposide_svm_model_1.rds', etoposide_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+etoposide_fit_1 <- earth(res_sens ~ ., data = etoposide_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+etoposide_fit_1_summary <- summary(etoposide_fit_1)
+etoposide_fit_1_evimp <- evimp(etoposide_fit_1) #plot these w ggplot side by side
+
+etoposide_fit_1_pred <- predict(etoposide_fit_1, newdata = as.matrix(etoposide_rna_seq), type = 'class')
+
+etoposide_mars_confusion <- confusionMatrix(factor(etoposide_fit_1_pred), factor(etoposide$res_sens))
+
+
+saveRDS(file = 'GLM_Models/etoposide_cv_mars_glm_model_1.rds', etoposide_fit_1)
+
+
+
+## gemcitabine ----
+## glm model
+set.seed(5)
 gemcitabine_fit_elnet <- cv.glmnet(x = as.matrix(gemcitabine_rose[, -14210]), y = gemcitabine_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/gemcitabine_auc.png')
@@ -630,13 +882,54 @@ plot(gemcitabine_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/gemcitabine_model.rds', gemcitabine_fit_elnet)
-gemcitabine_pred <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-gemcitabine_preds <- glmnet::auc(gemcitabine_test$res_sens, gemcitabine_pred)
-gemcitabine_preds <- round(gemcitabine_preds, digits = 2) #0.66
+gemcitabine_pred <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#gemcitabine_preds <- glmnet::auc(gemcitabine$res_sens, gemcitabine_pred)
+#gemcitabine_preds <- round(gemcitabine_preds, digits = 2) #0.66
 
-gemcitabine_overall_acc <- sum(gemcitabine_test$res_sens == gemcitabine_pred)/length(gemcitabine_pred) #0.88
+gemcitabine_overall_acc <- sum(gemcitabine$res_sens == gemcitabine_pred)/length(gemcitabine_pred) #0.916
 
-## methotrexate
+gemcitabine_glm_confusion <- confusionMatrix(factor(gemcitabine_pred), factor(gemcitabine$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+gemcitabine_svm <- train(factor(res_sens) ~ ., data = gemcitabine_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+gemcitabine_pred <- predict(gemcitabine_svm, newdata = gemcitabine_rna_seq)
+
+
+gemcitabine_svm_confusion <- confusionMatrix(gemcitabine_pred, factor(gemcitabine$res_sens))
+
+saveRDS(file = 'GLM_Models/gemcitabine_svm_model_1.rds', gemcitabine_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+gemcitabine_fit_1 <- earth(res_sens ~ ., data = gemcitabine_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+gemcitabine_fit_1_summary <- summary(gemcitabine_fit_1)
+gemcitabine_fit_1_evimp <- evimp(gemcitabine_fit_1) #plot these w ggplot side by side
+
+gemcitabine_fit_1_pred <- predict(gemcitabine_fit_1, newdata = as.matrix(gemcitabine_rna_seq), type = 'class')
+
+gemcitabine_mars_confusion <- confusionMatrix(factor(gemcitabine_fit_1_pred), factor(gemcitabine$res_sens))
+
+
+saveRDS(file = 'GLM_Models/gemcitabine_cv_mars_glm_model_1.rds', gemcitabine_fit_1)
+
+
+
+## methotrexate ----
+## glm model
+set.seed(5)
 methotrexate_fit_elnet <- cv.glmnet(x = as.matrix(methotrexate_rose[, -14210]), y = methotrexate_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/methotrexate_auc.png')
@@ -644,13 +937,54 @@ plot(methotrexate_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/methotrexate_model.rds', methotrexate_fit_elnet)
-methotrexate_pred <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-methotrexate_preds <- glmnet::auc(methotrexate_test$res_sens, methotrexate_pred)
-methotrexate_preds <- round(methotrexate_preds, digits = 2) #0.46
+methotrexate_pred <- predict(methotrexate_fit_elnet, newx = as.matrix(methotrexate_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#methotrexate_preds <- glmnet::auc(methotrexate$res_sens, methotrexate_pred)
+#methotrexate_preds <- round(methotrexate_preds, digits = 2) #0.66
 
-methotrexate_overall_acc <- sum(methotrexate_test$res_sens == methotrexate_pred)/length(methotrexate_pred) #0.90
+methotrexate_overall_acc <- sum(methotrexate$res_sens == methotrexate_pred)/length(methotrexate_pred) #0.916
 
-## mitomycin
+methotrexate_glm_confusion <- confusionMatrix(factor(methotrexate_pred), factor(methotrexate$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+methotrexate_svm <- train(factor(res_sens) ~ ., data = methotrexate_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+methotrexate_pred <- predict(methotrexate_svm, newdata = methotrexate_rna_seq)
+
+
+methotrexate_svm_confusion <- confusionMatrix(methotrexate_pred, factor(methotrexate$res_sens))
+
+saveRDS(file = 'GLM_Models/methotrexate_svm_model_1.rds', methotrexate_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+methotrexate_fit_1 <- earth(res_sens ~ ., data = methotrexate_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+methotrexate_fit_1_summary <- summary(methotrexate_fit_1)
+methotrexate_fit_1_evimp <- evimp(methotrexate_fit_1) #plot these w ggplot side by side
+
+methotrexate_fit_1_pred <- predict(methotrexate_fit_1, newdata = as.matrix(methotrexate_rna_seq), type = 'class')
+
+methotrexate_mars_confusion <- confusionMatrix(factor(methotrexate_fit_1_pred), factor(methotrexate$res_sens))
+
+
+saveRDS(file = 'GLM_Models/methotrexate_cv_mars_glm_model_1.rds', methotrexate_fit_1)
+
+
+
+## mitomycin ----
+## glm model
+set.seed(5)
 mitomycin_fit_elnet <- cv.glmnet(x = as.matrix(mitomycin_rose[, -14210]), y = mitomycin_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/mitomycin_auc.png')
@@ -658,13 +992,54 @@ plot(mitomycin_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/mitomycin_model.rds', mitomycin_fit_elnet)
-mitomycin_pred <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-mitomycin_preds <- glmnet::auc(mitomycin_test$res_sens, mitomycin_pred)
-mitomycin_preds <- round(mitomycin_preds, digits = 2) #0.63
+mitomycin_pred <- predict(mitomycin_fit_elnet, newx = as.matrix(mitomycin_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#mitomycin_preds <- glmnet::auc(mitomycin$res_sens, mitomycin_pred)
+#mitomycin_preds <- round(mitomycin_preds, digits = 2) #0.66
 
-mitomycin_overall_acc <- sum(mitomycin_test$res_sens == mitomycin_pred)/length(mitomycin_pred) #0.83
+mitomycin_overall_acc <- sum(mitomycin$res_sens == mitomycin_pred)/length(mitomycin_pred) #0.916
 
-## sn38
+mitomycin_glm_confusion <- confusionMatrix(factor(mitomycin_pred), factor(mitomycin$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+mitomycin_svm <- train(factor(res_sens) ~ ., data = mitomycin_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+mitomycin_pred <- predict(mitomycin_svm, newdata = mitomycin_rna_seq)
+
+
+mitomycin_svm_confusion <- confusionMatrix(mitomycin_pred, factor(mitomycin$res_sens))
+
+saveRDS(file = 'GLM_Models/mitomycin_svm_model_1.rds', mitomycin_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+mitomycin_fit_1 <- earth(res_sens ~ ., data = mitomycin_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+mitomycin_fit_1_summary <- summary(mitomycin_fit_1)
+mitomycin_fit_1_evimp <- evimp(mitomycin_fit_1) #plot these w ggplot side by side
+
+mitomycin_fit_1_pred <- predict(mitomycin_fit_1, newdata = as.matrix(mitomycin_rna_seq), type = 'class')
+
+mitomycin_mars_confusion <- confusionMatrix(factor(mitomycin_fit_1_pred), factor(mitomycin$res_sens))
+
+
+saveRDS(file = 'GLM_Models/mitomycin_cv_mars_glm_model_1.rds', mitomycin_fit_1)
+
+
+
+## sn38 ----
+## glm model
+set.seed(5)
 sn38_fit_elnet <- cv.glmnet(x = as.matrix(sn38_rose[, -14210]), y = sn38_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/sn38_auc.png')
@@ -672,13 +1047,54 @@ plot(sn38_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/sn38_model.rds', sn38_fit_elnet)
-sn38_pred <- predict(sn38_fit_elnet, newx = as.matrix(sn38_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-sn38_preds <- glmnet::auc(sn38_test$res_sens, sn38_pred)
-sn38_preds <- round(sn38_preds, digits = 2) #0.67
+sn38_pred <- predict(sn38_fit_elnet, newx = as.matrix(sn38_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#sn38_preds <- glmnet::auc(sn38$res_sens, sn38_pred)
+#sn38_preds <- round(sn38_preds, digits = 2) #0.66
 
-sn38_overall_acc <- sum(sn38_test$res_sens == sn38_pred)/length(sn38_pred) #0.90
+sn38_overall_acc <- sum(sn38$res_sens == sn38_pred)/length(sn38_pred) #0.916
 
-## temozolomide
+sn38_glm_confusion <- confusionMatrix(factor(sn38_pred), factor(sn38$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+sn38_svm <- train(factor(res_sens) ~ ., data = sn38_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+sn38_pred <- predict(sn38_svm, newdata = sn38_rna_seq)
+
+
+sn38_svm_confusion <- confusionMatrix(sn38_pred, factor(sn38$res_sens))
+
+saveRDS(file = 'GLM_Models/sn38_svm_model_1.rds', sn38_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+sn38_fit_1 <- earth(res_sens ~ ., data = sn38_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+sn38_fit_1_summary <- summary(sn38_fit_1)
+sn38_fit_1_evimp <- evimp(sn38_fit_1) #plot these w ggplot side by side
+
+sn38_fit_1_pred <- predict(sn38_fit_1, newdata = as.matrix(sn38_rna_seq), type = 'class')
+
+sn38_mars_confusion <- confusionMatrix(factor(sn38_fit_1_pred), factor(sn38$res_sens))
+
+
+saveRDS(file = 'GLM_Models/sn38_cv_mars_glm_model_1.rds', sn38_fit_1)
+
+
+
+## temozolomide ----
+## glm model
+set.seed(5)
 temozolomide_fit_elnet <- cv.glmnet(x = as.matrix(temozolomide_rose[, -14210]), y = temozolomide_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
 #save plot
 png(filename = 'Images/temozolomide_auc.png')
@@ -686,20 +1102,72 @@ plot(temozolomide_fit_elnet)
 dev.off()
 #save model
 saveRDS(file = 'GLM_Models/temozolomide_model.rds', temozolomide_fit_elnet)
-temozolomide_pred <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_rna_seq_test), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-temozolomide_preds <- glmnet::auc(temozolomide_test$res_sens, temozolomide_pred)
-temozolomide_preds <- round(temozolomide_preds, digits = 2) #0.96
+temozolomide_pred <- predict(temozolomide_fit_elnet, newx = as.matrix(temozolomide_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+#temozolomide_preds <- glmnet::auc(temozolomide$res_sens, temozolomide_pred)
+#temozolomide_preds <- round(temozolomide_preds, digits = 2) #0.66
 
-temozolomide_overall_acc <- sum(temozolomide_test$res_sens == temozolomide_pred)/length(temozolomide_pred) #0.93
+temozolomide_overall_acc <- sum(temozolomide$res_sens == temozolomide_pred)/length(temozolomide_pred) #0.916
+
+temozolomide_glm_confusion <- confusionMatrix(factor(temozolomide_pred), factor(temozolomide$res_sens))
+
+## svm model
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(5)
+
+temozolomide_svm <- train(factor(res_sens) ~ ., data = temozolomide_rose, method = "svmLinear",
+                       trControl=trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10)
+
+#ggplot(svm_Linear)
+
+
+
+temozolomide_pred <- predict(temozolomide_svm, newdata = temozolomide_rna_seq)
+
+
+temozolomide_svm_confusion <- confusionMatrix(temozolomide_pred, factor(temozolomide$res_sens))
+
+saveRDS(file = 'GLM_Models/temozolomide_svm_model_1.rds', temozolomide_svm)
+
+
+
+## fit glm mars first degree
+set.seed(5)
+temozolomide_fit_1 <- earth(res_sens ~ ., data = temozolomide_rose, ncross = 5, degree=1, nfold=5, pmethod = 'cv', keepxy=TRUE, glm=list(family=binomial), trace = .5) 
+temozolomide_fit_1_summary <- summary(temozolomide_fit_1)
+temozolomide_fit_1_evimp <- evimp(temozolomide_fit_1) #plot these w ggplot side by side
+
+temozolomide_fit_1_pred <- predict(temozolomide_fit_1, newdata = as.matrix(temozolomide_rna_seq), type = 'class')
+
+temozolomide_mars_confusion <- confusionMatrix(factor(temozolomide_fit_1_pred), factor(temozolomide$res_sens))
+
+
+saveRDS(file = 'GLM_Models/temozolomide_cv_mars_glm_model_1.rds', temozolomide_fit_1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## fitting MARS models
 # fit a basic MARS model
 bleomycin_mars1 <- earth(res_sens ~ ., data = bleomycin_rose)
 #print model summary
-print(bleomycin_mars1) #21
+print(bleomycin_mars1) #23/10
 summary(bleomycin_mars1)
 coef(bleomycin_mars1)
+evimp(bleomycin_mars1)
 
 png(filename = 'Images/bleomycin_first_degree_model_selection.png')
 plot(bleomycin_mars1, which = 1)
@@ -1803,11 +2271,11 @@ dev.off()
 
 
 ## testing for accuracy
-bleomycin_test_cv_mars <- predict(bleomycin_mars1, newdata = as.matrix(bleomycin_rna_seq_test), type = 'class') #class for everything else
+bleomycin_test_cv_mars <- predict(bleomycin_mars1, newdata = as.matrix(bleomycin_rna_seq), type = 'class') #class for everything else
 
 bleomycin_test_cv_mars_auc <- auc(bleomycin_test$res_sens, bleomycin_test_cv_mars)
 bleomycin_test_cv_mars_auc <- round(bleomycin_test_cv_mars_auc, digits = 2)
-bleomycin_cv_mars_acc <- sum(bleomycin_test$res_sens == bleomycin_test_cv_mars)/length(bleomycin_test_cv_mars)
+bleomycin_cv_mars_acc <- sum(bleomycin$res_sens == bleomycin_test_cv_mars)/length(bleomycin_test_cv_mars)
 
 # BLCA W CISPLATIN (49)
 blca_clinical <- read.csv('Processed_Clinical_Data/blca_tcga_clinical_processed.csv', row.names = 1)
