@@ -55,21 +55,38 @@ gemcitabine_rose <- read.csv('Processed_Gene_Expression/gemcitabine_rose_full.cs
 
 
 ## glm model
+# set.seed(5)
+# gemcitabine_fit_elnet <- cv.glmnet(x = as.matrix(gemcitabine_rose[, -14210]), y = gemcitabine_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
+# #save plot
+# png(filename = 'Images/gemcitabine_auc.png')
+# plot(gemcitabine_fit_elnet)
+# dev.off()
+# #save model
+# saveRDS(file = 'GLM_Models/gemcitabine_model.rds', gemcitabine_fit_elnet)
+# gemcitabine_pred <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
+# #gemcitabine_preds <- glmnet::auc(gemcitabine$res_sens, gemcitabine_pred)
+# #gemcitabine_preds <- round(gemcitabine_preds, digits = 2) #0.66
+# 
+# gemcitabine_overall_acc <- sum(gemcitabine$res_sens == gemcitabine_pred)/length(gemcitabine_pred) #0.916
+# 
+# gemcitabine_glm_confusion <- confusionMatrix(factor(gemcitabine_pred), factor(gemcitabine$res_sens))
+
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
 set.seed(5)
-gemcitabine_fit_elnet <- cv.glmnet(x = as.matrix(gemcitabine_rose[, -14210]), y = gemcitabine_rose$res_sens, family = 'binomial', alpha = 0.5, type.measure = 'auc')
-#save plot
-png(filename = 'Images/gemcitabine_auc.png')
-plot(gemcitabine_fit_elnet)
-dev.off()
-#save model
-saveRDS(file = 'GLM_Models/gemcitabine_model.rds', gemcitabine_fit_elnet)
-gemcitabine_pred <- predict(gemcitabine_fit_elnet, newx = as.matrix(gemcitabine_rna_seq[, -14210]), s = 'lambda.1se', interval = 'confidence', probability = FALSE, type = 'class')
-#gemcitabine_preds <- glmnet::auc(gemcitabine$res_sens, gemcitabine_pred)
-#gemcitabine_preds <- round(gemcitabine_preds, digits = 2) #0.66
 
-gemcitabine_overall_acc <- sum(gemcitabine$res_sens == gemcitabine_pred)/length(gemcitabine_pred) #0.916
+gemcitabine_glm_caret <- train(factor(res_sens) ~ ., data = gemcitabine_rose, 
+                   method = 'glmnet',
+                   family = 'binomial',
+                   trControl = trctrl, 
+                   tuneLength = 10)
 
-gemcitabine_glm_confusion <- confusionMatrix(factor(gemcitabine_pred), factor(gemcitabine$res_sens))
+gemcitabine_glm_caret$bestTune
+summary(glm_caret)
+
+gemcitabine_pred <- predict(gemcitabine_glm_caret, newdata = gemcitabine_rna_seq)
+
+
+gemcitabine_glm_confusion <- confusionMatrix(gemcitabine_pred, factor(gemcitabine$res_sens))
 
 ## svm model
 trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
