@@ -21,17 +21,12 @@ tcga_gene_exp <- function(tcga_class) {
 ### CELL LINES
 # GDSC
 gdsc_rna_seq <- read.csv('Gene_Expression_Files/gdsc_rnaseq.csv', header = TRUE, stringsAsFactors = FALSE)
-rownames(gdsc_rna_seq) <- make.names(gdsc_rna_seq$ï.., unique = TRUE) # ENSG IDs as row names
+rownames(gdsc_rna_seq) <- make.names(gdsc_rna_seq$?.., unique = TRUE) # ENSG IDs as row names
 gdsc_rna_seq <- gdsc_rna_seq[, -1] # remove gene names
 gdsc_rna_seq <- gdsc_rna_seq[-c(17738,17739), ] # removes NAs that were there due to previous use in excel
 colnames(gdsc_rna_seq) <- gsub('X', '', colnames(gdsc_rna_seq))
 # dimensions now: 17737 genes (by ENSG ID) x 962 cell lines (by COSMIC ID)
 
-# CCLE
-ccle_microarray <- read.xlsx('Gene_Expression_Files/Gene_expression_data_no blood_good.xlsx', 1)
-rownames(ccle_microarray) <- make.names(ccle_microarray$Description, unique = TRUE)
-ccle_microarray <- ccle_microarray[, -1]
-# dimensions now: 18988 (by gene name) x 855 cell lines (by name and type)
 
 ### TUMOR SETS (TCGA)
 # BLCA
