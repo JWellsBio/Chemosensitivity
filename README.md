@@ -7,25 +7,16 @@ Chemosensitivity Project Scripts and Files
 There are plenty of projects that predict sensitivity on a small scale, using only one drug and/or one cancer type. We sought to go as big as possible and build pan-cancer models to predict sensitivity for as many chemotherapy drugs as possible. One factor we considered was that it had to be able to be sequenced fairly inexpensively. The standard here would be Nanostring, which limits us to ~800 genes.
 
 ## Study Design
-The flowchart for the study design can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/study_design.png). 
+The flowchart for the study design can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/study_design_synth.png). 
 + Briefly, we sought to use only publicly available gene expression data to build our predictive models. The best sources of gene expression data paired with sensitivity data are the [Genomics of Drug Sensitivity in Cancer](https://www.cancerrxgene.org/) database and the [Cancer Cell Line Encyclopedia](https://portals.broadinstitute.org/ccle).
-+ After splitting into testing and training data, generalized linear models (GLMs) were developed per drug. Because trying to predict a continuous variable (such as IC50 or AUC) can be difficult, sensitivity measures were binned into the top 20% (most sensitive) and the bottom 20% (least sensitive).
-+ Models were evaluated based on AUC (10x-cross-validated within the training data) and were tuned to include the fewest genes possible while resulting in the highest AUC. [Cisplatin example](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/cisplatin_most_auc.png)
++ Generalized linear models (GLMs) were developed per drug and tested against testing data. [Figure](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/Fig_2_testing.png)
 + Finalized pan-cancer models were then applied to withheld testing data and AUC was measured.
 + Further, pan-cancer models were tested against specific tissue types in the testing data to see how well pan-cancer models predicted sensitivity to individual tissue types.
 + Finally, drug models were tested on human tumor datasets from [The Cancer Genome Atlas](https://cancergenome.nih.gov/).
 
-## Results for pan-cancer models applied to testing data
-+ Pan-cancer models built from GDSC data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/GDSC_AUC_heatmap_revised.png)
-+ Pan-cancer models built from CCLE data can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/CCLE_AUC_heatmap_revised.png)
-
-## Total gene numbers
-+ The total gene set for all drugs considered comes out to 247. A break-down of number of genes needed per drug model can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/geneset_treemap.png)
-+ A table detailing genes needed in GDSC models can be seen [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/gdsc_gene_table.PNG)
-+ And for CCLE [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ccle_gene_table.PNG)
 
 ## TCGA results
-+ Pan-cancer models were tested against available TCGA class/drug combinations where n >= 5. Sensitivity measure used was RFS.
-+ ROC curves were generated for every combination tested as well as recurrence-free survival curves split based on predicted labels. An example can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/ov_cisp_duo.png)
++ Pan-cancer models were tested against available TCGA class/drug combinations where n >= 10. Sensitivity measure used was RFS.
++ Recurrence-free survival curves split based on predicted labels were generated and measured for significance by multivariate Cox regression analysis, adjusting for age, sex, and tumor stage. An example can be found [here](https://github.com/JWellsBio/Chemosensitivity/blob/master/Images/blca_cisplatin_surv.tiff)
 
 
